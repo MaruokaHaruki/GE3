@@ -2,6 +2,7 @@
 /// ===自作クラス=== ///
 #include "base/WinApp.h"
 #include "base/DirectXManager.h"
+#include "input/Input.h"
 /// ===Win関連=== ///
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -515,13 +516,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	D3DResourceLeakCheker leakCheck;
 
 	///----------------------------------------///
-	//ダイレクトX生成
+	///ダイレクトX生成
 	///----------------------------------------///
 	//インスタンスの取得
 	DirectXManager* DXManager = new DirectXManager;
 	//ダイレクトXの初期化
 	DXManager->InitializeDirectX(win->GetWindowWidth(), win->GetWindowHeight(), win->GetWindowHandle());
-	
+
+	///-------------------------------------------/// 
+	///入力クラス
+	///-------------------------------------------///
+	//ポインタ
+	Input* input = nullptr;
+	//入力の初期化
+	input = new Input();
+	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
+
+
+
+
+
+
+
 
 	///----------------------------------------///
 	//DescriptorHeapのサイズを取得
@@ -1332,41 +1348,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	//開放処理
 	///----------------------------------------///
-
-	/// ===3Dオブジェクト描画=== ///
-	//vertexResource->Release();  // 頂点バッファリソースの解放
-	//indexResource->Release(); //頂点インデックスの解放
-	//graphicsPipelineState->Release();  // グラフィックスパイプラインステートの解放
-	//signatureBlob->Release();  // 署名バイナリの解放
-	//if (errorBlob) {
-		//errorBlob->Release();  // エラーメッセージバッファの解放
-	//}
-	//rootSignature->Release();  // ルートシグネチャの解放
-	//pixelShaderBlob->Release();  // ピクセルシェーダーバイナリの解放
-	//vertexShaderBlob->Release();  // 頂点シェーダーバイナリの解放
-
-	/// ===深度バッファ=== ///
-	//dsvDescriptorHeap->Release();  // 深度ステンシルビュー用ディスクリプタヒープの解放
-	//depthStencilResource->Release();  // 深度ステンシルバッファリソースの解放
-
-	/// ===マテリアル=== ///
-	//materialResource->Release();  // マテリアルリソースの解放
-
-	/// ===並行光源=== ///
-	//directionalLightResource->Release();
-
-	/// ===wvp=== ///
-	//transformationMatrixResource->Release();  // ワールド・ビュー・プロジェクション行列リソースの解放
-
-	/// ===Resource(Texture)=== ///
-	//textureResource->Release();  // テクスチャリソースの解放
-	//textureResource2->Release();  // 2番目のテクスチャリソースの解放
-
-	/// ===スプライト=== ///
-	//transformationMatrixResourceSprite->Release();  // スプライト用変換行列リソースの解放
-	//materialResourceSprite->Release();  // スプライト用マテリアルリソースの解放
-	//vertexResouceSprite->Release();  // スプライト用頂点バッファリソースの解放
-	//indexResourceSprite->Release();
+	/// ===入力クラス=== ///
+	delete input;
 
 	/// ===ImGuiの終了処理=== ///
 	//srvDescriptorHeap->Release();  // シェーダーリソースビュー用ディスクリプタヒープの解放
