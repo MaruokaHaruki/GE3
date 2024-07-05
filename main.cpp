@@ -1188,6 +1188,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {
+			/// ===Inputクラス=== ///
+			input->Update();
+
+
 			// ImGuiのフレーム開始
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
