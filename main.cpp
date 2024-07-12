@@ -326,42 +326,42 @@ void UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const Di
 }
 
 ///==============================================///
-///深度BufferろステンシルBufferの生成関数
+///深度BufferステンシルBufferの生成関数
 ///==============================================///
-Microsoft::WRL::ComPtr <ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr <ID3D12Device> device, int32_t width, int32_t height) {
-	/// ===生成するResouceの設定=== ///
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Width = width;										//テクスチャの幅
-	resourceDesc.Height = height;									//テクスチャの高さ
-	resourceDesc.MipLevels = 1;										//mipmapの数
-	resourceDesc.DepthOrArraySize = 1;								//奥行きor配列Textureの配列数
-	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			//DepthStencillとして利用可能なFormat
-	resourceDesc.SampleDesc.Count = 1;								//サンプリングカウント。1固定
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;	//2次元
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;	//DepthStencillとして使う通知
-
-	/// ===利用するHeapの設定=== ///
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//VRAM上に作る
-
-	/// ===深度値のクリア設定=== ///
-	D3D12_CLEAR_VALUE depthClearValue{};
-	depthClearValue.DepthStencil.Depth = 1.0f;//1.0F(最大値)でクリア
-	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//フォーマット。Resourceと合わせる
-
-
-	/// ===設定を元にResourceの生成を行う=== ///
-	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
-		&heapProperties,					//Heapの設定
-		D3D12_HEAP_FLAG_NONE,				//heepの特殊な設定。特になし。
-		&resourceDesc,						//Resourceの設定
-		D3D12_RESOURCE_STATE_DEPTH_WRITE,	//深度値を書き込む状態にしておく
-		&depthClearValue,					//Clear最適値
-		IID_PPV_ARGS(&resource));			//作成するResourceポインタへのポインタ
-	assert(SUCCEEDED(hr));
-	return resource;
-}
+//Microsoft::WRL::ComPtr <ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr <ID3D12Device> device, int32_t width, int32_t height) {
+//	/// ===生成するResouceの設定=== ///
+//	D3D12_RESOURCE_DESC resourceDesc{};
+//	resourceDesc.Width = width;										//テクスチャの幅
+//	resourceDesc.Height = height;									//テクスチャの高さ
+//	resourceDesc.MipLevels = 1;										//mipmapの数
+//	resourceDesc.DepthOrArraySize = 1;								//奥行きor配列Textureの配列数
+//	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;			//DepthStencillとして利用可能なFormat
+//	resourceDesc.SampleDesc.Count = 1;								//サンプリングカウント。1固定
+//	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;	//2次元
+//	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;	//DepthStencillとして使う通知
+//
+//	/// ===利用するHeapの設定=== ///
+//	D3D12_HEAP_PROPERTIES heapProperties{};
+//	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//VRAM上に作る
+//
+//	/// ===深度値のクリア設定=== ///
+//	D3D12_CLEAR_VALUE depthClearValue{};
+//	depthClearValue.DepthStencil.Depth = 1.0f;//1.0F(最大値)でクリア
+//	depthClearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//フォーマット。Resourceと合わせる
+//
+//
+//	/// ===設定を元にResourceの生成を行う=== ///
+//	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
+//	HRESULT hr = device->CreateCommittedResource(
+//		&heapProperties,					//Heapの設定
+//		D3D12_HEAP_FLAG_NONE,				//heepの特殊な設定。特になし。
+//		&resourceDesc,						//Resourceの設定
+//		D3D12_RESOURCE_STATE_DEPTH_WRITE,	//深度値を書き込む状態にしておく
+//		&depthClearValue,					//Clear最適値
+//		IID_PPV_ARGS(&resource));			//作成するResourceポインタへのポインタ
+//	assert(SUCCEEDED(hr));
+//	return resource;
+//}
 
 ///==============================================///
 ///DescriptorHandleの取得を関数化
@@ -944,16 +944,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	//深度用のリソース
 	///----------------------------------------///
-	/// ===DepthStencilTextureをウィンドウのサイズで作成=== ///
-	Microsoft::WRL::ComPtr <ID3D12Resource> depthStencilResource = CreateDepthStencilTextureResource(DXManager->GetDevice().Get(), win->GetWindowWidth(), win->GetWindowHeight());
-	/// ===dsv用DescriptorHeap=== ///
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap = CreateDescriptorHeap(DXManager->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
-	/// ===dsvの設定=== ///
-	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
-	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResourceに合わせる
-	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2dTexture
-	//DSVHeapの先頭にDSVを作る
-	DXManager->GetDevice()->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	///// ===DepthStencilTextureをウィンドウのサイズで作成=== ///
+	//Microsoft::WRL::ComPtr <ID3D12Resource> depthStencilResource = CreateDepthStencilTextureResource(DXManager->GetDevice().Get(), win->GetWindowWidth(), win->GetWindowHeight());
+	///// ===dsv用DescriptorHeap=== ///
+	//Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap = CreateDescriptorHeap(DXManager->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	///// ===dsvの設定=== ///
+	//D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+	//dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResourceに合わせる
+	//dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2dTexture
+	////DSVHeapの先頭にDSVを作る
+	//DXManager->GetDevice()->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
 
 	///----------------------------------------///
 	//並行光源用のリソース
@@ -1153,7 +1154,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//カメラの作成
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	//D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	//CPUで動かす用のTransform
 	Transform transformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
@@ -1273,14 +1274,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// ====ImGuiの内部コマンド生成==== ///
 			ImGui::Render();
 
-			// バックバッファの決定
-			DXManager->SettleCommandList();
-			// バリア設定
-			DXManager->SetupTransitionBarrier();
+			//// バックバッファの決定
+			//DXManager->SettleCommandList();
+			//// バリア設定
+			//DXManager->SetupTransitionBarrier();
 
-			// 描画ターゲットの設定とクリア
-			DXManager->RenderTargetPreference(dsvHandle);
+			//// 描画ターゲットの設定とクリア
+			//DXManager->RenderTargetPreference(dsvHandle);
 
+			DXManager->PreDraw();
 
 
 			// ImGuiの描画用DescriptorHeap設定
@@ -1336,8 +1338,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 			// コマンドリストのクローズと実行
-			DXManager->CloseCommandList();
-			DXManager->ExecuteCommandList();
+			//DXManager->CloseCommandList();
+			//DXManager->ExecuteCommandList();
+			DXManager->PostDraw();
 		}
 	}
 
