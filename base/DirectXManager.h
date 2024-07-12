@@ -2,17 +2,14 @@
 #include <string>
 #include <format>
 #include<cassert>
-
 #include <wrl.h>
-
 //自作関数
 #include"utils/WstringConve.h"
 #include "utils/Log.h"
-
+#include "WinApp.h"
 //ReportLiveObj
 #include <dxgidebug.h>
 #pragma comment(lib,"dxguid.lib")
-
 //DX12include
 #include<d3d12.h>
 #include<dxgi1_6.h>
@@ -20,13 +17,14 @@
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
 
+
 #pragma once
 class DirectXManager {
 public:
 
-	///------------------------------
+	///========================================================///
 	//コンストラクタ・デストラクタ
-	///------------------------------
+	///========================================================///
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -37,20 +35,30 @@ public:
 	/// </summary>
 	~DirectXManager();
 
-	///------------------------------
+	///========================================================///
 	//ダイレクトXの初期化
-	///------------------------------
+	///========================================================///
+	
+	/// <summary>
+	/// 
+	/// </summary>
+	void PreDraw();
+
+	/// <summary>
+	/// 
+	/// </summary>
+	void PostDraw();
 
 	/// <summary>
 	/// ダイレクトXの初期化
 	/// </summary>
-	void InitializeDirectX(const int32_t kClientWidth, const int32_t kClientHeight, HWND hwnd);
+	void InitializeDirectX(WinApp* winApp);
 
 	/// <summary>
 	/// 開放処理
 	/// </summary>
 	/// <param name="hwnd"></param>
-	void ReleaseDirectX(HWND hwnd);
+	void ReleaseDirectX();
 
 	/// <summary>
 	/// デバックレイヤーの生成
@@ -92,7 +100,7 @@ public:
 	/// <summary>
 	/// スワップチェーンを生成する
 	/// </summary>
-	void CreateSwapChain(const int32_t kClientWidth, const int32_t kClientHeight, HWND hwnd);
+	void CreateSwapChain();
 
 	/// <summary>
 	/// FenceとEventの生成
@@ -150,29 +158,23 @@ public:
 	/// <summary>
 	/// 開放処理
 	/// </summary>
-	void ReleaseResources(HWND hwnd);
-
+	void ReleaseResources();
 
 	/// <summary>
 	/// リソースリークチェック
 	/// </summary>
 	void CheckResourceLeaks();
 
-	/// <summary>
-	/// 描画前処理
-	/// </summary>
-	void PreDraw();
+	///=====================================================/// 
+	///生成関数
+	///=====================================================///
+	/// 
+	/// 
+	
 
-	/// <summary>
-	/// 描画後処理
-	/// </summary>
-	void PostDraw();
-
-
-
-	///------------------------------
-	//ゲッター・セッター
-	///------------------------------
+	///========================================================///
+	///ゲッター・セッター
+	///========================================================///
 	void SetHr(HRESULT sHr) { this->hr = sHr; }
 
 	HRESULT GetHr() { return hr; }
@@ -200,62 +202,55 @@ public:
 
 private:
 
-	///------------------------------
-	//デバックレイヤーの生成
-	///------------------------------
+	/// ===WindowsAPI=== ///
+	WinApp* winApp_ = nullptr;
+
+	/// ===デバックレイヤーの生成=== ///
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_;
 
-	///------------------------------
-	//DXGIファクトリーの生成
-	///------------------------------
+	/// ===DXGIファクトリーの生成=== ///
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	HRESULT hr;
 
-	///------------------------------
-	//使用するアダプタ用変数
-	///------------------------------
+	/// ===使用するアダプタ用変数=== ///
 	Microsoft::WRL::ComPtr <IDXGIAdapter4> useAdapter_;
 
-	///------------------------------
-	//D3D12Deviceの作成
-	///------------------------------
+	/// ===D3D12Deviceの作成=== ///
 	Microsoft::WRL::ComPtr <ID3D12Device> device_;
-
-	///------------------------------
-	//エラー・警告の場合即停止(初期化完了のあとに行う)
-	///------------------------------
+ 
+	/// ===エラー・警告の場合即停止(初期化完了のあとに行う)=== ///
 	Microsoft::WRL::ComPtr <ID3D12InfoQueue> infoQueue_;
 
 	//アダプターの情報を取得
 	DXGI_ADAPTER_DESC3 adapterDesc_{};
 
-	///------------------------------
+	///========================================================///
 	//コマンドキューを作成する
-	///------------------------------
+	///========================================================///
 	Microsoft::WRL::ComPtr <ID3D12CommandQueue> commandQueue_;
 
-	///------------------------------
+	///========================================================///
 	//コマンドアロケータを生成する
-	///------------------------------
+	///========================================================///
 	Microsoft::WRL::ComPtr <ID3D12CommandAllocator> commandAllocator_;
 	Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> commandList_;
 
-	///------------------------------
+	///========================================================///
 	//スワップチェーンを生成する
-	///------------------------------
+	///========================================================///
 	Microsoft::WRL::ComPtr <IDXGISwapChain4> swapChain_;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 
-	///------------------------------
+	///========================================================///
 	//Fenceの生成
-	///------------------------------
+	///========================================================///
 	Microsoft::WRL::ComPtr <ID3D12Fence> fence_;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
 
-	///------------------------------
+	///========================================================///
 	//ディスクリプタヒープ
-	///------------------------------
+	///========================================================///
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> rtvDescriptorHeap_;
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc_{};
 
@@ -273,9 +268,9 @@ private:
 	//TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	///------------------------------
+	///========================================================///
 	//SwapChainからResource
-	///------------------------------
+	///========================================================///
 	Microsoft::WRL::ComPtr <ID3D12Resource> swapChainResource_[2] = { nullptr };
 };
 
