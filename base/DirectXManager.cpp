@@ -14,9 +14,37 @@ DirectXManager::~DirectXManager() {
 }
 
 ///=====================================================/// 
+///描画前処理
+///=====================================================///
+//TODO:ループ内の前処理後処理を作成
+void DirectXManager::PreDraw() {
+	/// バックバッファの決定
+	SettleCommandList();
+	/// バリア設定
+	SetupTransitionBarrier();
+	// 描画ターゲットの設定とクリア
+	//RenderTargetPreference(dsvHandle);
+
+
+}
+
+///=====================================================/// 
+///描画後処理
+///=====================================================///
+void DirectXManager::PostDraw() {
+
+}
+
+///=====================================================/// 
 ///DirectXの初期化
 ///=====================================================/// 
-void DirectXManager::InitializeDirectX(const int32_t kClientWidth, const int32_t kClientHeight, HWND hwnd) {
+void DirectXManager::InitializeDirectX(WinApp* winApp) {
+	/// ===WinApp=== ///
+	///NULL検出
+	assert(winApp);
+	/// メンバ変数に記録
+	this->winApp_ = winApp;
+
 	CreateDebugLayer();
 
 	CreateDxgiFactory();
@@ -31,7 +59,7 @@ void DirectXManager::InitializeDirectX(const int32_t kClientWidth, const int32_t
 
 	CreateCommandAllocator();
 
-	CreateSwapChain(kClientWidth, kClientHeight, hwnd);
+	CreateSwapChain();
 
 	CreateFence();
 
@@ -51,9 +79,9 @@ void DirectXManager::InitializeDirectX(const int32_t kClientWidth, const int32_t
 ///=====================================================/// 
 ///開放処理
 ///=====================================================/// 
-void DirectXManager::ReleaseDirectX(HWND hwnd) {
+void DirectXManager::ReleaseDirectX() {
 	///開放処理
-	ReleaseResources(hwnd);
+	ReleaseResources();
 }
 
 ///=====================================================/// 
@@ -212,17 +240,17 @@ void DirectXManager::CreateCommandAllocator() {
 ///=====================================================/// 
 ///スワップチェーンを生成する
 ///=====================================================/// 
-void DirectXManager::CreateSwapChain(const int32_t kClientWidth, const int32_t kClientHeight, HWND hwnd) {
+void DirectXManager::CreateSwapChain() {
 	swapChain_ = nullptr;
-	swapChainDesc_.Width = kClientWidth;
-	swapChainDesc_.Height = kClientHeight;
+	swapChainDesc_.Width = winApp_->GetWindowWidth();
+	swapChainDesc_.Height = winApp_->GetWindowHeight();
 	swapChainDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc_.SampleDesc.Count = 1;
 	swapChainDesc_.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc_.BufferCount = 2;
 	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	//コマンドキュー、ウィンドウバレル、設定を渡して生成する
-	hr = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), hwnd, &swapChainDesc_, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>( swapChain_.GetAddressOf() ));
+	hr = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), winApp_->GetWindowHandle(), &swapChainDesc_, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>( swapChain_.GetAddressOf() ));
 	assert(SUCCEEDED(hr));
 }
 
@@ -396,12 +424,12 @@ void DirectXManager::ExecuteCommandList() {
 ///=====================================================/// 
 ///開放処理
 ///=====================================================/// 
-void DirectXManager::ReleaseResources(HWND hwnd) {
+void DirectXManager::ReleaseResources() {
 	CloseHandle(fenceEvent_);
 #ifdef _DEBUG
 	//debugController_->Release();
 #endif // DEBUG
-	CloseWindow(hwnd);
+	CloseWindow(winApp_->GetWindowHandle());
 }
 
 ///=====================================================/// 
@@ -417,15 +445,4 @@ void DirectXManager::CheckResourceLeaks() {
 	}
 }
 
-///=====================================================/// 
-///描画前処理
-///=====================================================///
-void DirectXManager::PreDraw() {
-}
-
-///=====================================================/// 
-///描画後処理
-///=====================================================///
-void DirectXManager::PostDraw() {
-}
 

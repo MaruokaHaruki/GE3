@@ -521,7 +521,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//インスタンスの取得
 	DirectXManager* DXManager = new DirectXManager;
 	//ダイレクトXの初期化
-	DXManager->InitializeDirectX(win->GetWindowWidth(), win->GetWindowHeight(), win->GetWindowHandle());
+	DXManager->InitializeDirectX(win);
 
 	///-------------------------------------------/// 
 	///入力クラス
@@ -1066,13 +1066,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
-	//SRVを作成するDescriptorHeapの場所を決める
-	//NOTE:関数化したため消去
-	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	//D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU = srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	////先頭はImGuiが使っているのでその次を使う
-	//textureSrvHadleCPU.ptr += DXManager->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	//textureSrvHadleGPU.ptr += DXManager->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	//SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = GetCPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1);
@@ -1362,7 +1355,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();  // ImGuiコンテキストの破棄
 
 	/// ===ダイレクトX=== ///
-	DXManager->ReleaseDirectX(win->GetWindowHandle());  // DirectXの解放処理
+	DXManager->ReleaseDirectX();  // DirectXの解放処理
 	delete DXManager;
 
 	/// ===ウィンドウの終了=== ///
