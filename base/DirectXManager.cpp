@@ -63,7 +63,8 @@ void DirectXManager::InitializeDirectX(WinApp* winApp) {
 
 	CreateFence();
 
-	//CreateDepthBuffer();
+	//深度バッファの生成
+	CreateDepthBuffer();
 
 	CreateDescriptorHeap();
 
@@ -117,7 +118,8 @@ void DirectXManager::CreateDxgiFactory() {
 	//開数が成功したかどうかをSUCCEEDマクロで判断できる
 	hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
 	//初期化の根本的なエラーを判断するためassertにする
-	assert(SUCCEEDED(hr));}
+	assert(SUCCEEDED(hr));
+}
 
 ///=====================================================/// 
 ///使用するアダプタ用変数
@@ -277,17 +279,31 @@ void DirectXManager::CreateFence() {
 ///=====================================================///
 void DirectXManager::CreateDepthBuffer() {
 	/// ===DepthStencilTextureをウィンドウのサイズで作成=== ///
-	Microsoft::WRL::ComPtr <ID3D12Resource> depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), winApp_->GetWindowWidth(), winApp_->GetWindowHeight());
+	depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), winApp_->GetWindowWidth(), winApp_->GetWindowHeight());
 	/// ===dsv用DescriptorHeap=== ///
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 	/// ===dsvの設定=== ///
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResourceに合わせる
 	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;//2dTexture
 	//DSVHeapの先頭にDSVを作る
-	device_->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	device_.Get()->CreateDepthStencilView(depthStencilResource_.Get(), &dsvDesc, dsvDescriptorHeap_.Get()->GetCPUDescriptorHandleForHeapStart());
 
-	dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	dsvHandle_ = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+}
+
+///=====================================================/// 
+///深度バッファの生成
+///=====================================================///
+void DirectXManager::CreateVariousDescriptorHeap() {
+	/// ===DescriptorHeapのサイズを取得=== ///
+
+	const uint32_t descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	const uint32_t descriptorSizeRTV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	const uint32_t descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+
+
 }
 
 
@@ -390,11 +406,11 @@ void DirectXManager::SetupTransitionBarrier() {
 ///=====================================================/// 
 void DirectXManager::RenderTargetPreference() {
 	//描画先のRTVを設定する
-	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex_], false, &dsvHandle);
+	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex_], false, &dsvHandle_);
 	//指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f }; // この色を変更することでウィンドウの色を変更できます
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex_], clearColor, 0, nullptr);
-	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0F, 0, 0, nullptr);
+	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0F, 0, 0, nullptr);
 }
 
 ///=====================================================/// 

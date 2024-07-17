@@ -113,6 +113,11 @@ public:
 	void CreateDepthBuffer();
 
 	/// <summary>
+	/// 各種ディスクリプタヒープの生成
+	/// </summary>
+	void CreateVariousDescriptorHeap();
+
+	/// <summary>
 	/// ディスクリプタヒープ
 	/// </summary>
 	void CreateDescriptorHeap();
@@ -271,7 +276,9 @@ private:
 	HANDLE fenceEvent_;
 
 	/// ===深度バッファ=== ///
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap_;
 
 	///========================================================///
 	//ディスクリプタヒープ
