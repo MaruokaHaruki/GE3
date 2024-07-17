@@ -108,6 +108,16 @@ public:
 	void CreateFence();
 
 	/// <summary>
+	/// 深度Bufferの生成
+	/// </summary>
+	void CreateDepthBuffer();
+
+	/// <summary>
+	/// 各種ディスクリプタヒープの生成
+	/// </summary>
+	void CreateVariousDescriptorHeap();
+
+	/// <summary>
 	/// ディスクリプタヒープ
 	/// </summary>
 	void CreateDescriptorHeap();
@@ -143,7 +153,7 @@ public:
 	/// <summary>
 	/// RenderTargetの設定
 	/// </summary>
-	void RenderTargetPreference(D3D12_CPU_DESCRIPTOR_HANDLE& dsvHandle);
+	void RenderTargetPreference();
 
 	/// <summary>
 	/// コマンドリストのクローズ
@@ -168,8 +178,25 @@ public:
 	///=====================================================/// 
 	///生成関数
 	///=====================================================///
-	/// 
-	/// 
+	
+	/// <summary>
+	/// 深度BufferステンシルBufferの生成関数
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="width"></param>
+	/// <param name="height"></param>
+	/// <returns></returns>
+	Microsoft::WRL::ComPtr <ID3D12Resource> CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr <ID3D12Device> device, int32_t width, int32_t height);
+
+	/// <summary>
+	/// DescriptorHeap関数
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="heapType"></param>
+	/// <param name="numDescriptors"></param>
+	/// <param name="shaderVisible"></param>
+	/// <returns></returns>
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 	
 
 	///========================================================///
@@ -247,6 +274,11 @@ private:
 	Microsoft::WRL::ComPtr <ID3D12Fence> fence_;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
+
+	/// ===深度バッファ=== ///
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
+	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap_;
 
 	///========================================================///
 	//ディスクリプタヒープ
