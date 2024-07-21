@@ -20,6 +20,7 @@
 #include "externals/imgui/imgui.h"
 #include"externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
+#include <dxcapi.h>
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
@@ -189,6 +190,11 @@ public:
 	/// </summary>
 	void ImGuiInitialize();
 
+	/// <summary>
+	/// DXCコンパイラーの初期化
+	/// </summary>
+	void CreateDXCCompiler();
+
 	///=====================================================/// 
 	///生成関数
 	///=====================================================///
@@ -256,9 +262,9 @@ private:
 	///ゲッター・セッター
 	///========================================================///
 public:
-	void SetHr(HRESULT sHr) { this->hr = sHr; }
+	void SetHr(HRESULT sHr) { this->hr_ = sHr; }
 
-	HRESULT GetHr() { return hr; }
+	HRESULT GetHr() { return hr_; }
 
 	void SetDevice(Microsoft::WRL::ComPtr <ID3D12Device> sDevice) { this->device_ = sDevice; }
 
@@ -293,7 +299,7 @@ private:
 
 	/// ===DXGIファクトリーの生成=== ///
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
-	HRESULT hr;
+	HRESULT hr_;
 
 	/// ===使用するアダプタ用変数=== ///
 	Microsoft::WRL::ComPtr <IDXGIAdapter4> useAdapter_;
@@ -307,26 +313,18 @@ private:
 	//アダプターの情報を取得
 	DXGI_ADAPTER_DESC3 adapterDesc_{};
 
-	///========================================================///
-	//コマンドキューを作成する
-	///========================================================///
+	/// ===コマンドキューを作成する=== ///
 	Microsoft::WRL::ComPtr <ID3D12CommandQueue> commandQueue_;
 
-	///========================================================///
-	//コマンドアロケータを生成する
-	///========================================================///
+	/// ===コマンドアロケータを生成する=== ///
 	Microsoft::WRL::ComPtr <ID3D12CommandAllocator> commandAllocator_;
 	Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> commandList_;
 
-	///========================================================///
-	//スワップチェーンを生成する
-	///========================================================///
+	/// ===スワップチェーンを生成する=== ///
 	Microsoft::WRL::ComPtr <IDXGISwapChain4> swapChain_;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 
-	///========================================================///
-	//Fenceの生成
-	///========================================================///
+	/// ===Fenceの生成=== ///
 	Microsoft::WRL::ComPtr <ID3D12Fence> fence_;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
@@ -363,9 +361,19 @@ private:
 	//TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	///========================================================///
-	//SwapChainからResource
-	///========================================================///
+	/// ===SwapChainからResource=== ///
 	Microsoft::WRL::ComPtr <ID3D12Resource> swapChainResource_[2] = { nullptr };
+
+	/// ===DXCコンパイラー=== ///
+	IDxcUtils* dxcUtils = nullptr;
+	IDxcCompiler3* dxcCompiler = nullptr;
+	//現時点でincludeはしないが、includeに対応するために設定を行う
+	IDxcIncludeHandler* includeHandler = nullptr;
+
+
+
+
+
+
 };
 
