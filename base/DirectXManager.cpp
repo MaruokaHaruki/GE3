@@ -24,6 +24,10 @@ void DirectXManager::PreDraw() {
 	SetupTransitionBarrier();
 	// 描画ターゲットの設定とクリア
 	RenderTargetPreference();
+
+	// ImGuiの描画用DescriptorHeap設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get()};
+	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
 ///=====================================================/// 
@@ -66,7 +70,12 @@ void DirectXManager::InitializeDirectX(WinApp* winApp) {
 	//深度バッファの生成
 	CreateDepthBuffer();
 
-	CreateDescriptorHeap();
+	//様々なヒープサイズの取得
+	CreateVariousDescriptorHeap();
+
+	CreateSRVDescriptorHeap();
+
+	CreateRTVDescriptorHeap();
 
 	GetResourcesFromSwapChain();
 
@@ -75,8 +84,6 @@ void DirectXManager::InitializeDirectX(WinApp* winApp) {
 	SettleCommandList();
 
 	SetupTransitionBarrier();
-
-	//RenderTargetPreference();
 }
 
 ///=====================================================/// 
@@ -279,9 +286,9 @@ void DirectXManager::CreateFence() {
 ///=====================================================///
 void DirectXManager::CreateDepthBuffer() {
 	/// ===DepthStencilTextureをウィンドウのサイズで作成=== ///
-	depthStencilResource_ = CreateDepthStencilTextureResource(device_.Get(), winApp_->GetWindowWidth(), winApp_->GetWindowHeight());
+	depthStencilResource_ = CreateDepthStencilTextureResource(winApp_->GetWindowWidth(), winApp_->GetWindowHeight());
 	/// ===dsv用DescriptorHeap=== ///
-	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+	dsvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
 	/// ===dsvの設定=== ///
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;//Format。基本的にはResourceに合わせる
@@ -293,24 +300,29 @@ void DirectXManager::CreateDepthBuffer() {
 }
 
 ///=====================================================/// 
-///深度バッファの生成
+///各種ディスクリプタヒープの生成
 ///=====================================================///
 void DirectXManager::CreateVariousDescriptorHeap() {
 	/// ===DescriptorHeapのサイズを取得=== ///
+	descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	descriptorSizeRTV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+}
 
-	const uint32_t descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-
-
+///=====================================================/// 
+///SRVディスクリプタヒープ
+///=====================================================///
+void DirectXManager::CreateSRVDescriptorHeap() {
+	//rtvはDXM内
+	//SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなのでShaderVisibleはTrue
+	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 }
 
 
 ///=====================================================/// 
-///ディスクリプタヒープ
+///RTVディスクリプタヒープ
 ///=====================================================/// 
-void DirectXManager::CreateDescriptorHeap() {
+void DirectXManager::CreateRTVDescriptorHeap() {
 	//ディスクリプタヒープの生成
 	rtvDescriptorHeap_ = nullptr;
 	rtvDescriptorHeapDesc_.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -319,7 +331,6 @@ void DirectXManager::CreateDescriptorHeap() {
 
 	assert(SUCCEEDED(hr));
 }
-
 
 ///=====================================================/// 
 ///SwapChainからResource
@@ -481,6 +492,22 @@ void DirectXManager::CheckResourceLeaks() {
 	}
 }
 
+///=====================================================/// 
+///ImGuiの初期化
+///=====================================================///
+void DirectXManager::ImGuiInitialize() {
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(winApp_->GetWindowHandle());
+	ImGui_ImplDX12_Init(device_.Get(),
+		swapChainDesc_.BufferCount,
+		rtvDesc_.Format,
+		srvDescriptorHeap_.Get(),
+		srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
+		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
+}
+
 
 
 
@@ -493,7 +520,7 @@ void DirectXManager::CheckResourceLeaks() {
 ///-------------------------------------------/// 
 ///深度BufferステンシルBufferの生成関数
 ///-------------------------------------------///
-Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, int32_t width, int32_t height) {
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTextureResource(int32_t width, int32_t height) {
 	/// ===生成するResouceの設定=== ///
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width;										//テクスチャの幅
@@ -517,7 +544,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTexture
 
 	/// ===設定を元にResourceの生成を行う=== ///
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
+	HRESULT hr = device_->CreateCommittedResource(
 		&heapProperties,					//Heapの設定
 		D3D12_HEAP_FLAG_NONE,				//heepの特殊な設定。特になし。
 		&resourceDesc,						//Resourceの設定
@@ -531,17 +558,47 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTexture
 ///-------------------------------------------/// 
 ///DescriptorHeap関数
 ///-------------------------------------------///
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHeap(Microsoft::WRL::ComPtr<ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHeap( D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+	HRESULT hr = device_->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
 	assert(SUCCEEDED(hr));
 	// 成功したログを出力
 	Log("Descriptor heap created successfully.");
 	return descriptorHeap;
+}
+
+///-------------------------------------------/// 
+///SRVDescriptorHandleの取得を関数化
+///-------------------------------------------///
+/// ===CPU=== ///
+D3D12_CPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVCPUDescriptorHandle(uint32_t index) {
+	return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
+}
+
+/// ===GPU=== ///
+D3D12_GPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVGPUDescriptorHandle(uint32_t index) {
+	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
+}
+
+///-------------------------------------------/// 
+///DescriptorHandleの取得を関数化
+///-------------------------------------------///
+/// ===CPU=== ///
+D3D12_CPU_DESCRIPTOR_HANDLE DirectXManager::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	handleCPU.ptr += ( descriptorSize * index );
+	return handleCPU;
+}
+
+/// ===GPU=== ///
+D3D12_GPU_DESCRIPTOR_HANDLE DirectXManager::GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
+	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	handleGPU.ptr += ( descriptorSize * index );
+	return handleGPU;
 }
 
 

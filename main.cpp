@@ -37,10 +37,10 @@
 //DXTex
 #include"base/externals/DirectXTex/DirectXTex.h"
 /// ===imgui=== //
-#include "base/externals/imgui/imgui.h"
-#include"base/externals/imgui/imgui_impl_dx12.h"
-#include "base/externals/imgui/imgui_impl_win32.h"
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//#include "base/externals/imgui/imgui.h"
+//#include"base/externals/imgui/imgui_impl_dx12.h"
+//#include "base/externals/imgui/imgui_impl_win32.h"
+//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 ///==============================================///
@@ -230,25 +230,6 @@ IDxcBlob* CompileShader(
 #pragma endregion
 
 ///==============================================///
-///DescriptorHeap関数
-///==============================================///
-//rtvを変更することを忘れない
-#pragma region DescriptorHeap関数
-Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(Microsoft::WRL::ComPtr <ID3D12Device> device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
-	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
-	descriptorHeapDesc.Type = heapType;
-	descriptorHeapDesc.NumDescriptors = numDescriptors;
-	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
-	assert(SUCCEEDED(hr));
-	// 成功したログを出力
-	Log("Descriptor heap created successfully.");
-	return descriptorHeap;
-}
-#pragma endregion
-
-///==============================================///
 ///DXTecを使ってデータを読む関数
 ///==============================================///
 DirectX::ScratchImage LoadTexture(const std::string& filePath) {
@@ -323,22 +304,6 @@ void UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const Di
 		);
 		assert(SUCCEEDED(hr));
 	}
-}
-
-///==============================================///
-///DescriptorHandleの取得を関数化
-///==============================================///
-/// ===CPU=== ///
-D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += ( descriptorSize * index );
-	return handleCPU;
-}
-/// ===GPU=== ///
-D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
-	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	handleGPU.ptr += ( descriptorSize * index );
-	return handleGPU;
 }
 
 ///=====================================================/// 
@@ -493,29 +458,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//入力の初期化
 	input = new Input();
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
-
-
-
-
-
-
-
-
-	///----------------------------------------///
-	//DescriptorHeapのサイズを取得
-	///----------------------------------------///
-	const uint32_t descriptorSizeSRV = DXManager->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	const uint32_t descriptorSizeRTV = DXManager->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	const uint32_t descriptorSizeDSV = DXManager->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
-
-	///----------------------------------------///
-	//srv用DescriptorHeap
-	///----------------------------------------///
-	//rtvはDXM内
-	//SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなのでShaderVisibleはTrue
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap = CreateDescriptorHeap(DXManager->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-
 
 	///----------------------------------------///
 	//DXCの初期化
@@ -694,128 +636,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DXManager->SetHr(DXManager->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState)));
 	assert(SUCCEEDED(DXManager->GetHr()));
-
-
-	///----------------------------------------///
-	// VertexResourceを生成(球体)
-	///----------------------------------------///
-
-	//// 分割数
-	//const uint32_t kSubDivision = 16; // 球体の分割数
-
-	//// 頂点リソースの作成
-	//const uint32_t kNumVertices = kSubDivision * kSubDivision * 6; // 全頂点数
-
-	///// ===頂点リソースの作成=== ///
-	//ID3D12Resource* vertexResource = CreateBufferResource(DXManager->GetDevice(), sizeof(VertexData) * kNumVertices); // 頂点リソースのバッファを作成
-
-	///// ===VertexBufferViewを作成する=== ///
-	//D3D12_VERTEX_BUFFER_VIEW vertexBufferView{}; // 頂点バッファビューの構造体
-	//// リソースの先頭のアドレスから使う
-	//vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress(); // GPU上のバッファの先頭アドレスを設定
-	//// 使用するリソースサイズは頂点3つ分のサイズ
-	//vertexBufferView.SizeInBytes = sizeof(VertexData) * kNumVertices; // バッファ全体のサイズを設定
-	//// 1頂点あたりのサイズ
-	//vertexBufferView.StrideInBytes = sizeof(VertexData); // 各頂点のサイズを設定
-
-	///// ===リソースにデータを書き込む=== ///
-	//VertexData* vertexData = nullptr; // 頂点データのポインタを初期化
-	//D3D12_RANGE readRange = {}; // 読み取り範囲
-	//vertexResource->Map(0, &readRange, reinterpret_cast<void**>( &vertexData )); // バッファのメモリをマッピングして書き込み用のポインタを取得
-
-	//const float kLonEvery = float(M_PI) * 2.0f / float(kSubDivision); // 経度のステップサイズ
-	//const float kLatEvery = float(M_PI) / float(kSubDivision); // 緯度のステップサイズ
-
-	//for (uint32_t latIndex = 0; latIndex < kSubDivision; ++latIndex) {
-	//	float lat = -float(M_PI) / 2.0f + latIndex * kLatEvery; // 現在の緯度
-
-	//	for (uint32_t lonIndex = 0; lonIndex < kSubDivision; ++lonIndex) {
-	//		float lon = lonIndex * kLonEvery; // 現在の経度
-	//		uint32_t vertexIndex = ( latIndex * kSubDivision + lonIndex ) * 6; // 頂点インデックスを管理する変数
-
-	//		/// ===1つ目の三角形(左下)=== ///
-	//		// NOTE:position = 頂点データ,texcoord = 画像場所データ,normad = 法線データ
-	//		// A
-	//		vertexData[vertexIndex].position = { cos(lat) * cos(lon), sin(lat), cos(lat) * sin(lon), 1.0f };
-	//		vertexData[vertexIndex].texCoord = { float(lonIndex) / kSubDivision, 1.0f - float(latIndex) / kSubDivision };
-	//		vertexData[vertexIndex].normal.x = vertexData[vertexIndex].position.x;
-	//		vertexData[vertexIndex].normal.y = vertexData[vertexIndex].position.y;
-	//		vertexData[vertexIndex].normal.z = vertexData[vertexIndex].position.z;
-	//		vertexIndex++;
-	//		// B
-	//		vertexData[vertexIndex].position = { cos(lat + kLatEvery) * cos(lon), sin(lat + kLatEvery), cos(lat + kLatEvery) * sin(lon), 1.0f };
-	//		vertexData[vertexIndex].texCoord = { float(lonIndex) / kSubDivision, 1.0f - float(latIndex + 1) / kSubDivision };
-	//		vertexData[vertexIndex].normal.x = vertexData[vertexIndex].position.x;
-	//		vertexData[vertexIndex].normal.y = vertexData[vertexIndex].position.y;
-	//		vertexData[vertexIndex].normal.z = vertexData[vertexIndex].position.z;
-	//		vertexIndex++;
-	//		// C
-	//		vertexData[vertexIndex].position = { cos(lat) * cos(lon + kLonEvery), sin(lat), cos(lat) * sin(lon + kLonEvery), 1.0f };
-	//		vertexData[vertexIndex].texCoord = { float(lonIndex + 1) / kSubDivision, 1.0f - float(latIndex) / kSubDivision };
-	//		vertexData[vertexIndex].normal.x = vertexData[vertexIndex].position.x;
-	//		vertexData[vertexIndex].normal.y = vertexData[vertexIndex].position.y;
-	//		vertexData[vertexIndex].normal.z = vertexData[vertexIndex].position.z;
-	//		vertexIndex++;
-
-	//		/// ===2つ目の三角形(右上)=== ///
-	//		// C
-	//		vertexData[vertexIndex].position = { cos(lat) * cos(lon + kLonEvery), sin(lat), cos(lat) * sin(lon + kLonEvery), 1.0f };
-	//		vertexData[vertexIndex].texCoord = { float(lonIndex + 1) / kSubDivision, 1.0f - float(latIndex) / kSubDivision };
-	//		vertexData[vertexIndex].normal.x = vertexData[vertexIndex].position.x;
-	//		vertexData[vertexIndex].normal.y = vertexData[vertexIndex].position.y;
-	//		vertexData[vertexIndex].normal.z = vertexData[vertexIndex].position.z;
-	//		vertexIndex++;
-	//		// B
-	//		vertexData[vertexIndex].position = { cos(lat + kLatEvery) * cos(lon), sin(lat + kLatEvery), cos(lat + kLatEvery) * sin(lon), 1.0f };
-	//		vertexData[vertexIndex].texCoord = { float(lonIndex) / kSubDivision, 1.0f - float(latIndex + 1) / kSubDivision };
-	//		vertexData[vertexIndex].normal.x = vertexData[vertexIndex].position.x;
-	//		vertexData[vertexIndex].normal.y = vertexData[vertexIndex].position.y;
-	//		vertexData[vertexIndex].normal.z = vertexData[vertexIndex].position.z;
-	//		vertexIndex++;
-	//		// D
-	//		vertexData[vertexIndex].position = { cos(lat + kLatEvery) * cos(lon + kLonEvery), sin(lat + kLatEvery), cos(lat + kLatEvery) * sin(lon + kLonEvery), 1.0f };
-	//		vertexData[vertexIndex].texCoord = { float(lonIndex + 1) / kSubDivision, 1.0f - float(latIndex + 1) / kSubDivision };
-	//		vertexData[vertexIndex].normal.x = vertexData[vertexIndex].position.x;
-	//		vertexData[vertexIndex].normal.y = vertexData[vertexIndex].position.y;
-	//		vertexData[vertexIndex].normal.z = vertexData[vertexIndex].position.z;
-	//		vertexIndex++;
-
-	//	}
-	//}
-
-	///----------------------------------------///
-	// IndexVertexResourceを生成(球体)
-	///----------------------------------------///
-	//// インデックスバッファの作成
-	//const uint32_t kNumIndices = kSubDivision * kSubDivision * 6; // インデックスの数
-	//ID3D12Resource* indexResource = CreateBufferResource(DXManager->GetDevice(), sizeof(uint32_t) * kNumIndices);
-
-	//// インデックスバッファビューの作成
-	//D3D12_INDEX_BUFFER_VIEW indexBufferView{};
-	//indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
-	//indexBufferView.SizeInBytes = sizeof(uint32_t) * kNumIndices;
-	//indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-
-	//// インデックスバッファにデータを書き込む
-	//uint32_t* indexData = nullptr;
-	//indexResource->Map(0, &readRange, reinterpret_cast<void**>( &indexData ));
-
-	//uint32_t indexCounter = 0;
-	//for (uint32_t latIndex = 0; latIndex < kSubDivision; ++latIndex) {
-	//	for (uint32_t lonIndex = 0; lonIndex < kSubDivision; ++lonIndex) {
-	//		uint32_t currentIndex = latIndex * kSubDivision + lonIndex;
-
-	//		// 三角形1のインデックス
-	//		indexData[indexCounter++] = currentIndex * 6 + 0; // A
-	//		indexData[indexCounter++] = currentIndex * 6 + 1; // B
-	//		indexData[indexCounter++] = currentIndex * 6 + 2; // C
-
-	//		// 三角形2のインデックス
-	//		indexData[indexCounter++] = currentIndex * 6 + 3; // C
-	//		indexData[indexCounter++] = currentIndex * 6 + 4; // B
-	//		indexData[indexCounter++] = currentIndex * 6 + 5; // D
-	//	}
-	//}
 
 	///-------------------------------------------/// 
 	///ModelResourceを生成
@@ -1016,8 +836,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = GetCPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1);
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU = GetGPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 1);
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = DXManager->GetSRVCPUDescriptorHandle(1);
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU = DXManager->GetSRVGPUDescriptorHandle(1);
 	//SRVの生成
 	DXManager->GetDevice().Get()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHadleCPU);
 
@@ -1030,8 +850,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
 
 	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = GetCPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 2);
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = GetGPUDescriptorHandle(srvDescriptorHeap.Get(), descriptorSizeSRV, 2);
+	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = DXManager->GetSRVCPUDescriptorHandle(2);
+	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = DXManager->GetSRVGPUDescriptorHandle(2);
 	//SRVの生成
 	DXManager->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHadleCPU2);
 
@@ -1081,16 +901,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	//Imguiの初期化
 	///----------------------------------------///
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(win->GetWindowHandle());
-	ImGui_ImplDX12_Init(DXManager->GetDevice().Get(),
-		DXManager->GetSwapChainDesc().BufferCount,
-		DXManager->GetRtvDesc().Format,
-		srvDescriptorHeap.Get(),
-		srvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	DXManager->ImGuiInitialize();
 
 
 	///----------------------------------------///
@@ -1101,7 +912,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//カメラの作成
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 
-	//D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	//CPUで動かす用のTransform
 	Transform transformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
@@ -1233,8 +1043,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 			// ImGuiの描画用DescriptorHeap設定
-			ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get()};
-			DXManager->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+			//ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get()};
+			//DXManager->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 
 			/// ====コマンドを積む==== ///
 			///3D描画
@@ -1282,11 +1092,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ImGui描画
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DXManager->GetCommandList().Get());
 
-
-
-			// コマンドリストのクローズと実行
-			//DXManager->CloseCommandList();
-			//DXManager->ExecuteCommandList();
 			DXManager->PostDraw();
 		}
 	}
