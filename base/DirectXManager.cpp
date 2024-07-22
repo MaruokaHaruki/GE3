@@ -84,6 +84,8 @@ void DirectXManager::InitializeDirectX(WinApp* winApp) {
 	SettleCommandList();
 
 	SetupTransitionBarrier();
+	//DXCコンパイラーの初期化
+	CreateDXCCompiler();
 }
 
 ///=====================================================/// 
