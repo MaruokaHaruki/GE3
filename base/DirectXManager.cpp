@@ -26,7 +26,7 @@ void DirectXManager::PreDraw() {
 	RenderTargetPreference();
 
 	// ImGuiの描画用DescriptorHeap設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get()};
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
@@ -123,9 +123,9 @@ void DirectXManager::CreateDxgiFactory() {
 	dxgiFactory_ = nullptr;
 	//HRESULTはWindows系のエラーコードであり、
 	//開数が成功したかどうかをSUCCEEDマクロで判断できる
-	hr = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
+	hr_ = CreateDXGIFactory(IID_PPV_ARGS(&dxgiFactory_));
 	//初期化の根本的なエラーを判断するためassertにする
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
 }
 
 ///=====================================================/// 
@@ -138,8 +138,8 @@ void DirectXManager::SelectAdapter() {
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter_)) !=
 		DXGI_ERROR_NOT_FOUND; i++) {
 		//アダプターの情報を取得
-		hr = useAdapter_->GetDesc3(&adapterDesc_);
-		assert(SUCCEEDED(hr));//取得不可
+		hr_ = useAdapter_->GetDesc3(&adapterDesc_);
+		assert(SUCCEEDED(hr_));//取得不可
 		//ソフトウェアアダプタでなければ採用
 		if (!( adapterDesc_.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE )) {
 			//採用したアダプタの情報をログに出力。Wstringの方に注意
@@ -165,9 +165,9 @@ void DirectXManager::CreateD3D12Device() {
 	//高い順に生成できるか試してみる
 	for (size_t i = 0; i < _countof(featureLevels); ++i) {
 		//採用したアダプタでデバイスを作成
-		hr = D3D12CreateDevice(useAdapter_.Get(), featureLevels[i], IID_PPV_ARGS(&device_));
+		hr_ = D3D12CreateDevice(useAdapter_.Get(), featureLevels[i], IID_PPV_ARGS(&device_));
 		//指定した機能レベルでデバイスが生成できたかを確認
-		if (SUCCEEDED(hr)) {
+		if (SUCCEEDED(hr_)) {
 			//生成できたのでログ出力を行ってループを抜ける
 			Log(std::format("FeatureLevel : {}\n", feartureLevelStrings[i]));
 			break;
@@ -223,10 +223,10 @@ void DirectXManager::SetupErrorHandling() {
 void DirectXManager::CreateCommandQueue() {
 	commandQueue_ = nullptr;
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
-	hr = device_->CreateCommandQueue(&commandQueueDesc,
+	hr_ = device_->CreateCommandQueue(&commandQueueDesc,
 		IID_PPV_ARGS(&commandQueue_));
 	//コマンドキューの生成がうまくいかなかったので起動できない
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
 }
 
 
@@ -235,16 +235,16 @@ void DirectXManager::CreateCommandQueue() {
 ///=====================================================/// 
 void DirectXManager::CreateCommandAllocator() {
 	commandAllocator_ = nullptr;
-	hr = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_));
+	hr_ = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_));
 	//コマンドアロケータのせいせがうまくいかなかったので起動できない
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
 
 	//コマンドリスト
 	commandList_ = nullptr;
-	hr = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr,
+	hr_ = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, commandAllocator_.Get(), nullptr,
 		IID_PPV_ARGS(&commandList_));
 	//コマンドリストの生成がうまくいかなかったので起動できない
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
 }
 
 
@@ -261,8 +261,8 @@ void DirectXManager::CreateSwapChain() {
 	swapChainDesc_.BufferCount = 2;
 	swapChainDesc_.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	//コマンドキュー、ウィンドウバレル、設定を渡して生成する
-	hr = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), winApp_->GetWindowHandle(), &swapChainDesc_, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>( swapChain_.GetAddressOf() ));
-	assert(SUCCEEDED(hr));
+	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), winApp_->GetWindowHandle(), &swapChainDesc_, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>( swapChain_.GetAddressOf() ));
+	assert(SUCCEEDED(hr_));
 }
 
 
@@ -273,12 +273,12 @@ void DirectXManager::CreateFence() {
 	//初期値0でFenceを作る
 	fence_ = nullptr;
 	fenceValue_ = 0;
-	hr = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
-	assert(SUCCEEDED(hr));
+	hr_ = device_->CreateFence(fenceValue_, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence_));
+	assert(SUCCEEDED(hr_));
 
 	//FenceのSignalを持つためのイベントを生成する
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
 }
 
 ///=====================================================/// 
@@ -327,9 +327,9 @@ void DirectXManager::CreateRTVDescriptorHeap() {
 	rtvDescriptorHeap_ = nullptr;
 	rtvDescriptorHeapDesc_.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvDescriptorHeapDesc_.NumDescriptors = 2;
-	hr = device_->CreateDescriptorHeap(&rtvDescriptorHeapDesc_, IID_PPV_ARGS(&rtvDescriptorHeap_));
+	hr_ = device_->CreateDescriptorHeap(&rtvDescriptorHeapDesc_, IID_PPV_ARGS(&rtvDescriptorHeap_));
 
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
 }
 
 ///=====================================================/// 
@@ -337,11 +337,11 @@ void DirectXManager::CreateRTVDescriptorHeap() {
 ///=====================================================/// 
 void DirectXManager::GetResourcesFromSwapChain() {
 	//SwapChainからResourceを引っ張ってくる
-	hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResource_[0]));
+	hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResource_[0]));
 	//うまく取得できなければ起動できない
-	assert(SUCCEEDED(hr));
-	hr = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResource_[1]));
-	assert(SUCCEEDED(hr));
+	assert(SUCCEEDED(hr_));
+	hr_ = swapChain_->GetBuffer(1, IID_PPV_ARGS(&swapChainResource_[1]));
+	assert(SUCCEEDED(hr_));
 }
 
 
@@ -436,8 +436,8 @@ void DirectXManager::CloseCommandList() {
 	//TransitionBarrierを張る
 	commandList_->ResourceBarrier(1, &barrier_);
 	//コマンドリストの内容を確定させる。すべてのコマンドを積んでからCloseすること
-	hr = commandList_->Close();
-	assert(SUCCEEDED(hr));
+	hr_ = commandList_->Close();
+	assert(SUCCEEDED(hr_));
 }
 
 ///=====================================================/// 
@@ -462,10 +462,10 @@ void DirectXManager::ExecuteCommandList() {
 	}
 
 	//次フレーム用のコマンドリストを準備
-	hr = commandAllocator_->Reset();
-	assert(SUCCEEDED(hr));
-	hr = commandList_->Reset(commandAllocator_.Get(), nullptr);
-	assert(SUCCEEDED(hr));
+	hr_ = commandAllocator_->Reset();
+	assert(SUCCEEDED(hr_));
+	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
+	assert(SUCCEEDED(hr_));
 }
 
 ///=====================================================/// 
@@ -506,6 +506,20 @@ void DirectXManager::ImGuiInitialize() {
 		srvDescriptorHeap_.Get(),
 		srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
 		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
+}
+
+///=====================================================/// 
+///DXCコンパイラーの初期化
+///=====================================================///
+void DirectXManager::CreateDXCCompiler() {
+	//dxcCompilerを初期化
+	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
+	assert(SUCCEEDED(hr_));
+	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_));
+	assert(SUCCEEDED(hr_));
+	//現時点でincludeはしないが、includeに対応するために設定を行う
+	hr_ = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
+	assert(SUCCEEDED(hr_));
 }
 
 
@@ -558,7 +572,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTexture
 ///-------------------------------------------/// 
 ///DescriptorHeap関数
 ///-------------------------------------------///
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHeap( D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;
@@ -582,6 +596,68 @@ D3D12_CPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVCPUDescriptorHandle(uint32_t i
 /// ===GPU=== ///
 D3D12_GPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVGPUDescriptorHandle(uint32_t index) {
 	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
+}
+
+///=====================================================/// 
+///
+///=====================================================///
+IDxcBlob* DirectXManager::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
+
+	/// ===hlseファイルを読む=== ///
+	//これからシェーダーをコンパイルする旨をログに出す
+	Log(ConvertString(std::format(L"Begin Compiler,path:{},profile:{}\n", filePath, profile)));
+	//hlseファイルを読む
+	IDxcBlobEncoding* shaderSource = nullptr;
+	HRESULT hr = dxcUtils_->LoadFile(filePath.c_str(), nullptr, &shaderSource);
+	//読めなかったら止める
+	assert(SUCCEEDED(hr));
+	//読み込んだファイルの内容を設定する
+	DxcBuffer shaderSourceBuffer;
+	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
+	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
+	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF-8の文字コードであることを通知
+
+	/// ===コンパイルする=== ///
+	LPCWSTR arguments[] = {
+	filePath.c_str(),
+	L"-E",L"main",
+	L"-T",profile,
+	L"-Zi",L"-Qembed_debug",
+	L"-Od",
+	L"-Zpr",
+	};
+	//実際にShaderをコンパイルする
+	IDxcResult* shaderResult = nullptr;
+	hr = dxcCompiler_->Compile(
+		&shaderSourceBuffer,
+		arguments,
+		_countof(arguments),
+		includeHandler_,
+		IID_PPV_ARGS(&shaderResult)
+	);
+	//コンパイルエラーではなくdxcが起動できないと致命的な状況
+	assert(SUCCEEDED(hr));
+
+	/// ===警告・エラーがでてないか確認する=== ///
+	IDxcBlobUtf8* shaderError = nullptr;
+	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
+	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+		Log(shaderError->GetStringPointer());
+		//警告・エラーダメ絶対
+		assert(false);
+	}
+
+	/// ===Compile結果を受け取って返す=== ///
+	//コンパイル結果から実行用のバイナリ部分を取得
+	IDxcBlob* shaderBlob = nullptr;
+	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
+	//成功したログを出す
+	Log(ConvertString(std::format(L"Compile Succeeded, path:{},profile:{}\n", filePath, profile)));
+	//もう使わないリソースを開放
+	shaderSource->Release();
+	shaderResult->Release();
+	//実行用のバイナリを返却
+	return shaderBlob;
 }
 
 ///-------------------------------------------/// 

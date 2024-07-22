@@ -163,7 +163,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 ///CompilerShader関数
 ///==============================================///
 #pragma region CompilerShader関数
-
+//TODO:
 IDxcBlob* CompileShader(
 	const std::wstring& filePath,
 	const wchar_t* profile,
