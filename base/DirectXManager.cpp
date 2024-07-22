@@ -1,4 +1,6 @@
 #include "DirectXManager.h"
+#include "externals/DirectXTex/DirectXTex.h"
+#pragma comment(lib,"winmm.lib")
 
 ///=====================================================/// 
 ///コンストラクタ
@@ -34,6 +36,8 @@ void DirectXManager::PreDraw() {
 ///描画後処理
 ///=====================================================///
 void DirectXManager::PostDraw() {
+	//FPS固定
+	UpdateFixFPS();
 	// コマンドリストのクローズと実行
 	CloseCommandList();
 	ExecuteCommandList();
@@ -43,6 +47,9 @@ void DirectXManager::PostDraw() {
 ///DirectXの初期化
 ///=====================================================/// 
 void DirectXManager::InitializeDirectX(WinApp* winApp) {
+	//FPS固定初期化
+	InitializeFixFPS();
+
 	/// ===WinApp=== ///
 	///NULL検出
 	assert(winApp);
@@ -525,10 +532,6 @@ void DirectXManager::CreateDXCCompiler() {
 }
 
 
-
-
-
-
 ///=====================================================/// 
 ///生成関数
 ///=====================================================///
@@ -600,9 +603,9 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVGPUDescriptorHandle(uint32_t i
 	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
 }
 
-///=====================================================/// 
-///
-///=====================================================///
+///-------------------------------------------/// 
+///シェーダーコンパイル
+///-------------------------------------------///
 IDxcBlob* DirectXManager::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
 
 	/// ===hlseファイルを読む=== ///
@@ -663,6 +666,124 @@ IDxcBlob* DirectXManager::CompileShader(const std::wstring& filePath, const wcha
 }
 
 ///-------------------------------------------/// 
+///リソース生成
+///-------------------------------------------///
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateBufferResource(size_t sizeInByte) { 		// バッファリソースの設定を作成
+	D3D12_RESOURCE_DESC resourceDesc{};
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc.Width = sizeInByte;
+	resourceDesc.Height = 1;
+	resourceDesc.DepthOrArraySize = 1;
+	resourceDesc.MipLevels = 1;
+	resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	// アップロードヒープのプロパティを設定
+	//頂点リソース用のヒープ設定
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	// リソースを作成
+	//TODO:一旦回避
+	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
+	HRESULT hr = device_->CreateCommittedResource(
+		&uploadHeapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&resourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&resource)
+	);
+
+	// エラーチェック
+	if (FAILED(hr) || !resource) {
+		// リソースの作成に失敗した場合、エラーメッセージを出力して nullptr を返す
+		return nullptr;
+	}
+
+	return resource;
+}
+
+///-------------------------------------------/// 
+///テクスチャリソース生成
+///-------------------------------------------///
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
+	/// ===1.metadataを元にResouceの設定=== ///
+	D3D12_RESOURCE_DESC resouceDesc{};
+	resouceDesc.Width = UINT(metadata.width);								//Textureの幅
+	resouceDesc.Height = UINT(metadata.height);								//Textureの高さ
+	resouceDesc.MipLevels = UINT16(metadata.mipLevels);						//mipmapの数
+	resouceDesc.DepthOrArraySize = UINT16(metadata.arraySize);				//奥行き or 配列Textureの配列数
+	resouceDesc.Format = metadata.format;									//TextureのFormat
+	resouceDesc.SampleDesc.Count = 1;										//サンプリングカウント
+	resouceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);	//Textureの次元数。普段つかているのは2次元。
+
+	/// ===2.利用するHeapの設定===///
+	D3D12_HEAP_PROPERTIES heapProperties{};
+	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;//細かい設定を行う
+	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
+	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
+
+	/// ===3.resouceを生成する=== ///
+	//TODO:助けて
+	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
+	HRESULT hr = device_->CreateCommittedResource(
+		&heapProperties,					//Heapの設定
+		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定、特になし
+		&resouceDesc,						//Resourceの設定
+		D3D12_RESOURCE_STATE_GENERIC_READ,	//初回のResouceState。Textureは基本読むだけ
+		nullptr,
+		IID_PPV_ARGS(&resource)
+	);
+	assert(SUCCEEDED(hr));
+	return resource;
+}
+
+///-------------------------------------------/// 
+///テクスチャデータの転送
+///-------------------------------------------///
+void DirectXManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+	/// ===Mata情報を取得=== ///
+	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+
+	/// ===全MipMapについて=== ///
+	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
+		//全MipMapLevelを指定して書くImageを取得
+		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
+		//Textureに転送
+		HRESULT hr = texture.Get()->WriteToSubresource(
+			UINT(mipLevel),
+			nullptr,				//全領域へコピー
+			img->pixels,			//元データアドレス
+			UINT(img->rowPitch),	//1ラインサイズ
+			UINT(img->slicePitch)	//1枚サイズ
+		);
+		assert(SUCCEEDED(hr));
+	}
+}
+
+/// <summary>
+/// DXTecを使ってファイルを読む
+/// </summary>
+/// <param name="filePath"></param>
+/// <returns></returns>
+DirectX::ScratchImage DirectXManager::LoadTexture(const std::string& filePath) {
+	/// ===テクスチャファイルを読んでプログラムを扱えるようにする=== ///
+	DirectX::ScratchImage image{};
+	std::wstring filePathW = ConvertString(filePath);
+	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	assert(SUCCEEDED(hr));
+
+	/// ===ミニマップの作成=== ///
+	DirectX::ScratchImage mipImages{};
+	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+	assert(SUCCEEDED(hr));
+
+	/// ===ミニマップ付きのデータを返す=== ///
+	return mipImages;
+}
+
+///-------------------------------------------/// 
 ///DescriptorHandleの取得を関数化
 ///-------------------------------------------///
 /// ===CPU=== ///
@@ -677,6 +798,44 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXManager::GetGPUDescriptorHandle(Microsoft::WR
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += ( descriptorSize * index );
 	return handleGPU;
+}
+
+
+///=====================================================/// 
+///60FPS固定
+///=====================================================///
+/// ===InitializeFixFPS=== ///
+void DirectXManager::InitializeFixFPS() {
+	//システムタイマーの分解能を上げる
+	timeBeginPeriod(1);
+	//現在時間を記録する
+	reference_ = std::chrono::steady_clock::now();
+}
+
+/// ===UpdateFixFPS=== ///
+void DirectXManager::UpdateFixFPS() {
+	// 1/60秒ピッタリの時間
+	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
+	// 1/60秒よりわずかに短い時間
+	const std::chrono::microseconds kMinCheckTime(uint64_t(1000000.0f / 65.0f));
+
+	//現在時間を取得する
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	//前回記録からの経過時間を取得する
+	std::chrono::microseconds elapsed =
+		std::chrono::duration_cast<std::chrono::microseconds>( now - reference_ );
+
+	// 1/60秒(よりわずかに短い時間)経っていない場合
+	if (elapsed < kMinCheckTime) {
+		//1/60秒経過するまで軽微なスリープを繰り返す
+		while (std::chrono::steady_clock::now() - reference_ < kMinTime) {
+			//1マイクロ秒スリープ
+			std::this_thread::sleep_for(std::chrono::microseconds(1));
+		}
+	}
+
+	//現在の時間を記録する
+	reference_ = std::chrono::steady_clock::now();
 }
 
 

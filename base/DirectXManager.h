@@ -1,8 +1,10 @@
 #include <cstdint>
 #include <string>
 #include <format>
-#include<cassert>
+#include <cassert>
 #include <wrl.h>
+#include <chrono>
+#include <thread>
 //自作関数
 #include"utils/WstringConve.h"
 #include "utils/Log.h"
@@ -19,6 +21,8 @@
 //DXC
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
+//DXtec
+#include"externals/DirectXTex/DirectXTex.h"
 /// ===imgui=== //
 #include "externals/imgui/imgui.h"
 #include"externals/imgui/imgui_impl_dx12.h"
@@ -47,12 +51,12 @@ public:
 	///========================================================///
 
 	/// <summary>
-	/// 
+	/// ループ前処理
 	/// </summary>
 	void PreDraw();
 
 	/// <summary>
-	/// 
+	/// ループ後処理
 	/// </summary>
 	void PostDraw();
 
@@ -234,13 +238,41 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 
 	/// <summary>
-	/// 
+	/// シェーダーのコンパイル
 	/// </summary>
 	/// <param name="filePath"></param>
 	/// <param name="profile"></param>
 	/// <returns></returns>
 	IDxcBlob* CompileShader(const std::wstring& filePath,const wchar_t* profile);
 
+	/// <summary>
+	/// リソース生成関数
+	/// </summary>
+	/// <param name="sizeInByte"></param>
+	/// <returns></returns>
+	Microsoft::WRL::ComPtr <ID3D12Resource> CreateBufferResource(size_t sizeInByte);
+
+	/// <summary>
+	/// テクスチャリソースの生成
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="metadata"></param>
+	/// <returns></returns>
+	Microsoft::WRL::ComPtr <ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+
+	/// <summary>
+	/// テクスチャデータの転送
+	/// </summary>
+	/// <param name="texture"></param>
+	/// <param name="mipImages"></param>
+	void UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+
+	/// <summary>
+	/// DXTecを使ってファイルを読む
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
+	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 private:
 	/// ===CPU=== ///
@@ -263,6 +295,20 @@ private:
 	/// <returns></returns>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
+
+	///=====================================================/// 
+	///FPS固定
+	///=====================================================///
+	
+	/// <summary>
+	/// FPS固定初期化
+	/// </summary>
+	void InitializeFixFPS();
+
+	/// <summary>
+	/// FPS固定更新
+	/// </summary>
+	void UpdateFixFPS();
 
 
 	///========================================================///
@@ -297,6 +343,9 @@ public:
 	void Log(const std::string& message);
 
 private:
+
+	/// ===記録時間(FPS固定用)=== ///
+	std::chrono::steady_clock::time_point reference_;
 
 	/// ===WindowsAPI=== ///
 	WinApp* winApp_ = nullptr;
