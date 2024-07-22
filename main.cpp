@@ -31,8 +31,6 @@
 #include "base/utils/WstringConve.h"
 //ログ出力
 #include "base/utils/Log.h"
-//DXTex
-#include"base/externals/DirectXTex/DirectXTex.h"
 
 
 ///==============================================///
@@ -85,169 +83,26 @@ struct ModelData {
 };
 
 
-///==============================================///
-///リソース作成の関数化
-///==============================================///
-#pragma region リソース作成の関数化
-// 頂点リソースを生成する関数
-Microsoft::WRL::ComPtr <ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr <ID3D12Device> device, size_t sizeInByte) {
-	// バッファリソースの設定を作成
-	D3D12_RESOURCE_DESC resourceDesc{};
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = sizeInByte;
-	resourceDesc.Height = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-
-	// アップロードヒープのプロパティを設定
-	//頂点リソース用のヒープ設定
-	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
-	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
-
-	// リソースを作成
-	//TODO:一旦回避
-	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
-		&uploadHeapProperties,
-		D3D12_HEAP_FLAG_NONE,
-		&resourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&resource)
-	);
-
-	// エラーチェック
-	if (FAILED(hr) || !resource) {
-		// リソースの作成に失敗した場合、エラーメッセージを出力して nullptr を返す
-		return nullptr;
-	}
-
-	return resource;
-}
-#pragma endregion
-
-///==============================================///
-///ウィンドウプロシージャ関数
-///==============================================///
-#pragma region ウィンドウプロシージャ関数
-
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	//ImGuiに伝える
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
-		return true;
-	}
-	//メッセージに応じてゲーム固有の処理を行う
-	switch (msg) {
-		//ウィンドウが破棄された
-	case WM_DESTROY:
-		//OSに対して、アプリの終了を伝える
-		PostQuitMessage(0);
-		return 0;
-	}
-	//標準のメッセージ処理を行う
-	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-#pragma endregion
-
-///==============================================///
-///DXTecを使ってデータを読む関数
-///==============================================///
-DirectX::ScratchImage LoadTexture(const std::string& filePath) {
-	/// ===テクスチャファイルを読んでプログラムを扱えるようにする=== ///
-	DirectX::ScratchImage image{};
-	std::wstring filePathW = ConvertString(filePath);
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	assert(SUCCEEDED(hr));
-
-	/// ===ミニマップの作成=== ///
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-	assert(SUCCEEDED(hr));
-
-	/// ===ミニマップ付きのデータを返す=== ///
-	return mipImages;
-}
-
-///==============================================///
-///DirectX12のTextureResourceを作る
-///==============================================///
-Microsoft::WRL::ComPtr <ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr <ID3D12Device> device, const DirectX::TexMetadata& metadata) {
-	/// ===1.metadataを元にResouceの設定=== ///
-	D3D12_RESOURCE_DESC resouceDesc{};
-	resouceDesc.Width = UINT(metadata.width);								//Textureの幅
-	resouceDesc.Height = UINT(metadata.height);								//Textureの高さ
-	resouceDesc.MipLevels = UINT16(metadata.mipLevels);						//mipmapの数
-	resouceDesc.DepthOrArraySize = UINT16(metadata.arraySize);				//奥行き or 配列Textureの配列数
-	resouceDesc.Format = metadata.format;									//TextureのFormat
-	resouceDesc.SampleDesc.Count = 1;										//サンプリングカウント
-	resouceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);	//Textureの次元数。普段つかているのは2次元。
-
-	/// ===2.利用するHeapの設定===///
-	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;//細かい設定を行う
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
-
-	/// ===3.resouceを生成する=== ///
-	//TODO:助けて
-	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
-		&heapProperties,					//Heapの設定
-		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定、特になし
-		&resouceDesc,						//Resourceの設定		
-		D3D12_RESOURCE_STATE_GENERIC_READ,	//初回のResouceState。Textureは基本読むだけ
-		nullptr,
-		IID_PPV_ARGS(&resource)
-	);
-	assert(SUCCEEDED(hr));
-	return resource;
-}
-
-///==============================================///
-///TextureResouceにデータを転送する
-///==============================================///
-void UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
-	/// ===Mata情報を取得=== ///
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-
-	/// ===全MipMapについて=== ///
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		//全MipMapLevelを指定して書くImageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		//Textureに転送
-		HRESULT hr = texture.Get()->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,				//全領域へコピー
-			img->pixels,			//元データアドレス
-			UINT(img->rowPitch),	//1ラインサイズ
-			UINT(img->slicePitch)	//1枚サイズ
-		);
-		assert(SUCCEEDED(hr));
-	}
-}
-
 ///=====================================================/// 
 ///mtlファイルの読み込み
 ///=====================================================///
 MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
-    MaterialData materialData;
-    std::string line;
-    std::ifstream file(directoryPath + "/" + filename);
+	MaterialData materialData;
+	std::string line;
+	std::ifstream file(directoryPath + "/" + filename);
 
-    while (std::getline(file, line)) {
-        std::string identifier;
-        std::istringstream s(line);
-        s >> identifier;
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier;
 
-        if (identifier == "map_Kd") {
-            std::string textureFilename;
-            s >> textureFilename;
-            materialData.textureFilePath = directoryPath + "/" + textureFilename;
-        }
-    }
-    return materialData;
+		if (identifier == "map_Kd") {
+			std::string textureFilename;
+			s >> textureFilename;
+			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+		}
+	}
+	return materialData;
 }
 
 
@@ -357,7 +212,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	WinApp* win = new WinApp;
 	win->CreateGameWindow(L"CG2");
-	
+
 
 	///-------------------------------------------/// 
 	///リークチェック
@@ -550,7 +405,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	/// ===モデルデータの読み込み=== ///
 	ModelData modelData = LoadObjFile("resources", "axis.obj");
 	/// ===頂点リソースを作る=== ///
-	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(VertexData) * modelData.vertices.size());
+	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResource = DXManager->CreateBufferResource(sizeof(VertexData) * modelData.vertices.size());
 	/// ===頂点バッファビューを作成する=== ///
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();				//リソースの先頭アドレスから使う
@@ -567,7 +422,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	/// ===頂点リソースの作成=== ///
 	//NOTE:一般的にこれらのデータはオブジェクト事に必要である
-	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResouceSprite = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(VertexData) * 6);
+	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResouceSprite = DXManager->CreateBufferResource(sizeof(VertexData) * 6);
 
 	/// ===VettexBufferViewSpriteを作成する=== ///
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
@@ -613,7 +468,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//VettexResourceSpriteを生成(スプライト用)
 	///----------------------------------------///
 	/// ===頂点リソースの作成=== ///
-	Microsoft::WRL::ComPtr <ID3D12Resource> indexResourceSprite = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(uint32_t) * 6);
+	Microsoft::WRL::ComPtr <ID3D12Resource> indexResourceSprite = DXManager->CreateBufferResource(sizeof(uint32_t) * 6);
 
 	/// ===VettexBufferViewSpriteを作成する=== ///
 	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
@@ -633,7 +488,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	//並行光源用のリソース
 	///----------------------------------------///
-	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightResource = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(DirectionalLight));
+	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightResource = DXManager->CreateBufferResource(sizeof(DirectionalLight));
 	//並行光源リソースデータ
 	DirectionalLight* directionalLightData = nullptr;
 	//並行光源書き込み用データ
@@ -650,7 +505,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	//マテリアル用のリソース(3D)
 	///----------------------------------------///
-	Microsoft::WRL::ComPtr <ID3D12Resource> materialResource = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(Material));
+	Microsoft::WRL::ComPtr <ID3D12Resource> materialResource = DXManager->CreateBufferResource(sizeof(Material));
 	//マテリアルデータ
 	Material* materialData = nullptr;
 	//マテリアルデータ書き込み用変数
@@ -666,7 +521,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	//マテリアル用のリソース(2D)
 	///----------------------------------------///
-	Microsoft::WRL::ComPtr <ID3D12Resource> materialResourceSprite = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(Material));
+	Microsoft::WRL::ComPtr <ID3D12Resource> materialResourceSprite = DXManager->CreateBufferResource(sizeof(Material));
 	//マテリアルデータ
 	Material* materialDataSprite = nullptr;
 	//マテリアルデータ書き込み用変数
@@ -682,7 +537,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//WVP用のリソース Matrix4x4 1つ分のサイズを用意
 	///----------------------------------------///
 	//wvp用のリソースを作る
-	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(TransformationMatrix));
+	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource = DXManager->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
 	TransformationMatrix* transformationMatrixData = nullptr;
 	//書き込み用変数
@@ -698,7 +553,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//Sprite用リソース Matrial4x4 1つ
 	///----------------------------------------///
 	//wvp用のリソースを作る
-	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResourceSprite = CreateBufferResource(DXManager->GetDevice().Get(), sizeof(TransformationMatrix));
+	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResourceSprite = DXManager->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
 	TransformationMatrix* transformationMatrixDataSprite = nullptr;
 	//書き込み用変数
@@ -716,18 +571,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	/// ===一枚目=== ///
 	//Textureを読んで転送する
-	DirectX::ScratchImage mipImages = LoadTexture("resources/uvChecker.png");
+	DirectX::ScratchImage mipImages = DXManager->LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = CreateTextureResource(DXManager->GetDevice(), metadata);
-	UploadTextureData(textureResource, mipImages);
+	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = DXManager->CreateTextureResource(metadata);
+	DXManager->UploadTextureData(textureResource, mipImages);
 
 	/// ===二枚目=== ///
 	//Textureを読んで転送する
 	//DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
-	DirectX::ScratchImage mipImages2 = LoadTexture(modelData.material.textureFilePath);
+	DirectX::ScratchImage mipImages2 = DXManager->LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = CreateTextureResource(DXManager->GetDevice(), metadata2);
-	UploadTextureData(textureResource2, mipImages2);
+	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = DXManager->CreateTextureResource(metadata2);
+	DXManager->UploadTextureData(textureResource2, mipImages2);
 
 
 	///----------------------------------------///
