@@ -26,7 +26,7 @@ void DirectXManager::PreDraw() {
 	RenderTargetPreference();
 
 	// ImGuiの描画用DescriptorHeap設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get()};
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
@@ -513,12 +513,12 @@ void DirectXManager::ImGuiInitialize() {
 ///=====================================================///
 void DirectXManager::CreateDXCCompiler() {
 	//dxcCompilerを初期化
-	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
 	assert(SUCCEEDED(hr_));
-	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler_));
 	assert(SUCCEEDED(hr_));
 	//現時点でincludeはしないが、includeに対応するために設定を行う
-	hr_ = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	hr_ = dxcUtils_->CreateDefaultIncludeHandler(&includeHandler_);
 	assert(SUCCEEDED(hr_));
 }
 
@@ -572,7 +572,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTexture
 ///-------------------------------------------/// 
 ///DescriptorHeap関数
 ///-------------------------------------------///
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHeap( D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
 	descriptorHeapDesc.Type = heapType;
@@ -596,6 +596,68 @@ D3D12_CPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVCPUDescriptorHandle(uint32_t i
 /// ===GPU=== ///
 D3D12_GPU_DESCRIPTOR_HANDLE DirectXManager::GetSRVGPUDescriptorHandle(uint32_t index) {
 	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
+}
+
+///=====================================================/// 
+///
+///=====================================================///
+IDxcBlob* DirectXManager::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
+
+	/// ===hlseファイルを読む=== ///
+	//これからシェーダーをコンパイルする旨をログに出す
+	Log(ConvertString(std::format(L"Begin Compiler,path:{},profile:{}\n", filePath, profile)));
+	//hlseファイルを読む
+	IDxcBlobEncoding* shaderSource = nullptr;
+	HRESULT hr = dxcUtils_->LoadFile(filePath.c_str(), nullptr, &shaderSource);
+	//読めなかったら止める
+	assert(SUCCEEDED(hr));
+	//読み込んだファイルの内容を設定する
+	DxcBuffer shaderSourceBuffer;
+	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
+	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
+	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF-8の文字コードであることを通知
+
+	/// ===コンパイルする=== ///
+	LPCWSTR arguments[] = {
+	filePath.c_str(),
+	L"-E",L"main",
+	L"-T",profile,
+	L"-Zi",L"-Qembed_debug",
+	L"-Od",
+	L"-Zpr",
+	};
+	//実際にShaderをコンパイルする
+	IDxcResult* shaderResult = nullptr;
+	hr = dxcCompiler_->Compile(
+		&shaderSourceBuffer,
+		arguments,
+		_countof(arguments),
+		includeHandler_,
+		IID_PPV_ARGS(&shaderResult)
+	);
+	//コンパイルエラーではなくdxcが起動できないと致命的な状況
+	assert(SUCCEEDED(hr));
+
+	/// ===警告・エラーがでてないか確認する=== ///
+	IDxcBlobUtf8* shaderError = nullptr;
+	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
+	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+		Log(shaderError->GetStringPointer());
+		//警告・エラーダメ絶対
+		assert(false);
+	}
+
+	/// ===Compile結果を受け取って返す=== ///
+	//コンパイル結果から実行用のバイナリ部分を取得
+	IDxcBlob* shaderBlob = nullptr;
+	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
+	//成功したログを出す
+	Log(ConvertString(std::format(L"Compile Succeeded, path:{},profile:{}\n", filePath, profile)));
+	//もう使わないリソースを開放
+	shaderSource->Release();
+	shaderResult->Release();
+	//実行用のバイナリを返却
+	return shaderBlob;
 }
 
 ///-------------------------------------------/// 

@@ -233,6 +233,13 @@ public:
 	/// <returns></returns>
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <param name="profile"></param>
+	/// <returns></returns>
+	IDxcBlob* CompileShader(const std::wstring& filePath,const wchar_t* profile);
 
 
 private:
@@ -365,10 +372,10 @@ private:
 	Microsoft::WRL::ComPtr <ID3D12Resource> swapChainResource_[2] = { nullptr };
 
 	/// ===DXCコンパイラー=== ///
-	IDxcUtils* dxcUtils = nullptr;
-	IDxcCompiler3* dxcCompiler = nullptr;
+	IDxcUtils* dxcUtils_ = nullptr;
+	IDxcCompiler3* dxcCompiler_ = nullptr;
 	//現時点でincludeはしないが、includeに対応するために設定を行う
-	IDxcIncludeHandler* includeHandler = nullptr;
+	IDxcIncludeHandler* includeHandler_ = nullptr;
 
 
 
