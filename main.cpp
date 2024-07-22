@@ -31,16 +31,8 @@
 #include "base/utils/WstringConve.h"
 //ログ出力
 #include "base/utils/Log.h"
-/// ===DXC=== //
-#include <dxcapi.h>
-#pragma comment(lib,"dxcompiler.lib")
 //DXTex
 #include"base/externals/DirectXTex/DirectXTex.h"
-/// ===imgui=== //
-//#include "base/externals/imgui/imgui.h"
-//#include"base/externals/imgui/imgui_impl_dx12.h"
-//#include "base/externals/imgui/imgui_impl_win32.h"
-//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 ///==============================================///
@@ -156,76 +148,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 	//標準のメッセージ処理を行う
 	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-#pragma endregion
-
-///==============================================///
-///CompilerShader関数
-///==============================================///
-#pragma region CompilerShader関数
-//TODO:
-IDxcBlob* CompileShader(
-	const std::wstring& filePath,
-	const wchar_t* profile,
-	IDxcUtils* dcxUtils,
-	IDxcCompiler3* dxcCompiler,
-	IDxcIncludeHandler* includeHandler) {
-
-	/// ===hlseファイルを読む=== ///
-	//これからシェーダーをコンパイルする旨をログに出す
-	Log(ConvertString(std::format(L"Begin Compiler,path:{},profile:{}\n", filePath, profile)));
-	//hlseファイルを読む
-	IDxcBlobEncoding* shaderSource = nullptr;
-	HRESULT hr = dcxUtils->LoadFile(filePath.c_str(), nullptr, &shaderSource);
-	//読めなかったら止める
-	assert(SUCCEEDED(hr));
-	//読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
-	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
-	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
-	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF-8の文字コードであることを通知
-
-	/// ===コンパイルする=== ///
-	LPCWSTR arguments[] = {
-	filePath.c_str(),
-	L"-E",L"main",
-	L"-T",profile,
-	L"-Zi",L"-Qembed_debug",
-	L"-Od",
-	L"-Zpr",
-	};
-	//実際にShaderをコンパイルする
-	IDxcResult* shaderResult = nullptr;
-	hr = dxcCompiler->Compile(
-		&shaderSourceBuffer,
-		arguments,
-		_countof(arguments),
-		includeHandler,
-		IID_PPV_ARGS(&shaderResult)
-	);
-	//コンパイルエラーではなくdxcが起動できないと致命的な状況
-	assert(SUCCEEDED(hr));
-
-	/// ===警告・エラーがでてないか確認する=== ///
-	IDxcBlobUtf8* shaderError = nullptr;
-	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
-		Log(shaderError->GetStringPointer());
-		//警告・エラーダメ絶対
-		assert(false);
-	}
-
-	/// ===Compile結果を受け取って返す=== ///
-	//コンパイル結果から実行用のバイナリ部分を取得
-	IDxcBlob* shaderBlob = nullptr;
-	hr = shaderResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
-	//成功したログを出す
-	Log(ConvertString(std::format(L"Compile Succeeded, path:{},profile:{}\n", filePath, profile)));
-	//もう使わないリソースを開放
-	shaderSource->Release();
-	shaderResult->Release();
-	//実行用のバイナリを返却
-	return shaderBlob;
 }
 #pragma endregion
 
@@ -460,23 +382,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
 
 	///----------------------------------------///
-	//DXCの初期化
-	///----------------------------------------///
-	//dxcCompilerを初期化
-	IDxcUtils* dxcUtils = nullptr;
-	IDxcCompiler3* dxcCompiler = nullptr;
-	DXManager->SetHr(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils)));
-	assert(SUCCEEDED(DXManager->GetHr()));
-	DXManager->SetHr(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
-	assert(SUCCEEDED(DXManager->GetHr()));
-
-	//現時点でincludeはしないが、includeに対応するために設定を行う
-	IDxcIncludeHandler* includeHandler = nullptr;
-	DXManager->SetHr(dxcUtils->CreateDefaultIncludeHandler(&includeHandler));
-	assert(SUCCEEDED(DXManager->GetHr()));
-
-
-	///----------------------------------------///
 	//PSO
 	///----------------------------------------///
 	/// ===RootSignature作成=== ///
@@ -590,12 +495,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	/// ===Shaderをcompileする=== ///
-	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = CompileShader(L"Object3D.VS.hlsl",
-		L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	//Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = CompileShader(L"Object3D.VS.hlsl",
+	//	L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = DXManager->CompileShader(L"Object3D.VS.hlsl", L"vs_6_0");
 	assert(vertexShaderBlob != nullptr);
 
-	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = CompileShader(L"Object3D.PS.hlsl",
-		L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	//Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = CompileShader(L"Object3D.PS.hlsl",
+	//	L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = DXManager->CompileShader(L"Object3D.PS.hlsl", L"ps_6_0");
 	assert(pixelShaderBlob != nullptr);
 
 	/// ===PSOを生成する=== ///
