@@ -1,12 +1,12 @@
-#include "DirectXManager.h"
-#include "externals/DirectXTex/DirectXTex.h"
-#pragma comment(lib,"winmm.lib")
-
 ///===============================================================///
 /// 
 ///DirectXManagerクラス
 /// 
 ///===============================================================///
+
+#include "DirectXManager.h"
+#include "externals/DirectXTex/DirectXTex.h"
+#pragma comment(lib,"winmm.lib")
 
 ///=====================================================/// 
 ///コンストラクタ

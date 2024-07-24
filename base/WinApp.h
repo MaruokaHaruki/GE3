@@ -1,13 +1,14 @@
-#include <cstdint>
-#include <string>
-#include <windows.h>
-
 ///===============================================================///
 /// 
 ///ウィンドウズアプリケーションクラス
 /// 
 ///===============================================================///
 //NOTE:ウィンドウズAPIを管理する
+
+#include <cstdint>
+#include <string>
+#include <windows.h>
+
 #pragma once
 class WinApp {
 private:
