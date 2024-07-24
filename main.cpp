@@ -3,6 +3,8 @@
 #include "base/WinApp.h"
 #include "base/DirectXManager.h"
 #include "input/Input.h"
+#include "base/SpriteManager.h"
+#include "base/Sprite.h"
 /// ===Win関連=== ///
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -213,10 +215,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	WinApp* win = new WinApp;
 	win->CreateGameWindow(L"CG2");
 
-
-	///-------------------------------------------/// 
+	///----------------------------------------/// 
 	///リークチェック
-	///-------------------------------------------///
+	///----------------------------------------///
 	D3DResourceLeakCheker leakCheck;
 
 	///----------------------------------------///
@@ -227,14 +228,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ダイレクトXの初期化
 	DXManager->InitializeDirectX(win);
 
-	///-------------------------------------------/// 
+	///----------------------------------------/// 
 	///入力クラス
-	///-------------------------------------------///
+	///----------------------------------------///
 	//ポインタ
 	Input* input = nullptr;
 	//入力の初期化
 	input = new Input();
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
+
+	///----------------------------------------///
+	///スプライト系クラス
+	///----------------------------------------///
+	///// ===スプライト基盤システム=== ///
+	//SpriteManager* spriteManager = nullptr;
+	////スプライト共通部の初期化
+	//spriteManager = new SpriteManager;
+	//spriteManager->Initialize();
+
+	///// ===スプライト=== ///
+	//Sprite* sprite = nullptr;
+	////スプライトの初期化
+	//sprite = new Sprite;
+	//sprite->Initialize();
+
 
 	///----------------------------------------///
 	//PSO
@@ -864,6 +881,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------///
 	/// ===入力クラス=== ///
 	delete input;
+
+	/// ===スプライト=== ///
+	//delete spriteManager;
+	//delete sprite;
 
 	/// ===ImGuiの終了処理=== ///
 	//srvDescriptorHeap->Release();  // シェーダーリソースビュー用ディスクリプタヒープの解放
