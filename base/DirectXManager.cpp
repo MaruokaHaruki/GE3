@@ -110,13 +110,6 @@ void DirectXManager::ReleaseDirectX() {
 }
 
 ///=====================================================/// 
-///ログの確認
-///=====================================================/// 
-void DirectXManager::Log(const std::string& message) {
-	OutputDebugStringA(message.c_str());
-}
-
-///=====================================================/// 
 ///デバックレイヤーの生成
 ///=====================================================/// 
 void DirectXManager::CreateDebugLayer() {

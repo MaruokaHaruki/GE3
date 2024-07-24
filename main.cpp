@@ -16,23 +16,28 @@
 #include <sstream>
 /// ===自作関数=== //
 //構造体
-#include "selfMath/structure/Vector3.h"
-#include "selfMath/structure/Vector4.h"
-#include "selfMath/structure/Matrix4x4.h"
-#include "selfMath/structure/Transform.h"
-#include "selfMath/structure/Matrix3x3.h"
+#include "math/structure/Vector3.h"
+#include "math/structure/Vector4.h"
+#include "math/structure/Matrix4x4.h"
+#include "math/structure/Transform.h"
+#include "math/structure/Matrix3x3.h"
 //3x3行列演算
-#include "selfMath/3x3Calc.h"
+#include "math/Calc3x3.h"
+using namespace Calc3x3;
 //4x4行列演算
-#include "selfMath/4x4Calc.h"
+#include "math/Calc4x4.h"
+using namespace Calc4x4;
 //3次元アフィン演算
-#include"selfMath/3dAffineCalc.h"
+#include"math/AffineCalc.h"
+using namespace AffineCalc;
 //レンダリングパイプライン
-#include"selfMath/RendPipeLine.h"
+#include"math/RendPipeLine.h"
+using namespace RendPipeLine;
 //Wstring変換
-#include "base/utils/WstringConve.h"
+#include "base/utils/WstringUtility.h"
 //ログ出力
-#include "base/utils/Log.h"
+#include "base/utils/Logger.h"
+using namespace Calc3x3;
 
 
 ///==============================================///
@@ -530,7 +535,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	materialResource->Map(0, nullptr, reinterpret_cast<void**>( &materialData ));
 	//今回は赤を書き込む
 	*materialData = material;
-	materialData->uvTransform = IdentityMatrix();
+	materialData->uvTransform = Identity4x4();
 
 
 
@@ -547,7 +552,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//今回は赤を書き込む
 	*materialDataSprite = materialSprite;
 	//UVトランスフォーム
-	materialDataSprite->uvTransform = IdentityMatrix();
+	materialDataSprite->uvTransform = Identity4x4();
 
 	///----------------------------------------///
 	//WVP用のリソース Matrix4x4 1つ分のサイズを用意
@@ -561,7 +566,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//書き込むためのアドレスを取得
 	transformationMatrixResource->Map(0, nullptr, reinterpret_cast<void**>( &transformationMatrixData ));
 	//書き込み
-	transformationMatrix.WVP = IdentityMatrix();
+	transformationMatrix.WVP = Identity4x4();
 	//単位行列を書き込む
 	*transformationMatrixData = transformationMatrix;
 
@@ -577,7 +582,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//書き込むためのアドレスを取得
 	transformationMatrixResourceSprite->Map(0, nullptr, reinterpret_cast<void**>( &transformationMatrixDataSprite ));
 	//書き込み
-	transformationMatrixSprite.WVP = IdentityMatrix();
+	transformationMatrixSprite.WVP = Identity4x4();
 	//単位行列を書き込む
 	*transformationMatrixDataSprite = transformationMatrixSprite;
 
@@ -783,28 +788,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 			transformationMatrix.World = worldMatrix;
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
-			Matrix4x4 viewMatrix = InverseMatrix(cameraMatrix);
+			Matrix4x4 viewMatrix = Inverse4x4(cameraMatrix);
 			//3Dオブジェクト処理
 			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(win->GetWindowWidth()) / float(win->GetWindowHeight()), 0.1f, 100.0f);
-			Matrix4x4 worldViewProjectionMatrix = MultiplyMatrix(worldMatrix, MultiplyMatrix(viewMatrix, projectionMatrix));
+			Matrix4x4 worldViewProjectionMatrix = Multiply4x4(worldMatrix, Multiply4x4(viewMatrix, projectionMatrix));
 			transformationMatrix.WVP = worldViewProjectionMatrix;
 			*transformationMatrixData = transformationMatrix;
 			//2Dオブジェクト処理
 			//sprite用のWorldViewProjectionMatrixを作る
 			Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 			transformationMatrixSprite.World = worldMatrixSprite;
-			Matrix4x4 viewMatrxSprite = IdentityMatrix();
+			Matrix4x4 viewMatrxSprite = Identity4x4();
 			Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(win->GetWindowWidth()), float(win->GetWindowHeight()), 0.0f, 100.0f);
-			Matrix4x4 worldViewProjectionMatrixSprite = MultiplyMatrix(worldMatrixSprite, MultiplyMatrix(viewMatrxSprite, projectionMatrixSprite));
+			Matrix4x4 worldViewProjectionMatrixSprite = Multiply4x4(worldMatrixSprite, Multiply4x4(viewMatrxSprite, projectionMatrixSprite));
 			transformationMatrixSprite.WVP = worldViewProjectionMatrixSprite;
 			*transformationMatrixDataSprite = transformationMatrixSprite;
 
 			Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransformSprite.scale);
-			uvTransformMatrix = MultiplyMatrix(uvTransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
-			uvTransformMatrix = MultiplyMatrix(uvTransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
+			uvTransformMatrix = Multiply4x4(uvTransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
+			uvTransformMatrix = Multiply4x4(uvTransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
 			materialDataSprite->uvTransform = uvTransformMatrix;
 
-			materialData->uvTransform = IdentityMatrix();
+			materialData->uvTransform = Identity4x4();
 
 			/// ====ImGuiの内部コマンド生成==== ///
 			ImGui::Render();
