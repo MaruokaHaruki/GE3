@@ -672,7 +672,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------	------///
 	//コマンドキック
 	///----------------------------------------///
-	dxManager->ExecuteCommandList();
+	//dxManager->ExecuteCommandList();
 
 
 	///----------------------------------------///
