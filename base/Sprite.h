@@ -4,8 +4,10 @@
 /// 
 ///===============================================================///
 //NOTE:スプライト1枚分のクラス
+#include "SpriteManager.h"
 
 #pragma once
+class SpriteManager;
 class Sprite {
 public:
 	///-------------------------------------------/// 
@@ -15,7 +17,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize();
+	void Initialize(SpriteManager* spriteManager);
 
 
 
@@ -23,6 +25,11 @@ public:
 
 
 private:
+	///-------------------------------------------/// 
+	///メンバ変数
+	///-------------------------------------------///
+	/// ===スプライト共通部Pointer=== ///
+	SpriteManager* spriteManager_ = nullptr;
 
 
 

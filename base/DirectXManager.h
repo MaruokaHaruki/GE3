@@ -13,8 +13,10 @@
 #include <chrono>
 #include <thread>
 //自作関数
-#include"utils/WstringConve.h"
-#include "utils/Log.h"
+#include"utils/WstringUtility.h"
+using namespace WstringUtility;
+#include "utils/Logger.h"
+using namespace Logger;
 #include "WinApp.h"
 //ReportLiveObj
 #include <dxgidebug.h>
@@ -30,7 +32,7 @@
 #pragma comment(lib,"dxcompiler.lib")
 //DXtec
 #include"externals/DirectXTex/DirectXTex.h"
-/// ===imgui=== //
+//imgui
 #include "externals/imgui/imgui.h"
 #include"externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
@@ -335,13 +337,6 @@ public:
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetRtvDescriptorHeap() { return rtvDescriptorHeap_; }
 
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
-
-
-	/// <summary>
-	/// ログ確認
-	/// </summary>
-	/// <param name="message"></param>
-	void Log(const std::string& message);
 
 private:
 	///-------------------------------------------/// 
