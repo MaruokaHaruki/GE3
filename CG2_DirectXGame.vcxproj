@@ -102,6 +102,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="base\externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="base\externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="input\Input.cpp" />
+    <ClCompile Include="MAG\MAudio.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="base\SpriteManager.cpp" />
@@ -120,6 +121,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="base\externals\imgui\imstb_textedit.h" />
     <ClInclude Include="base\externals\imgui\imstb_truetype.h" />
     <ClInclude Include="input\Input.h" />
+    <ClInclude Include="MAG\MAudio.h" />
     <ClInclude Include="math\Calc4x4.h" />
     <ClInclude Include="math\structure\Matrix4x4.h" />
     <ClInclude Include="math\structure\Transform.h" />
