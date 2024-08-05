@@ -181,8 +181,6 @@ void DirectXManager::CreateD3D12Device() {
 			break;
 		}
 	}
-
-
 	//デバイスの生成がうまくいかなかったので起動できない
 	assert(device_ != nullptr);
 	//初期化完了のログの出力
@@ -569,7 +567,11 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateDepthStencilTexture
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,	//深度値を書き込む状態にしておく
 		&depthClearValue,					//Clear最適値
 		IID_PPV_ARGS(&resource));			//作成するResourceポインタへのポインタ
-	assert(SUCCEEDED(hr));
+	// エラーチェックを行う
+	if (FAILED(hr)) {
+		// エラー処理（ログ出力やアサートなど）
+		assert(SUCCEEDED(hr));
+	}
 	return resource;
 }
 
@@ -583,7 +585,11 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXManager::CreateDescriptorHea
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	HRESULT hr = device_->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
-	assert(SUCCEEDED(hr));
+	// エラーチェックを行う
+	if (FAILED(hr)) {
+		// エラー処理（ログ出力やアサートなど）
+		assert(SUCCEEDED(hr));
+	}
 	// 成功したログを出力
 	Log("Descriptor heap created successfully.");
 	return descriptorHeap;
@@ -734,7 +740,11 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 		nullptr,
 		IID_PPV_ARGS(&resource)
 	);
-	assert(SUCCEEDED(hr));
+	// エラーチェックを行う
+	if (FAILED(hr)) {
+		// エラー処理（ログ出力やアサートなど）
+		assert(SUCCEEDED(hr));
+	}
 	return resource;
 }
 
@@ -742,24 +752,30 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 ///テクスチャデータの転送
 ///-------------------------------------------///
 void DirectXManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
-	/// ===Mata情報を取得=== ///
+	/// ===Meta情報を取得=== ///
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 
 	/// ===全MipMapについて=== ///
 	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		//全MipMapLevelを指定して書くImageを取得
+		//全MipMapLevelを指定して各Imageを取得
 		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
 		//Textureに転送
 		HRESULT hr = texture.Get()->WriteToSubresource(
 			UINT(mipLevel),
-			nullptr,				//全領域へコピー
-			img->pixels,			//元データアドレス
-			UINT(img->rowPitch),	//1ラインサイズ
-			UINT(img->slicePitch)	//1枚サイズ
+			nullptr,                //全領域へコピー
+			img->pixels,            //元データアドレス
+			UINT(img->rowPitch),    //1ラインサイズ
+			UINT(img->slicePitch)   //1枚サイズ
 		);
-		assert(SUCCEEDED(hr));
+
+		// エラーチェックを行う
+		if (FAILED(hr)) {
+			// エラー処理（ログ出力やアサートなど）
+			assert(SUCCEEDED(hr));
+		}
 	}
 }
+
 
 /// <summary>
 /// DXTecを使ってファイルを読む

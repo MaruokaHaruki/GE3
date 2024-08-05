@@ -231,7 +231,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///----------------------------------------/// 
 	///リークチェック
 	///----------------------------------------///
-	D3DResourceLeakCheker leakCheck;
+	//D3DResourceLeakCheker leakCheck;
 
 	///----------------------------------------///
 	///ダイレクトX生成
@@ -541,8 +541,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
 	//クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = win->GetWindowWidth();
-	viewport.Height = win->GetWindowHeight();
+	viewport.Width = static_cast<float>( win->GetWindowWidth() );
+	viewport.Height = static_cast<float>( win->GetWindowHeight() );
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.MinDepth = 0;
@@ -629,7 +629,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Begin("3D Object");
 			/// --カラーピッカーを表示-- ///
 			ImGui::Text("3D Material Settings");
-			ImGui::ColorPicker4("Color", &material.color.x, 0.01f);
+			const float ColorVol = 0.01f;
+			ImGui::ColorPicker4("Color", &material.color.x,true, &ColorVol);
 			*materialData = material;
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::Separator();
@@ -673,12 +674,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::DragFloat2("UVTScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 			ImGui::End();
 
+			ImGui::Begin("Sound");
+			ImGui::DragFloat("Volume", &testSound.volume, 0.001f);
+			ImGui::End();
+
 			/// ====ゲーム処理==== ///
 			///サウンド再生
 			if (!mAudio->IsPlaying(testSound.voiceHandle)) {
 				testSound.voiceHandle = mAudio->PlayWave(testSound.dataHandle);
-				mAudio->SetVolume(testSound.voiceHandle, testSound.volume);
 			}
+			mAudio->SetVolume(testSound.voiceHandle, testSound.volume);
 
 			///カメラ処理
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
@@ -742,7 +747,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dxManager->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewBunny);
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceBunny->GetGPUVirtualAddress());
-			dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2,textureSrvHadleGPUBunny);//テクスチャ
+			dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHadleGPUBunny);//テクスチャ
 			if (isDrawbunny) {
 				dxManager->GetCommandList()->DrawInstanced(UINT(modelDataBunny.vertices.size()), 1, 0, 0);
 			}
