@@ -800,24 +800,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			materialData->uvTransform = Identity4x4();
 
-			/// ====ImGuiの内部コマンド生成==== ///
-			ImGui::Render();
-
-			//// バックバッファの決定
-			//dxManager->SettleCommandList();
-			//// バリア設定
-			//dxManager->SetupTransitionBarrier();
-
-			//// 描画ターゲットの設定とクリア
-			//dxManager->RenderTargetPreference(dsvHandle);
-
-
-			// ImGuiの描画用DescriptorHeap設定
-			//ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap.Get()};
-			//dxManager->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
-
 			/// ====コマンドを積む==== ///
-			///dxManagerループ前処理
+			///ImGuiの内部コマンド生成
+			ImGui::Render();
+			///ループ前処理
 			dxManager->PreDraw();
 			///共通描画設定
 			spriteManager->CommonDrawSetup();
@@ -825,10 +811,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///3D描画
 			dxManager->GetCommandList()->RSSetViewports(1, &viewport);
 			dxManager->GetCommandList()->RSSetScissorRects(1, &scissorRect);
-
-			//dxManager->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-			//dxManager->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			//dxManager->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 
 			dxManager->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 			// インデックスバッファをバインド
@@ -868,6 +850,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ImGui描画
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxManager->GetCommandList().Get());
 
+			///ループ後処理
 			dxManager->PostDraw();
 		}
 	}
