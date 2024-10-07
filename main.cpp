@@ -12,6 +12,7 @@
 #include <cmath>
 ///====================コムポインタ====================///
 #include <wrl.h>
+#include <memory> // std::unique_ptr
 ///====================ファイル読み込み用====================///
 #include <fstream>
 #include <sstream>
@@ -218,7 +219,7 @@ struct D3DResourceLeakCheker {
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///====================ウィンドウ生成====================///
-	WinApp* win = new WinApp;
+	std::unique_ptr<WinApp> win = std::make_unique<WinApp>();
 	win->CreateGameWindow(L"CG2");
 
 	///====================リークチェック====================///
@@ -226,29 +227,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///====================ダイレクトX生成====================///
 	//インスタンスの取得
-	DirectXManager* dxManager = new DirectXManager;
+	std::unique_ptr<DirectXManager> dxManager = std::make_unique<DirectXManager>();
 	//ダイレクトXの初期化
-	dxManager->InitializeDirectX(win);
+	dxManager->InitializeDirectX(win.get());
 
 	///====================入力クラス====================///
-	//ポインタ
-	Input* input = nullptr;
+	//ユニークポインタ
+	std::unique_ptr<Input> input = std::make_unique<Input>();
 	//入力の初期化
-	input = new Input();
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
 
 	///====================スプライト系クラス====================///
 	///----------------スプライト基盤システム----------------///
-	SpriteManager* spriteManager = nullptr;
+	//ユニークポインタ
+	std::unique_ptr<SpriteManager> spriteManager = std::make_unique<SpriteManager>();
 	//スプライト共通部の初期化
-	spriteManager = new SpriteManager;
-	spriteManager->Initialize(dxManager);
+	spriteManager->Initialize(dxManager.get());
 
-	///====================スプライト====================///
-	//Sprite* sprite = nullptr;
-	////スプライトの初期化
-	//sprite = new Sprite;
-	//sprite->Initialize();
+	///----------------スプライト----------------///
+	//ユニークポインタ
+	std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
+	//スプライトの初期化
+	sprite->Initialize(spriteManager.get());
+
+#pragma region Test
 
 	///====================PSO====================///
 	///// ===RootSignature作成=== ///
@@ -407,7 +409,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//	IID_PPV_ARGS(&graphicsPipelineState)));
 	//assert(SUCCEEDED(dxManager->GetHr()));
 
-
+#pragma endregion
 
 	///====================ModelResourceを生成====================///
 	/// ===モデルデータの読み込み=== ///
@@ -822,10 +824,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///====================開放処理====================///
 	///----------------入力クラス----------------///
-	delete input;
+	//delete input;
 
 	///----------------スプライト----------------///
-	delete spriteManager;
+	//delete spriteManager;
 	//delete sprite;
 
 	///----------------ImGuiの終了処理----------------///
@@ -836,7 +838,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	/// ===ダイレクトX=== ///
 	dxManager->ReleaseDirectX();  // DirectXの解放処理
-	delete dxManager;
+	//delete dxManager;
 
 	/// ===ウィンドウの終了=== ///
 	win->CloseWindow();
