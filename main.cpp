@@ -1,61 +1,67 @@
+///===================================================================///
+///								main.cpp
+///===================================================================///
+
+///----------------------------------------------------///
+///					インクルードスペース
+///----------------------------------------------------///
 #include <Windows.h>
-/// ===自作クラス=== ///
+///====================Win関係====================///
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <cmath>
+///====================コムポインタ====================///
+#include <wrl.h>
+#include <memory> // std::unique_ptr
+///====================ファイル読み込み用====================///
+#include <fstream>
+#include <sstream>
+///====================自作クラス====================///
 #include "base/WinApp.h"
 #include "base/DirectXManager.h"
 #include "input/Input.h"
 #include "base/SpriteManager.h"
 #include "base/Sprite.h"
-/// ===Win関連=== ///
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
-/// ===コムポインタ=== ///
-#include <wrl.h>
-/// ===ファイル読み込み用=== ///
-#include <fstream>
-#include <sstream>
-/// ===自作関数=== //
-//構造体
-#include "math/structure/Vector3.h"
-#include "math/structure/Vector4.h"
-#include "math/structure/Matrix4x4.h"
-#include "math/structure/Transform.h"
-#include "math/structure/Matrix3x3.h"
-//3x3行列演算
-#include "math/Calc3x3.h"
+///====================自作数学関数====================///
+///----------------構造体
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix4x4.h"
+#include "Transform.h"
+#include "Matrix3x3.h"
+///----------------3x3行列演算
+#include "Calc3x3.h"
 using namespace Calc3x3;
-//4x4行列演算
-#include "math/Calc4x4.h"
+///----------------4x4行列演算
+#include "Calc4x4.h"
 using namespace Calc4x4;
-//3次元アフィン演算
-#include"math/AffineCalc.h"
+///----------------3次元アフィン演算
+#include"AffineCalc.h"
 using namespace AffineCalc;
-//レンダリングパイプライン
-#include"math/RendPipeLine.h"
+///----------------レンダリングパイプライン
+#include"RendPipeLine.h"
 using namespace RendPipeLine;
-//Wstring変換
+///----------------Wstring変換
 #include "base/utils/WstringUtility.h"
-//ログ出力
+///----------------ログ出力
 #include "base/utils/Logger.h"
 using namespace Calc3x3;
 
 
-///==============================================///
-//構造体
-///==============================================///
-const struct Vector2 {
-	float x;
-	float y;
-};
 
-/// ===頂点データ=== ///　
+
+///----------------------------------------------------///
+///						構造体
+///----------------------------------------------------///
+///====================頂点データ====================///
 const struct VertexData {
 	Vector4 position;
 	Vector2 texCoord;
 	Vector3 normal;
 };
 
-/// ===マテリアル=== ///
+///====================マテリアル====================///
 struct Material {
 	Vector4 color;
 	int32_t enableLighting;
@@ -63,14 +69,14 @@ struct Material {
 	Matrix4x4 uvTransform;
 };
 
-/// ===トランスレートマトリックス=== ///
+///====================トランスレートマトリックス====================///
 struct TransformationMatrix {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 };
 
-/// ===並行光源=== ///
-//NOTE:光源の色、向き、光度表す。向きは必ず正規化しておくこと。
+///====================並行光源====================///
+//NOTE:光源の色、向き、光度表す。向きは必ず正規化しておくこと
 struct DirectionalLight {
 	Vector4 color;		//ライトの色
 	Vector3 direction;	//ライトの向き
@@ -78,7 +84,7 @@ struct DirectionalLight {
 
 };
 
-/// ===マテリアルデータ=== ///
+///====================マテリアルデータ====================///
 struct MaterialData {
 	std::string textureFilePath;
 };
@@ -90,9 +96,11 @@ struct ModelData {
 };
 
 
-///=====================================================/// 
-///mtlファイルの読み込み
-///=====================================================///
+///----------------------------------------------------///
+///							関数
+///----------------------------------------------------///
+///====================mtlファイルの読み込み====================///
+///NOTE:ディレクトリパスとファイルネームの設定を忘れずに
 MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
 	MaterialData materialData;
 	std::string line;
@@ -112,23 +120,20 @@ MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const st
 	return materialData;
 }
 
-
-///
-/// OBJファイルを読む関数
-///
+///====================OBJファイルを読む関数====================///
 ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename) {
-	/// ===1.中で必要となる変数の宣言=== ///
+	///----------------1.中で必要となる変数の宣言----------------///
 	ModelData modelData;            //構築するModelData
 	std::vector<Vector4> positions; //位置
 	std::vector<Vector3> normals;   //法線
 	std::vector<Vector2> texcoords; //テクスチャ座標
 	std::string line;               //ファイルから読んだ1行を格納するもの
 
-	/// ===2.ファイルを開く=== ///
+	///----------------2.ファイルを開く----------------///
 	std::ifstream file(directoryPath + "/" + filename);
 	assert(file.is_open());
 
-	/// ===3.実際にファイルを読み、ModelDataを構築していく=== ///
+	///----------------3.実際にファイルを読み、ModelDataを構築していく----------------///
 	while (std::getline(file, line)) {
 		std::string identifier;
 		std::istringstream s(line);
@@ -188,13 +193,11 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 		}
 	}
 
-	/// ===4.ModelDataを返す=== ///
+	///----------------4.ModelDataを返す----------------///
 	return modelData;
 }
 
-///=====================================================/// 
-///リソースリークチェッカー
-///=====================================================///
+///====================リソースリークチェッカー====================///
 struct D3DResourceLeakCheker {
 	~D3DResourceLeakCheker() {
 		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
@@ -209,58 +212,47 @@ struct D3DResourceLeakCheker {
 };
 
 
-///==============================================///
-///Windowsアプリでのエントリーポイント(main関数)
-///==============================================///
+
+///----------------------------------------------------///
+/// Windowsアプリでのエントリーポイント(main関数)
+///----------------------------------------------------///
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	///----------------------------------------///
-	//ウィンドウ生成
-	///----------------------------------------///
-	WinApp* win = new WinApp;
+	///====================ウィンドウ生成====================///
+	std::unique_ptr<WinApp> win = std::make_unique<WinApp>();
 	win->CreateGameWindow(L"CG2");
 
-	///----------------------------------------/// 
-	///リークチェック
-	///----------------------------------------///
+	///====================リークチェック====================///
 	D3DResourceLeakCheker leakCheck;
 
-	///----------------------------------------///
-	///ダイレクトX生成
-	///----------------------------------------///
+	///====================ダイレクトX生成====================///
 	//インスタンスの取得
-	DirectXManager* dxManager = new DirectXManager;
+	std::unique_ptr<DirectXManager> dxManager = std::make_unique<DirectXManager>();
 	//ダイレクトXの初期化
-	dxManager->InitializeDirectX(win);
+	dxManager->InitializeDirectX(win.get());
 
-	///----------------------------------------/// 
-	///入力クラス
-	///----------------------------------------///
-	//ポインタ
-	Input* input = nullptr;
+	///====================入力クラス====================///
+	//ユニークポインタ
+	std::unique_ptr<Input> input = std::make_unique<Input>();
 	//入力の初期化
-	input = new Input();
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
 
-	///----------------------------------------///
-	///スプライト系クラス
-	///----------------------------------------///
-	/// ===スプライト基盤システム=== ///
-	SpriteManager* spriteManager = nullptr;
+	///====================スプライト系クラス====================///
+	///----------------スプライト基盤システム----------------///
+	//ユニークポインタ
+	std::unique_ptr<SpriteManager> spriteManager = std::make_unique<SpriteManager>();
 	//スプライト共通部の初期化
-	spriteManager = new SpriteManager;
-	spriteManager->Initialize(dxManager);
+	spriteManager->Initialize(dxManager.get());
 
-	/// ===スプライト=== ///
-	//Sprite* sprite = nullptr;
-	////スプライトの初期化
-	//sprite = new Sprite;
-	//sprite->Initialize();
+	///----------------スプライト----------------///
+	//ユニークポインタ
+	std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
+	//スプライトの初期化
+	sprite->Initialize(spriteManager.get());
 
+#pragma region Test
 
-	/////----------------------------------------///
-	////PSO
-	/////----------------------------------------///
+	///====================PSO====================///
 	///// ===RootSignature作成=== ///
 	//D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	//descriptionRootSignature.Flags =
@@ -417,12 +409,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//	IID_PPV_ARGS(&graphicsPipelineState)));
 	//assert(SUCCEEDED(dxManager->GetHr()));
 
+#pragma endregion
 
-
-
-	///-------------------------------------------/// 
-	///ModelResourceを生成
-	///-------------------------------------------///
+	///====================ModelResourceを生成====================///
 	/// ===モデルデータの読み込み=== ///
 	ModelData modelData = LoadObjFile("resources", "axis.obj");
 	/// ===頂点リソースを作る=== ///
@@ -438,14 +427,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 
 
-	///----------------------------------------///
-	//VettexResourceSpriteを生成(スプライト用)
-	///----------------------------------------///
-	/// ===頂点リソースの作成=== ///
+	///====================VettexResourceSpriteを生成(スプライト用)====================////'
+	///----------------頂点リソースの作成----------------///
 	//NOTE:一般的にこれらのデータはオブジェクト事に必要である
 	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResouceSprite = dxManager->CreateBufferResource(sizeof(VertexData) * 6);
 
-	/// ===VettexBufferViewSpriteを作成する=== ///
+	///----------------VettexBufferViewSpriteを作成する----------------///
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
 	//リソースの先頭のアドレスから使う
 	vertexBufferViewSprite.BufferLocation = vertexResouceSprite->GetGPUVirtualAddress();
@@ -454,7 +441,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//1頂点あたりのサイズ
 	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
 
-	/// ===リソースにデータを書き込む=== ///
+	///----------------リソースにデータを書き込む----------------///
 	VertexData* vertexDataSprite = nullptr;
 	//書き込むためのアドレス
 	vertexResouceSprite->Map(0, nullptr,
@@ -485,13 +472,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	vertexDataSprite[5].texCoord = { 1.0f,1.0f };
 	vertexDataSprite[5].normal = { 0.0f,0.0f,-1.0f };
 
-	///----------------------------------------///
-	//VettexResourceSpriteを生成(スプライト用)
-	///----------------------------------------///
-	/// ===頂点リソースの作成=== ///
+
+	///====================VettexResourceSpriteを生成(スプライト用)====================///
+	///----------------頂点リソースの作成----------------///
 	Microsoft::WRL::ComPtr <ID3D12Resource> indexResourceSprite = dxManager->CreateBufferResource(sizeof(uint32_t) * 6);
 
-	/// ===VettexBufferViewSpriteを作成する=== ///
+	///----------------VettexBufferViewSpriteを作成する----------------///
 	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
 	//リソースの先頭のアドレスから使う
 	indexBufferViewSprite.BufferLocation = indexResourceSprite->GetGPUVirtualAddress();
@@ -500,15 +486,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//1頂点あたりのサイズ
 	indexBufferViewSprite.Format = DXGI_FORMAT_R32_UINT;
 
-	/// ===リソースにデータを書き込む=== ///
+	///----------------リソースにデータを書き込む----------------///
 	uint32_t* indexDataSprite = nullptr;
 	indexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>( &indexDataSprite ));
 	indexDataSprite[0] = 0; indexDataSprite[1] = 1; indexDataSprite[2] = 2;
 	indexDataSprite[3] = 1; indexDataSprite[4] = 4; indexDataSprite[5] = 2;
 
-	///----------------------------------------///
-	//並行光源用のリソース
-	///----------------------------------------///
+
+	///====================並行光源用のリソース====================///
 	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightResource = dxManager->CreateBufferResource(sizeof(DirectionalLight));
 	//並行光源リソースデータ
 	DirectionalLight* directionalLightData = nullptr;
@@ -517,15 +502,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//書き込むためのアドレス取得
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>( &directionalLightData ));
 
-	/// ===リソースデータへの書き込み(初期設定)=== ///
+	///----------------リソースデータへの書き込み(初期設定)----------------///
 	directionalLight.color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLight.direction = { 0.0f,-1.0f,0.0f };
 	directionalLight.intensity = 1.0f;
 	*directionalLightData = directionalLight;
 
-	///----------------------------------------///
-	//マテリアル用のリソース(3D)
-	///----------------------------------------///
+
+	///====================マテリアル用のリソース(3D)====================///
 	Microsoft::WRL::ComPtr <ID3D12Resource> materialResource = dxManager->CreateBufferResource(sizeof(Material));
 	//マテリアルデータ
 	Material* materialData = nullptr;
@@ -539,9 +523,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-	///----------------------------------------///
-	//マテリアル用のリソース(2D)
-	///----------------------------------------///
+	///====================マテリアル用のリソース(2D)====================///
 	Microsoft::WRL::ComPtr <ID3D12Resource> materialResourceSprite = dxManager->CreateBufferResource(sizeof(Material));
 	//マテリアルデータ
 	Material* materialDataSprite = nullptr;
@@ -554,9 +536,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//UVトランスフォーム
 	materialDataSprite->uvTransform = Identity4x4();
 
-	///----------------------------------------///
-	//WVP用のリソース Matrix4x4 1つ分のサイズを用意
-	///----------------------------------------///
+	///====================WVP用のリソース Matrix4x4 1つ分のサイズを用意====================///
 	//wvp用のリソースを作る
 	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResource = dxManager->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
@@ -570,9 +550,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//単位行列を書き込む
 	*transformationMatrixData = transformationMatrix;
 
-	///----------------------------------------///
-	//Sprite用リソース Matrial4x4 1つ
-	///----------------------------------------///
+
+	///====================Sprite用リソース Matrial4x4 1つ====================///
 	//wvp用のリソースを作る
 	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResourceSprite = dxManager->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
@@ -587,9 +566,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	*transformationMatrixDataSprite = transformationMatrixSprite;
 
 
-	///----------------------------------------///
-	//textureResourceの読み込み
-	///----------------------------------------///
+	///====================textureResourceの読み込み====================///
 	/// ===一枚目=== ///
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = dxManager->LoadTexture("resources/uvChecker.png");
@@ -606,32 +583,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxManager->UploadTextureData(textureResource2, mipImages2);
 
 
-	///----------------------------------------///
-	//実際にShaderResourceViewを作る
-	///----------------------------------------///
-	/// ===一枚目=== ///
+	///====================実際にShaderResourceViewを作る====================///
+	///----------------一枚目----------------///
 	//metaDataを元にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-
-
 	//SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = dxManager->GetSRVCPUDescriptorHandle(1);
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU = dxManager->GetSRVGPUDescriptorHandle(1);
 	//SRVの生成
 	dxManager->GetDevice().Get()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHadleCPU);
 
-	/// ===二枚目=== ///
+	///----------------二枚目----------------///
 	//metaDataを元にSRVの設定
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
 	srvDesc2.Format = metadata.format;
 	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-
 	//SRVを作成するDescriptorHeapの場所を決める
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = dxManager->GetSRVCPUDescriptorHandle(2);
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = dxManager->GetSRVGPUDescriptorHandle(2);
@@ -639,11 +611,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxManager->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHadleCPU2);
 
 
-
-
-	///----------------------------------------///
-	//ViewportとScissor
-	///----------------------------------------///
+	///====================ViewportとScissor====================///
 	//ビューポート
 	D3D12_VIEWPORT viewport{};
 	//クライアント領域のサイズと一緒にして画面全体に表示
@@ -663,9 +631,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	scissorRect.bottom = win->GetWindowHeight();
 
 
-	///----------------------------------------///
-	//コマンドリスト
-	///----------------------------------------///
+	///====================コマンドリスト====================///
 	//コマンドリストの設定
 	dxManager->CloseCommandList();
 	//コマンドキック
@@ -676,9 +642,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxManager->ImGuiInitialize();
 
 
-	///----------------------------------------///
-	//メインループ用変数
-	///----------------------------------------///
+	///====================メインループ用変数====================///
 	//Transform変数を作る
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
@@ -702,9 +666,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	{0.0f,0.0f,0.0f},
 	};
 
-	///========================================///
-	//メインループ
-	///========================================///
+	///----------------------------------------------------///
+	/// メインループ
+	///----------------------------------------------------///
 	MSG msg{};
 	while (msg.message != WM_QUIT) {
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -714,13 +678,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// ===Inputクラス=== ///
 			input->Update();
 
-
-			// ImGuiのフレーム開始
+			///====================開発用UIの処理====================///
+			///----------------ImGuiのフレーム開始----------------///
 			ImGui_ImplDX12_NewFrame();
 			ImGui_ImplWin32_NewFrame();
 			ImGui::NewFrame();
 
-			/// ===開発用UIの処理=== ///
+			///----------------ImGui----------------///
 			ImGui::Begin("Window");
 			// カラーピッカーを表示
 			ImGui::Text("3D Material Settings");
@@ -771,19 +735,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 
-			/// ====ゲーム処理==== ///
-			//カメラ処理
+			///====================ゲーム処理====================///
+			///----------------カメラ処理----------------///
 			transform.rotate.y += 0.001f;
 			Matrix4x4 worldMatrix = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 			transformationMatrix.World = worldMatrix;
 			Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 			Matrix4x4 viewMatrix = Inverse4x4(cameraMatrix);
-			//3Dオブジェクト処理
+
+			///----------------3Dオブジェクト処理----------------///
 			Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(win->GetWindowWidth()) / float(win->GetWindowHeight()), 0.1f, 100.0f);
 			Matrix4x4 worldViewProjectionMatrix = Multiply4x4(worldMatrix, Multiply4x4(viewMatrix, projectionMatrix));
 			transformationMatrix.WVP = worldViewProjectionMatrix;
 			*transformationMatrixData = transformationMatrix;
-			//2Dオブジェクト処理
+
+			///----------------2Dオブジェクト処理----------------///
 			//sprite用のWorldViewProjectionMatrixを作る
 			Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 			transformationMatrixSprite.World = worldMatrixSprite;
@@ -800,7 +766,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			materialData->uvTransform = Identity4x4();
 
-			/// ====コマンドを積む==== ///
+			///====================コマンドを積む====================///
 			///ImGuiの内部コマンド生成
 			ImGui::Render();
 			///ループ前処理
@@ -856,17 +822,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 
-	///----------------------------------------///
-	//開放処理
-	///----------------------------------------///
-	/// ===入力クラス=== ///
-	delete input;
+	///====================開放処理====================///
+	///----------------入力クラス----------------///
+	//delete input;
 
-	/// ===スプライト=== ///
-	delete spriteManager;
+	///----------------スプライト----------------///
+	//delete spriteManager;
 	//delete sprite;
 
-	/// ===ImGuiの終了処理=== ///
+	///----------------ImGuiの終了処理----------------///
 	//srvDescriptorHeap->Release();  // シェーダーリソースビュー用ディスクリプタヒープの解放
 	ImGui_ImplDX12_Shutdown();  // ImGuiのDirectX12サポート終了
 	ImGui_ImplWin32_Shutdown();  // ImGuiのWin32サポート終了
@@ -874,7 +838,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	/// ===ダイレクトX=== ///
 	dxManager->ReleaseDirectX();  // DirectXの解放処理
-	delete dxManager;
+	//delete dxManager;
 
 	/// ===ウィンドウの終了=== ///
 	win->CloseWindow();
