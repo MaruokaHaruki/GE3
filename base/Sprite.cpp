@@ -119,7 +119,7 @@ void Sprite::CreateVertexBuffer() {
 	vertexData_[4].texCoord = { 1.0f, 0.0f };
 	vertexData_[4].normal = { 0.0f, 0.0f, -1.0f };
 
-	vertexData_[5].position = { 640.5f, 360.0f, 0.0f, 1.0f };
+	vertexData_[5].position = { 640.0f, 360.0f, 0.0f, 1.0f };
 	vertexData_[5].texCoord = { 1.0f, 1.0f };
 	vertexData_[5].normal = { 0.0f, 0.0f, -1.0f };
 }
