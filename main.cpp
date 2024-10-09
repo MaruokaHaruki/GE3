@@ -22,78 +22,34 @@
 #include "input/Input.h"
 #include "base/SpriteManager.h"
 #include "base/Sprite.h"
-///====================自作数学関数====================///
-///----------------構造体
+///====================自作構造体====================///
+///----------------基底構造体
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
 #include "Transform.h"
 #include "Matrix3x3.h"
+///----------------描画データ構造体
+#include "VertexData.h"
+#include "Material.h"
+#include "TransformationMatrix.h"
+#include "DirectionalLight.h"
+#include "MaterialData.h"
+#include "ModelData.h"
+///====================自作数学関数====================///
 ///----------------3x3行列演算
 #include "Calc3x3.h"
-using namespace Calc3x3;
 ///----------------4x4行列演算
 #include "Calc4x4.h"
-using namespace Calc4x4;
 ///----------------3次元アフィン演算
 #include"AffineCalc.h"
-using namespace AffineCalc;
 ///----------------レンダリングパイプライン
 #include"RendPipeLine.h"
-using namespace RendPipeLine;
 ///----------------Wstring変換
 #include "base/utils/WstringUtility.h"
 ///----------------ログ出力
 #include "base/utils/Logger.h"
-using namespace Calc3x3;
-
-
-
-
-///----------------------------------------------------///
-///						構造体
-///----------------------------------------------------///
-///====================頂点データ====================///
-const struct VertexData {
-	Vector4 position;
-	Vector2 texCoord;
-	Vector3 normal;
-};
-
-///====================マテリアル====================///
-struct Material {
-	Vector4 color;
-	int32_t enableLighting;
-	float padding[3];
-	Matrix4x4 uvTransform;
-};
-
-///====================トランスレートマトリックス====================///
-struct TransformationMatrix {
-	Matrix4x4 WVP;
-	Matrix4x4 World;
-};
-
-///====================並行光源====================///
-//NOTE:光源の色、向き、光度表す。向きは必ず正規化しておくこと
-struct DirectionalLight {
-	Vector4 color;		//ライトの色
-	Vector3 direction;	//ライトの向き
-	float intensity;	//光度
-
-};
-
-///====================マテリアルデータ====================///
-struct MaterialData {
-	std::string textureFilePath;
-};
-
-/// ===ModelData=== ///
-struct ModelData {
-	std::vector<VertexData> vertices;
-	MaterialData material;
-};
 
 
 ///----------------------------------------------------///
@@ -551,7 +507,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	*transformationMatrixData = transformationMatrix;
 
 
-	///====================Sprite用リソース Matrial4x4 1つ====================///
+	///====================Sprite用リソース Matrix4x4 1つ====================///
 	//wvp用のリソースを作る
 	Microsoft::WRL::ComPtr <ID3D12Resource> transformationMatrixResourceSprite = dxManager->CreateBufferResource(sizeof(TransformationMatrix));
 	//データを書き込む
@@ -766,6 +722,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			materialData->uvTransform = Identity4x4();
 
+
+			///====================Spriteクラス====================///
+			sprite->Update(transformSprite);
+
+
 			///====================コマンドを積む====================///
 			///ImGuiの内部コマンド生成
 			ImGui::Render();
@@ -812,6 +773,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//dxManager->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 			//描画!
 			//dxManager->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+			///Spriteクラス
+			sprite->Draw(textureSrvHadleGPU);
 
 			// ImGui描画
 			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxManager->GetCommandList().Get());

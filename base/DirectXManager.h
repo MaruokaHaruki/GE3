@@ -319,6 +319,9 @@ private:
 	///----------------------------------------------------///
 public:
 
+	///----------------GetWin----------------///
+	WinApp GetWinApp() { return *winApp_; }
+
 	///----------------SetHr----------------///
 	/// HRESULT型の変数を設定するセッター関数。
 	/// 引数としてHRESULT型のsHrを受け取り、内部のhr_変数にセットする。
@@ -446,6 +449,8 @@ private:
 	D3D12_RESOURCE_BARRIER barrier_{};
 
 	///----------------SwapChainからResource----------------///
+	//TODO:後に修正。C言語の新しい機能は順次使用すること
+	//std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResource;
 	Microsoft::WRL::ComPtr <ID3D12Resource> swapChainResource_[2] = { nullptr };
 
 	///----------------DXCコンパイラー----------------///

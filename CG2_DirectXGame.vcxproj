@@ -45,11 +45,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(ProjectDir)\math\structure\drawData;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ProjectDir)/math/structure/Vector2.h;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(ProjectDir)\math\structure\drawData;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ProjectDir)/math/structure/Vector2.h;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -129,6 +129,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="base\externals\imgui\imstb_truetype.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="math\Calc4x4.h" />
+    <ClInclude Include="math\structure\drawData\DirectionalLight.h" />
+    <ClInclude Include="math\structure\drawData\Material.h" />
+    <ClInclude Include="math\structure\drawData\MaterialData.h" />
+    <ClInclude Include="math\structure\drawData\ModelData.h" />
+    <ClInclude Include="math\structure\drawData\TransformationMatrix.h" />
+    <ClInclude Include="math\structure\drawData\VertexData.h" />
     <ClInclude Include="math\structure\Matrix4x4.h" />
     <ClInclude Include="math\structure\Transform.h" />
     <ClInclude Include="math\structure\Vector3.h" />
