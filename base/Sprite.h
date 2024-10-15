@@ -68,6 +68,7 @@ private:
 	///					ゲッター・セッター 
 	///----------------------------------------------------///
 public:
+	///====================座標====================///
 	/// <summary>
 	/// 座標Getter
 	/// </summary>
@@ -80,6 +81,7 @@ public:
 	/// <param name="position"></param>
 	void SetPosition(const Vector2& position) { this->position_ = position; }
 
+	///====================回転====================///
 	/// <summary>
 	/// 回転Getter
 	/// </summary>
@@ -91,6 +93,35 @@ public:
 	/// </summary>
 	/// <param name="rotation"></param>
 	void SetRotation(float rotation) { this->rotation_ = rotation; }
+
+	///====================カラー====================///
+	/// <summary>
+	/// カラーGetter
+	/// </summary>
+	/// <returns></returns>
+	const Vector4& GetColor() const { return materialData_->color; }
+
+	/// <summary>
+	/// カラーSetter
+	/// </summary>
+	/// <param name="color"></param>
+	void SetColor(const Vector4& color) { materialData_->color = color; }
+
+	///====================サイズ====================///
+	/// <summary>
+	/// サイズGetter
+	/// </summary>
+	/// <returns></returns>
+	const Vector2 GetSize() const { return size_; }
+
+	/// <summary>
+	/// サイズSetter
+	/// </summary>
+	/// <param name="size"></param>
+	void SetSize(const Vector2& size) { this->size_ = size; }
+
+
+
 
 
 	///----------------------------------------------------///
@@ -129,11 +160,13 @@ private:
 
 	///==================== 設定 ====================///
 	///----------------トランスフォーム----------------///
-	Transform transform_ = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	///----------------座標----------------///
 	Vector2 position_ = { 0.0f,0.0f };
 	///----------------回転----------------///
 	float rotation_ = 0.0f;
+	///----------------サイズ----------------///
+	Vector2 size_ = { 1.0f,1.0f };
 
 
 };
