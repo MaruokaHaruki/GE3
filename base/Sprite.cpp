@@ -23,19 +23,27 @@ void Sprite::Initialize(SpriteManager* spriteManager) {
 
 ///====================更新====================///
 //NOTE:引数としてローカル行列とビュー行列を持ってくること
-void Sprite::Update(Transform transform, Matrix4x4 viewMatrix) {
-	// スプライトの変換行列を作成
-	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+void Sprite::Update(Matrix4x4 viewMatrix) {
+	///----------------SRTの反映----------------///
+	//サイズの反映
+	transform_.scale = { size_.x,size_.y,0 };
+	//回転の反映
+	transform_.rotate = { 0.0f,0.0f,rotation_ };
+	//座標の反映
+	transform_.translate = { position_.x,position_.y,0.0f };
+
+	///----------------スプライトの変換行列を作成----------------///
+	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	transformationMatrixData_->World = worldMatrixSprite;
 
-	// 正射影行列の作成
+	///----------------正射影行列の作成----------------///
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(
 		0.0f, 0.0f,
 		float(spriteManager_->GetDXManager()->GetWinApp().GetWindowWidth()),
 		float(spriteManager_->GetDXManager()->GetWinApp().GetWindowHeight()),
 		0.0f, 100.0f);
 
-	// ワールド・ビュー・プロジェクション行列を計算
+	///----------------ワールド・ビュー・プロジェクション行列を計算----------------///
 	Matrix4x4 worldViewProjectionMatrixSprite = Multiply4x4(worldMatrixSprite, Multiply4x4(viewMatrix, projectionMatrixSprite));
 	transformationMatrixData_->WVP = worldViewProjectionMatrixSprite;
 }
@@ -78,7 +86,7 @@ void Sprite::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 
 
 ///----------------------------------------------------///
-///						プライベート
+///					プライベート関数
 ///----------------------------------------------------///
 ///====================頂点バッファの作成====================///
 void Sprite::CreateVertexBuffer() {
