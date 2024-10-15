@@ -23,7 +23,7 @@ void Sprite::Initialize(SpriteManager* spriteManager) {
 
 ///====================更新====================///
 //NOTE:引数としてローカル行列とビュー行列を持ってくること
-void Sprite::Update() {
+void Sprite::Update(Matrix4x4 viewMatrix) {
 	//座標の反映
 	transform_.translate = { position_.x,position_.y,0.0f };
 	//回転の反映

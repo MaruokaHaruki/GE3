@@ -36,7 +36,7 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(Matrix4x4 viewMatrix = Identity4x4());
 
 	/// <summary>
 	/// 描画
