@@ -23,9 +23,14 @@ void Sprite::Initialize(SpriteManager* spriteManager) {
 
 ///====================更新====================///
 //NOTE:引数としてローカル行列とビュー行列を持ってくること
-void Sprite::Update(Transform transform, Matrix4x4 viewMatrix) {
+void Sprite::Update() {
+	//座標の反映
+	transform_.translate = { position_.x,position_.y,0.0f };
+	//回転の反映
+	transform_.rotate = { 0.0f,0.0f,rotation_ };
+
 	// スプライトの変換行列を作成
-	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	transformationMatrixData_->World = worldMatrixSprite;
 
 	// 正射影行列の作成

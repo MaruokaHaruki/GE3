@@ -706,25 +706,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			*transformationMatrixData = transformationMatrix;
 
 			///----------------2Dオブジェクト処理----------------///
-			//sprite用のWorldViewProjectionMatrixを作る
-			//Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
-			//transformationMatrixSprite.World = worldMatrixSprite;
-			//Matrix4x4 viewMatrxSprite = Identity4x4();
-			//Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(win->GetWindowWidth()), float(win->GetWindowHeight()), 0.0f, 100.0f);
-			//Matrix4x4 worldViewProjectionMatrixSprite = Multiply4x4(worldMatrixSprite, Multiply4x4(viewMatrxSprite, projectionMatrixSprite));
-			//transformationMatrixSprite.WVP = worldViewProjectionMatrixSprite;
-			//*transformationMatrixDataSprite = transformationMatrixSprite;
 
-			//Matrix4x4 uvTransformMatrix = MakeScaleMatrix(uvTransformSprite.scale);
-			//uvTransformMatrix = Multiply4x4(uvTransformMatrix, MakeRotateZMatrix(uvTransformSprite.rotate.z));
-			//uvTransformMatrix = Multiply4x4(uvTransformMatrix, MakeTranslateMatrix(uvTransformSprite.translate));
-			//materialDataSprite->uvTransform = uvTransformMatrix;
+			///----------------2Dオブジェクト処理----------------///
+			///座標のセット
+			sprite->SetPosition(Vector2{ transform.translate.x, transform.translate.y });
 
 			materialData->uvTransform = Identity4x4();
 
 
 			///====================Spriteクラス====================///
-			sprite->Update(transformSprite);
+			sprite->Update();
 
 
 			///====================コマンドを積む====================///

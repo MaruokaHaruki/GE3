@@ -36,7 +36,7 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update(Transform transform,Matrix4x4 viewMatrix = Identity4x4());
+	void Update();
 
 	/// <summary>
 	/// 描画
@@ -63,6 +63,35 @@ private:
 	/// トランスフォーメーションマトリックスバッファの作成
 	/// </summary>
 	void CreateTransformationMatrixBuffer();
+
+	///----------------------------------------------------///
+	///					ゲッター・セッター 
+	///----------------------------------------------------///
+public:
+	/// <summary>
+	/// 座標Getter
+	/// </summary>
+	/// <returns></returns>
+	const Vector2& GetPosition() const { return position_; }
+
+	/// <summary>
+	/// 座標Setter
+	/// </summary>
+	/// <param name="position"></param>
+	void SetPosition(const Vector2& position) { this->position_ = position; }
+
+	/// <summary>
+	/// 回転Getter
+	/// </summary>
+	/// <returns></returns>
+	const float& GetRotation() const { return rotation_; }
+
+	/// <summary>
+	/// 回転Setter
+	/// </summary>
+	/// <param name="rotation"></param>
+	void SetRotation(float rotation) { this->rotation_ = rotation; }
+
 
 	///----------------------------------------------------///
 	///						メンバ変数
@@ -98,7 +127,14 @@ private:
 	//インデックス
 	D3D12_INDEX_BUFFER_VIEW indexBufferView_;
 
+	///==================== 設定 ====================///
+	///----------------トランスフォーム----------------///
+	Transform transform_ = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	///----------------座標----------------///
+	Vector2 position_ = { 0.0f,0.0f };
+	///----------------回転----------------///
+	float rotation_ = 0.0f;
 
-	///====================その他データ====================///
+
 };
 
