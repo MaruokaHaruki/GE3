@@ -1,6 +1,6 @@
 #pragma once
-#include"structure/Matrix4x4.h"
-#include"4x4Calc.h"
+#include"Matrix4x4.h"
+#include"Calc4x4.h"
 #include <cmath>
 
 /// <summary>
@@ -13,9 +13,9 @@
 /// <param name="nearClip"></param>
 /// <param name="farClip"></param>
 /// <returns></returns>
-Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
+inline Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip) {
 	// 単位行列で初期化
-	Matrix4x4 result = IdentityMatrix();
+	Matrix4x4 result = Identity4x4();
 
 	// 正射影平面の範囲から正射影行列を構築する
 	result.m[0][0] = 2.0f / ( right - left );
@@ -37,9 +37,9 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 /// <param name="nearClip"></param>
 /// <param name="farClip"></param>
 /// <returns></returns>
-Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+inline Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
 	// 単位行列で初期化
-	Matrix4x4 result = IdentityMatrix();
+	Matrix4x4 result = Identity4x4();
 
 	// tanの逆説
 	float cot = tanf(fovY / 2.0f);
@@ -65,9 +65,9 @@ Matrix4x4 MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip
 /// <param name="minDepth"></param>
 /// <param name="maxDepth"></param>
 /// <returns></returns>
-Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
+inline Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth) {
 	// 単位行列で初期化
-	Matrix4x4 result = IdentityMatrix();
+	Matrix4x4 result = Identity4x4();
 
 	// ビューポート変換行列の要素を計算する
 	result.m[0][0] = width / 2.0f;
@@ -79,5 +79,4 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 
 	return result;
 }
-#pragma endregion
 

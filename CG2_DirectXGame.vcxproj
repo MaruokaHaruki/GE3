@@ -44,6 +44,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(ProjectDir)\math\structure\drawData;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ProjectDir)/math/structure/Vector2.h;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(ProjectDir)\math\structure\drawData;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ProjectDir)/math/structure/Vector2.h;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -92,8 +100,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="base\DirectXManager.cpp" />
-    <ClCompile Include="base\utils\WstringConve.cpp" />
-    <ClCompile Include="base\utils\Log.cpp" />
+    <ClCompile Include="base\utils\WstringUtility.cpp" />
+    <ClCompile Include="base\utils\Logger.cpp" />
     <ClCompile Include="base\externals\imgui\imgui.cpp" />
     <ClCompile Include="base\externals\imgui\imgui_demo.cpp" />
     <ClCompile Include="base\externals\imgui\imgui_draw.cpp" />
@@ -109,8 +117,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base\DirectXManager.h" />
-    <ClInclude Include="base\utils\WstringConve.h" />
-    <ClInclude Include="base\utils\Log.h" />
+    <ClInclude Include="base\utils\WstringUtility.h" />
+    <ClInclude Include="base\utils\Logger.h" />
     <ClInclude Include="base\externals\imgui\imconfig.h" />
     <ClInclude Include="base\externals\imgui\imgui.h" />
     <ClInclude Include="base\externals\imgui\imgui_impl_dx12.h" />
@@ -120,18 +128,25 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="base\externals\imgui\imstb_textedit.h" />
     <ClInclude Include="base\externals\imgui\imstb_truetype.h" />
     <ClInclude Include="input\Input.h" />
-    <ClInclude Include="selfMath\4x4Calc.h" />
-    <ClInclude Include="selfMath\structure\Matrix4x4.h" />
-    <ClInclude Include="selfMath\structure\Transform.h" />
-    <ClInclude Include="selfMath\structure\Vector3.h" />
-    <ClInclude Include="selfMath\structure\Vector4.h" />
-    <ClInclude Include="selfMath\3dAffineCalc.h" />
-    <ClInclude Include="selfMath\RendPipeLine.h" />
-    <ClInclude Include="selfMath\3x3Calc.h" />
-    <ClInclude Include="selfMath\structure\Matrix3x3.h" />
+    <ClInclude Include="math\Calc4x4.h" />
+    <ClInclude Include="math\structure\drawData\DirectionalLight.h" />
+    <ClInclude Include="math\structure\drawData\Material.h" />
+    <ClInclude Include="math\structure\drawData\MaterialData.h" />
+    <ClInclude Include="math\structure\drawData\ModelData.h" />
+    <ClInclude Include="math\structure\drawData\TransformationMatrix.h" />
+    <ClInclude Include="math\structure\drawData\VertexData.h" />
+    <ClInclude Include="math\structure\Matrix4x4.h" />
+    <ClInclude Include="math\structure\Transform.h" />
+    <ClInclude Include="math\structure\Vector3.h" />
+    <ClInclude Include="math\structure\Vector4.h" />
+    <ClInclude Include="math\AffineCalc.h" />
+    <ClInclude Include="math\RendPipeLine.h" />
+    <ClInclude Include="math\Calc3x3.h" />
+    <ClInclude Include="math\structure\Matrix3x3.h" />
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="base\SpriteManager.h" />
     <ClInclude Include="base\Sprite.h" />
+    <ClInclude Include="math\structure\Vector2.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl">

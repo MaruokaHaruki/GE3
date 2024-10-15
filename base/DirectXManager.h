@@ -1,10 +1,7 @@
-///===============================================================///
-/// 
-///DirectXManagerクラス
-/// 
-///===============================================================///
+///===================================================================///
+///						DirectXManagerクラス
+///===================================================================///
 //NOTE:ダイレクトXを管理する
-
 #include <cstdint>
 #include <string>
 #include <format>
@@ -13,8 +10,10 @@
 #include <chrono>
 #include <thread>
 //自作関数
-#include"utils/WstringConve.h"
-#include "utils/Log.h"
+#include"utils/WstringUtility.h"
+using namespace WstringUtility;
+#include "utils/Logger.h"
+using namespace Logger;
 #include "WinApp.h"
 //ReportLiveObj
 #include <dxgidebug.h>
@@ -30,7 +29,7 @@
 #pragma comment(lib,"dxcompiler.lib")
 //DXtec
 #include"externals/DirectXTex/DirectXTex.h"
-/// ===imgui=== //
+//imgui
 #include "externals/imgui/imgui.h"
 #include"externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
@@ -39,10 +38,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 #pragma once
 class DirectXManager {
 public:
-	///-------------------------------------------/// 
-	///メンバ関数
-	///-------------------------------------------///
-	
+	///----------------------------------------------------///
+	///						メンバ関数
+	///----------------------------------------------------///
+
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
@@ -203,9 +202,9 @@ public:
 	void CreateDXCCompiler();
 
 
-	///-------------------------------------------/// 
-	///生成メンバ関数
-	///-------------------------------------------///
+	///----------------------------------------------------///
+	///						生成メンバ関数
+	///----------------------------------------------------///
 
 	/// <summary>
 	/// 深度BufferステンシルBufferの生成関数
@@ -247,7 +246,7 @@ public:
 	/// <param name="filePath"></param>
 	/// <param name="profile"></param>
 	/// <returns></returns>
-	IDxcBlob* CompileShader(const std::wstring& filePath,const wchar_t* profile);
+	IDxcBlob* CompileShader(const std::wstring& filePath, const wchar_t* profile);
 
 	/// <summary>
 	/// リソース生成関数
@@ -278,6 +277,10 @@ public:
 	/// <returns></returns>
 	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
+
+	///----------------------------------------------------///
+	///						ローカル関数 
+	///----------------------------------------------------///
 private:
 	/// ===CPU=== ///
 	/// <summary>
@@ -300,7 +303,6 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 
 
-	/// ===FPS固定=== ///
 	/// <summary>
 	/// FPS固定初期化
 	/// </summary>
@@ -312,99 +314,124 @@ private:
 	void UpdateFixFPS();
 
 
-	///-------------------------------------------/// 
-	///ゲッター・セッター
-	///-------------------------------------------///
+	///----------------------------------------------------///
+	///					ゲッター・セッター
+	///----------------------------------------------------///
 public:
+
+	///----------------GetWin----------------///
+	WinApp GetWinApp() { return *winApp_; }
+
+	///----------------SetHr----------------///
+	/// HRESULT型の変数を設定するセッター関数。
+	/// 引数としてHRESULT型のsHrを受け取り、内部のhr_変数にセットする。
 	void SetHr(HRESULT sHr) { this->hr_ = sHr; }
 
+	///----------------GetHr----------------///
+	/// HRESULT型の変数を取得するゲッター関数。
+	/// 内部に保存されているhr_変数の値を返す。
 	HRESULT GetHr() { return hr_; }
 
+	///----------------SetDevice----------------///
+	/// DirectX 12のID3D12Deviceを管理するComPtrの変数を設定するセッター関数。
+	/// 引数としてMicrosoft::WRL::ComPtr<ID3D12Device>型のsDeviceを受け取り、内部のdevice_変数にセットする。
 	void SetDevice(Microsoft::WRL::ComPtr <ID3D12Device> sDevice) { this->device_ = sDevice; }
 
+	///----------------GetDevice----------------///
+	/// DirectX 12のID3D12Deviceを管理するComPtrの変数を取得するゲッター関数。
+	/// 内部に保存されているdevice_変数の値を返す。
 	Microsoft::WRL::ComPtr <ID3D12Device> GetDevice() { return device_; }
+
+	///----------------SetCommandList----------------///
+	/// DirectX 12のID3D12GraphicsCommandListを管理するComPtrの変数を設定するセッター関数。
+	/// 引数としてMicrosoft::WRL::ComPtr<ID3D12GraphicsCommandList>型のsCommandListを受け取り、内部のcommandList_変数にセットする。
 
 	void SetCommandList(Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> sCommandList) { this->commandList_ = sCommandList; }
 
+	///----------------GetCommandList----------------///
+	/// DirectX 12のID3D12GraphicsCommandListを管理するComPtrの変数を取得するゲッター関数。
+	/// 内部に保存されているcommandList_変数の値を返す。
 	Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> GetCommandList() { return commandList_.Get(); }
 
+	///----------------GetSwapChainDesc----------------///
+	/// DXGI_SWAP_CHAIN_DESC1構造体を取得するゲッター関数。
+	/// 内部に保存されているswapChainDesc_変数の値を返す。
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc_; }
 
+	///----------------GetRtvDesc----------------///
+	/// D3D12_RENDER_TARGET_VIEW_DESC構造体を取得するゲッター関数。
+	/// 内部に保存されているrtvDesc_変数の値を返す。
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc_; }
 
+	///----------------GetRtvDescriptorHeap----------------///
+	/// DirectX 12のID3D12DescriptorHeapを管理するComPtrの変数を取得するゲッター関数。
+	/// 内部に保存されているrtvDescriptorHeap_変数の値を返す。
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetRtvDescriptorHeap() { return rtvDescriptorHeap_; }
 
+	///----------------GetSrvDescriptorHeap----------------///
+	/// DirectX 12のID3D12DescriptorHeapを管理するComPtrの変数を取得するゲッター関数。
+	/// 内部に保存されているsrvDescriptorHeap_変数の値を返す。
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 
-
-	/// <summary>
-	/// ログ確認
-	/// </summary>
-	/// <param name="message"></param>
-	void Log(const std::string& message);
-
 private:
-	///-------------------------------------------/// 
-	///メンバ変数
-	///-------------------------------------------///
+	///----------------------------------------------------///
+	///						メンバ変数
+	///----------------------------------------------------///
 
-	/// ===記録時間(FPS固定用)=== ///
+	///----------------記録時間(FPS固定用)----------------///
 	std::chrono::steady_clock::time_point reference_;
 
-	/// ===WindowsAPI=== ///
+	///----------------WindowsAPI----------------///
 	WinApp* winApp_ = nullptr;
 
-	/// ===デバックレイヤーの生成=== ///
+	///----------------デバックレイヤーの生成----------------///
 	Microsoft::WRL::ComPtr<ID3D12Debug1> debugController_;
 
-	/// ===DXGIファクトリーの生成=== ///
+	///----------------DXGIファクトリーの生成----------------///
 	Microsoft::WRL::ComPtr<IDXGIFactory7> dxgiFactory_;
 	HRESULT hr_;
 
-	/// ===使用するアダプタ用変数=== ///
+	///----------------使用するアダプタ用変数----------------///
 	Microsoft::WRL::ComPtr <IDXGIAdapter4> useAdapter_;
 
-	/// ===D3D12Deviceの作成=== ///
+	///----------------D3D12Deviceの作成----------------///
 	Microsoft::WRL::ComPtr <ID3D12Device> device_;
 
-	/// ===エラー・警告の場合即停止(初期化完了のあとに行う)=== ///
+	///----------------エラー・警告の場合即停止(初期化完了のあとに行う)----------------///
 	Microsoft::WRL::ComPtr <ID3D12InfoQueue> infoQueue_;
-
 	//アダプターの情報を取得
 	DXGI_ADAPTER_DESC3 adapterDesc_{};
 
-	/// ===コマンドキューを作成する=== ///
+	///----------------コマンドキューを作成する----------------///
 	Microsoft::WRL::ComPtr <ID3D12CommandQueue> commandQueue_;
 
-	/// ===コマンドアロケータを生成する=== ///
+	///----------------コマンドアロケータを生成する----------------///
 	Microsoft::WRL::ComPtr <ID3D12CommandAllocator> commandAllocator_;
 	Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> commandList_;
 
-	/// ===スワップチェーンを生成する=== ///
+	///----------------スワップチェーンを生成する----------------///
 	Microsoft::WRL::ComPtr <IDXGISwapChain4> swapChain_;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc_{};
 
-	/// ===Fenceの生成=== ///
+	///----------------Fenceの生成----------------///
 	Microsoft::WRL::ComPtr <ID3D12Fence> fence_;
 	uint64_t fenceValue_ = 0;
 	HANDLE fenceEvent_;
 
-	/// ===深度バッファ=== ///
+	///----------------深度バッファ----------------///
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle_;
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource_;
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> dsvDescriptorHeap_;
 
-
-	/// ===DescriptorHeapサイズ=== ///
+	///----------------DescriptorHeapサイズ----------------///
 	uint32_t descriptorSizeSRV = 0;	//SRV
 	uint32_t descriptorSizeRTV = 0;	//RTV
 	uint32_t descriptorSizeDSV = 0;	//DSV
 
-	/// ===SRVディスクリプタヒープ=== ///
+	///----------------SRVディスクリプタヒープ----------------///
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> srvDescriptorHeap_;
 
-
-	/// ===RTVディスクリプタヒープ=== ///
+	///----------------RTVディスクリプタヒープ----------------///
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> rtvDescriptorHeap_;
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc_{};
 
@@ -421,19 +448,15 @@ private:
 	//TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
-	/// ===SwapChainからResource=== ///
+	///----------------SwapChainからResource----------------///
+	//TODO:後に修正。C言語の新しい機能は順次使用すること
+	//std::array<Microsoft::WRL::ComPtr<ID3D12Resource>,2> swapChainResource;
 	Microsoft::WRL::ComPtr <ID3D12Resource> swapChainResource_[2] = { nullptr };
 
-	/// ===DXCコンパイラー=== ///
+	///----------------DXCコンパイラー----------------///
 	IDxcUtils* dxcUtils_ = nullptr;
 	IDxcCompiler3* dxcCompiler_ = nullptr;
 	//現時点でincludeはしないが、includeに対応するために設定を行う
 	IDxcIncludeHandler* includeHandler_ = nullptr;
-
-
-
-
-
-
 };
 

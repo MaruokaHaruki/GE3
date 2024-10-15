@@ -1,10 +1,7 @@
-///===============================================================///
-/// 
-///SpriteManagerクラス.h
-/// 
-///===============================================================///
+///===================================================================///
+///						SpriteManagerクラス
+///===================================================================///
 //NOTE:スプライト共通部
-
 #include "DirectXManager.h"
 
 #pragma once
@@ -51,13 +48,13 @@ private:
 	///メンバ変数
 	///-------------------------------------------///
 
-	/// ===DirectXManager.Pointer=== ///
-	DirectXManager* dxManager_;
+	///====================DirectXManagerポインタ====================///
+	DirectXManager* dxManager_ = nullptr;;
 
-	/// ===RootSignature=== ///
+	///====================RootSignature====================///
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 
-	/// ===グラフィックスパイプライン=== ///
+	///====================グラフィックスパイプライン====================///
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 };
 
