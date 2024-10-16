@@ -1,9 +1,15 @@
 ///===================================================================///
 ///DirectXManagerクラス
 ///===================================================================///
-#include "DirectXManager.h"
+///====================Win====================///
+#include <vector>
+///----------------DirectXTex----------------///
 #include "externals/DirectXTex/DirectXTex.h"
+#include "externals/DirectXTex/d3dx12.h"
 #pragma comment(lib,"winmm.lib")
+///----------------自作クラス----------------///
+#include "DirectXManager.h"
+
 
 ///====================コンストラクタ====================///
 DirectXManager::DirectXManager() {
@@ -642,6 +648,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 	resouceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);	//Textureの次元数。普段つかているのは2次元。
 
 	/// ===2.利用するHeapの設定===///
+	//TODO:リソースの場所を変更する03_00_ex
 	D3D12_HEAP_PROPERTIES heapProperties{};
 	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;//細かい設定を行う
 	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
