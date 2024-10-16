@@ -1,39 +1,47 @@
 ///===================================================================///
 ///						DirectXManagerクラス
 ///===================================================================///
-//NOTE:ダイレクトXを管理する
+///====================== 標準ライブラリ ======================///
 #include <cstdint>
 #include <string>
 #include <format>
 #include <cassert>
-#include <wrl.h>
 #include <chrono>
 #include <thread>
-//自作関数
-#include"utils/WstringUtility.h"
-using namespace WstringUtility;
+
+///====================== 自作関数 ======================///
+#include "utils/WstringUtility.h"
 #include "utils/Logger.h"
-using namespace Logger;
 #include "WinApp.h"
-//ReportLiveObj
-#include <dxgidebug.h>
-#pragma comment(lib,"dxguid.lib")
-//DX12include
-#include<d3d12.h>
-#include<dxgi1_6.h>
+using namespace WstringUtility;
+using namespace Logger;
+
+///====================== DirectX 12 関連 ======================///
+// DirectX 12 ヘッダー
+#include <d3d12.h>
+#include <dxgi1_6.h>
 #include <wrl/client.h>
-#pragma comment(lib,"d3d12.lib")
-#pragma comment(lib,"dxgi.lib")
-//DXC
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+
+// DirectX コンパイラ
 #include <dxcapi.h>
-#pragma comment(lib,"dxcompiler.lib")
-//DXtec
-#include"externals/DirectXTex/DirectXTex.h"
-//imgui
+#pragma comment(lib, "dxcompiler.lib")
+
+// DirectX リソースデバッグ
+#include <dxgidebug.h>
+#pragma comment(lib, "dxguid.lib")
+
+///====================== 外部ライブラリ ======================///
+// DirectXTex
+#include "externals/DirectXTex/DirectXTex.h"
+
+// ImGui
 #include "externals/imgui/imgui.h"
-#include"externals/imgui/imgui_impl_dx12.h"
+#include "externals/imgui/imgui_impl_dx12.h"
 #include "externals/imgui/imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 
 #pragma once
 class DirectXManager {

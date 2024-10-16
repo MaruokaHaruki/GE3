@@ -217,7 +217,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
 		sprites.push_back(std::move(sprite));
 	}
-
+	DirectX::PrepareUpload
 
 	///====================ModelResourceを生成====================///
 	/// ===モデルデータの読み込み=== ///
