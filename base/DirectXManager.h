@@ -458,5 +458,12 @@ private:
 	IDxcCompiler3* dxcCompiler_ = nullptr;
 	//現時点でincludeはしないが、includeに対応するために設定を行う
 	IDxcIncludeHandler* includeHandler_ = nullptr;
+
+
+	///====================テクスチャマネージャ関係====================///
+	//最大SRV数(最大テクスチャ枚数)
+	static const uint32_t kMaxSRVCount_ = 512;
+
+
 };
 

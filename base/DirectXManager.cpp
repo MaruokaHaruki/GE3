@@ -10,7 +10,6 @@
 ///----------------自作クラス----------------///
 #include "DirectXManager.h"
 
-
 ///====================コンストラクタ====================///
 DirectXManager::DirectXManager() {
 
@@ -290,7 +289,7 @@ void DirectXManager::CreateVariousDescriptorHeap() {
 void DirectXManager::CreateSRVDescriptorHeap() {
 	//rtvはDXM内
 	//SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなのでShaderVisibleはTrue
-	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
 }
 
 
