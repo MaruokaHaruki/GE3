@@ -5,8 +5,8 @@
 #include <vector>
 ///----------------DirectXTex----------------///
 //#include "externals/DirectXTex/DirectXTex.h"
-//#pragma comment(lib,"winmm.lib")
 #include "externals/DirectXTex/d3dx12.h"
+#pragma comment(lib,"winmm.lib")
 ///----------------自作クラス----------------///
 #include "DirectXManager.h"
 
@@ -615,7 +615,6 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateBufferResource(size
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
 
 	// リソースを作成
-	//TODO:一旦回避
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 	HRESULT hr = device_->CreateCommittedResource(
 		&uploadHeapProperties,
@@ -651,16 +650,17 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 	//TODO:リソースの場所を変更する03_00_ex
 	D3D12_HEAP_PROPERTIES heapProperties{};
 	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;						//デフォルトに変更
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;			//プロセッサの近くに配置
+	//heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
+	//heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;			//プロセッサの近くに配置
 
 	/// ===3.resouceを生成する=== ///
+	//TODO:Stateの変更
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 	HRESULT hr = device_->CreateCommittedResource(
 		&heapProperties,					//Heapの設定
 		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定、特になし
 		&resouceDesc,						//Resourceの設定
-		D3D12_RESOURCE_STATE_COPY_DEST,	//初回のResouceState。Textureは基本読むだけ
+		D3D12_RESOURCE_STATE_COPY_DEST,		//初回のResouceState。Textureは基本読むだけ
 		nullptr,
 		IID_PPV_ARGS(&resource)
 	);
@@ -675,22 +675,29 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 //5.CommandListに3を2に転送するコマンドを積む
 //NOTE:以下の文字は属性というもの。戻り値を破棄してはならないことを示す。
 [[nodiscard]]
-void DirectXManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
 	///----------------中間リソースの作成----------------///
 	std::vector<D3D12_SUBRESOURCE_DATA> subresource;
 	DirectX::PrepareUpload(device_.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
+	//Subresourceの数を元に、コピー元となるintermediateResourceに必要なサイズを計算する
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresource.size()));
+	//計算したサイズでintermediateResourceを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = CreateBufferResource(intermediateSize);
 
+	///----------------データ転送をコマンドに積む----------------///
+	//interにsubreのデータを書き込み、textureに転送する
+	UpdateSubresources(commandList_.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresource.size()), subresource.data());
 
-
-
-
-
-
-
-
-
-
+	///----------------読み込み変更コマンド----------------///
+	//D3D12_RESOURCE_BARRIER barrier{};
+	barrier_.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier_.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier_.Transition.pResource = texture.Get();
+	barrier_.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier_.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier_.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	commandList_->ResourceBarrier(1, &barrier_);
+	return intermediateResource;
 
 	///// ===Mata情報を取得=== ///
 	//const DirectX::TexMetadata& metadata = mipImages.GetMetadata();

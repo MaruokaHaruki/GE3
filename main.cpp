@@ -217,7 +217,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
 		sprites.push_back(std::move(sprite));
 	}
-	DirectX::PrepareUpload
 
 	///====================ModelResourceを生成====================///
 	/// ===モデルデータの読み込み=== ///
@@ -323,20 +322,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	*transformationMatrixData = transformationMatrix;
 
 	///====================textureResourceの読み込み====================///
+	//TODO:intermediateを作成
 	/// ===一枚目=== ///
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = dxManager->LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = dxManager->CreateTextureResource(metadata);
-	dxManager->UploadTextureData(textureResource, mipImages);
+	Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = dxManager->UploadTextureData(textureResource, mipImages);
 
 	/// ===二枚目=== ///
 	//Textureを読んで転送する
 	//DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
-	DirectX::ScratchImage mipImages2 = dxManager->LoadTexture(modelData.material.textureFilePath);
-	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
-	dxManager->UploadTextureData(textureResource2, mipImages2);
+	//DirectX::ScratchImage mipImages2 = dxManager->LoadTexture(modelData.material.textureFilePath);
+	//const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
+	//Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
+	//Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource2 = dxManager->UploadTextureData(textureResource2, mipImages2);
 
 
 	///====================実際にShaderResourceViewを作る====================///
@@ -355,16 +355,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///----------------二枚目----------------///
 	//metaDataを元にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = dxManager->GetSRVCPUDescriptorHandle(2);
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = dxManager->GetSRVGPUDescriptorHandle(2);
-	//SRVの生成
-	dxManager->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHadleCPU2);
+	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+	//srvDesc2.Format = metadata.format;
+	//srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	//srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
+	////SRVを作成するDescriptorHeapの場所を決める
+	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = dxManager->GetSRVCPUDescriptorHandle(2);
+	//D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = dxManager->GetSRVGPUDescriptorHandle(2);
+	////SRVの生成
+	//dxManager->GetDevice()->CreateShaderResourceView(intermediateResource2.Get(), &srvDesc2, textureSrvHadleCPU2);
 
 
 	///====================ViewportとScissor====================///
@@ -573,7 +573,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource->GetGPUVirtualAddress());
 			//テクスチャの切り替え
-			dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2, usaMonsterBall ? textureSrvHadleGPU2 : textureSrvHadleGPU);
+			//dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2, usaMonsterBall ? textureSrvHadleGPU2 : textureSrvHadleGPU);
 			// DirectionalLight用のCBV設定 (b1)
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 			// 描画コマンド(頂点データ)
