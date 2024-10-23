@@ -22,6 +22,7 @@
 #include "input/Input.h"
 #include "base/SpriteManager.h"
 #include "base/Sprite.h"
+#include "TextureManager.h"
 ///====================自作構造体====================///
 ///----------------基底構造体
 #include "Vector2.h"
@@ -192,6 +193,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Input> input = std::make_unique<Input>();
 	//入力の初期化
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
+
+	///====================テクスチャマネージャ====================///
+	TextureManager::Getinstance()->initialize(dxManager.get());
 
 	///====================スプライト系クラス====================///
 	///----------------スプライト基盤システム----------------///
@@ -609,6 +613,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui_ImplDX12_Shutdown();  // ImGuiのDirectX12サポート終了
 	ImGui_ImplWin32_Shutdown();  // ImGuiのWin32サポート終了
 	ImGui::DestroyContext();  // ImGuiコンテキストの破棄
+
+	///----------------テクスチャマネージャ----------------///
+	TextureManager::Getinstance()->Finalize();	//終了処理
 
 	/// ===ダイレクトX=== ///
 	dxManager->ReleaseDirectX();  // DirectXの解放処理

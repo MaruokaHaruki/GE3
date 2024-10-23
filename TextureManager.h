@@ -35,7 +35,22 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void initialize();
+	void initialize(DirectXManager* dxManager);
+
+	/// <summary>
+	/// テクスチャファイルの読み込み
+	/// </summary>
+	/// <param name="filePath"></param>
+	void LoadTexture(const std::string& filePath);
+
+	/// <summary>
+	/// テクスチャリソースの生成
+	/// </summary>
+	/// <param name="device"></param>
+	/// <param name="metadata"></param>
+	/// <returns></returns>
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+
 
 	/// <summary>
 	/// 終了
@@ -54,10 +69,10 @@ private:
 	TextureManager(TextureManager&) = default;
 	TextureManager& operator = (TextureManager&) = default;
 
+	///====================DirectXManagerポインタ====================///
+	DirectXManager* dxManager_ = nullptr;;
+
 	///====================テクスチャデータ====================///
 	std::vector<TextureData> textureDatas_;
-
-
-
 };
 

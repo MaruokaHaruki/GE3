@@ -373,6 +373,9 @@ public:
 	/// 内部に保存されているsrvDescriptorHeap_変数の値を返す。
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 
+	///----------------GetDescriptorSizeSRV----------------///
+	uint32_t GetDescriptorSizeSRV() const { return descriptorSizeSRV; }
+
 private:
 	///----------------------------------------------------///
 	///						メンバ変数
@@ -461,9 +464,9 @@ private:
 
 
 	///====================テクスチャマネージャ関係====================///
+public:
 	//最大SRV数(最大テクスチャ枚数)
 	static const uint32_t kMaxSRVCount_ = 512;
-
 
 };
 
