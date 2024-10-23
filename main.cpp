@@ -328,7 +328,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectX::ScratchImage mipImages = dxManager->LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
 	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = dxManager->CreateTextureResource(metadata);
-	dxManager->UploadTextureData(textureResource, mipImages);
+	Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource = dxManager->UploadTextureData(textureResource, mipImages);
 
 	/// ===二枚目=== ///
 	//Textureを読んで転送する
@@ -336,7 +336,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectX::ScratchImage mipImages2 = dxManager->LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
-	dxManager->UploadTextureData(textureResource2, mipImages2);
+	Microsoft::WRL::ComPtr <ID3D12Resource> intermediateResource2 =  dxManager->UploadTextureData(textureResource2, mipImages2);
 
 
 	///====================実際にShaderResourceViewを作る====================///
