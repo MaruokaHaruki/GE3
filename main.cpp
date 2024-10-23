@@ -177,7 +177,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///====================ウィンドウ生成====================///
 	std::unique_ptr<WinApp> win = std::make_unique<WinApp>();
-	win->CreateGameWindow(L"CG2");
+	win->CreateGameWindow(L"GE3");
 
 	///====================リークチェック====================///
 	D3DResourceLeakCheker leakCheck;

@@ -26,6 +26,19 @@ void TextureManager::initialize(DirectXManager* dxManager) {
 ///====================テクスチャファイルの読み込み====================///
 //TODO:作成中
 void TextureManager::LoadTexture(const std::string& filePath) {
+	///----------------読み込み済みテクスチャを検索----------------///
+	//検索
+	auto it = std::find_if(
+		textureDatas_.begin(),
+		textureDatas_.end(),
+		[&](TextureData& textureData) {return textureData.filePath == filePath;
+		}
+	);
+	///----------------早期リターン----------------///
+	if (it != textureDatas_.end()) {
+		return;
+	}
+
 	///----------------テクスチャファイルを読んでプログラムを扱えるようにする----------------///
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = ConvertString(filePath);
@@ -65,8 +78,6 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 	//SRVの生成
 	dxManager_->GetDevice().Get()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
-
-
 }
 
 ///====================テクスチャリソース生成====================///

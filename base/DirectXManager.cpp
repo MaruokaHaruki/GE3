@@ -288,7 +288,7 @@ void DirectXManager::CreateVariousDescriptorHeap() {
 ///====================SRVディスクリプタヒープ====================///
 void DirectXManager::CreateSRVDescriptorHeap() {
 	//rtvはDXM内
-	//SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなのでShaderVisibleはTrue
+	//SRV用のヒープでディスクリプタの数は512。SRVはShader内で触るものなのでShaderVisibleはTrue
 	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
 }
 

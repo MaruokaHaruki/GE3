@@ -74,5 +74,9 @@ private:
 
 	///====================テクスチャデータ====================///
 	std::vector<TextureData> textureDatas_;
+
+	///====================SRVインデックスの開始番号====================///
+	//NOTE:ImGuiが使っている番号を開けてその後ろのSRVヒープ1番から使用する
+	const uint32_t kSRVIndexTop = 1;
 };
 
