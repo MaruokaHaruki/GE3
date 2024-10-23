@@ -331,16 +331,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//Textureを読んで転送する
 	DirectX::ScratchImage mipImages = dxManager->LoadTexture("resources/uvChecker.png");
 	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	//テクスチャリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = dxManager->CreateTextureResource(metadata);
-	dxManager->UploadTextureData(textureResource, mipImages);
+	//中間リソース
+	//NOTE:中間リソースはGPU側に設置したリソースの経由地点になるらしい。
+	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource = dxManager->UploadTextureData(textureResource, mipImages);
 
 	/// ===二枚目=== ///
 	//Textureを読んで転送する
 	//DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
 	DirectX::ScratchImage mipImages2 = dxManager->LoadTexture(modelData.material.textureFilePath);
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
+	//テクスチャリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
-	dxManager->UploadTextureData(textureResource2, mipImages2);
+	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource2 = dxManager->UploadTextureData(textureResource2, mipImages2);
 
 
 	///====================実際にShaderResourceViewを作る====================///

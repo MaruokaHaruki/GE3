@@ -268,7 +268,7 @@ public:
 	/// </summary>
 	/// <param name="texture"></param>
 	/// <param name="mipImages"></param>
-	void UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
 	/// <summary>
 	/// DXTecを使ってファイルを読む
