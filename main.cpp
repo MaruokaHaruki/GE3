@@ -22,7 +22,7 @@
 #include "input/Input.h"
 #include "base/SpriteManager.h"
 #include "base/Sprite.h"
-#include "TextureManager.h"
+#include "base/TextureManager.h"
 ///====================自作構造体====================///
 ///----------------基底構造体
 #include "Vector2.h"
@@ -195,7 +195,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
 
 	///====================テクスチャマネージャ====================///
-	TextureManager::Getinstance()->initialize(dxManager.get());
+	TextureManager::Getinstance()->Initialize(dxManager.get());
 
 	///====================スプライト系クラス====================///
 	///----------------スプライト基盤システム----------------///
@@ -215,7 +215,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// ユニークポインタでスプライトを作成
 		//NOTE:autoを使用せず明示的を心がけろ
 		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(spriteManager.get());
+		sprite->Initialize(spriteManager.get(), "resources/");
 
 		// std::move で vector に追加
 		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
@@ -344,6 +344,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
 	//テクスチャリソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
+	//中間リソース
 	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource2 = dxManager->UploadTextureData(textureResource2, mipImages2);
 
 
