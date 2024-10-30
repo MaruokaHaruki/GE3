@@ -12,12 +12,18 @@
  ///--------------------------------------------------------------
  ///							構造体
  /**
-  * \brief テクスチャデータ
+  * \brief テクスチャデータのセット
+  * \brief filePath ファイルパス
+  * \brief metadata メタデータ
+  * \brief resource リソース
+  * \brief srvHandleCPU CPU用SRVハンドル
+  * \brief srvHandleGPU GPU用SRVハンドル
   */
 struct TextureData {
 	std::string filePath;
 	DirectX::TexMetadata metadata;
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource;
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
 	D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
 };
@@ -54,7 +60,7 @@ public:
 	 * \param  metadata メタデータの受け渡し
 	 * \return テクスチャデータ
 	 */
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
+	//Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(const DirectX::TexMetadata& metadata);
 
 	/**----------------------------------------------------------------------------
 	 * \brief	終了処理
@@ -68,7 +74,7 @@ public:
 	 * \return SRVテクスチャインデックスの開始番号
 	 * \note   検索化ヒットしない場合は停止するぞ
 	 */
-	uint32_t GetTextureIndexByFilePath(const std::string& filePath);
+	uint32_t GetTextureIndexByFilePath(const std::string& filePath);	
 	
 	/**----------------------------------------------------------------------------
 	 * \brief  GPUハンドルの取得
@@ -78,35 +84,31 @@ public:
 	 */
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGPU(uint32_t textureIndex);
 
-
-
-
-
 	///--------------------------------------------------------------
 	///							 メンバ変数
 private:
 
-	///---------------------------------------
-	/// シングルトン化
-	static TextureManager* instance_;	/* シングルトンインスタンス */
+	//---------------------------------------
+	// シングルトンインスタンス
+	static TextureManager* instance_;
 
-	///---------------------------------------
-	/// 設定
+	//---------------------------------------
+	// 設定
 	TextureManager() = default;
 	~TextureManager() = default;
 	TextureManager(TextureManager&) = default;
 	TextureManager& operator = (TextureManager&) = default;
 
-	///---------------------------------------
-	/// DirectXManagerポインタ
+	//---------------------------------------
+	// DirectXManagerポインタ
 	DirectXManager* dxManager_ = nullptr;;
 
-	///---------------------------------------
-	/// テクスチャデータ
+	//---------------------------------------
+	// テクスチャデータ
 	std::vector<TextureData> textureDatas_;
 
-	///---------------------------------------
-	/// SRVインデックスの開始番号
+	//---------------------------------------
+	// SRVインデックスの開始番号
 	//NOTE:ImGuiが使っている番号を開けてその後ろのSRVヒープ1番から使用する
 	const uint32_t kSRVIndexTop = 1;
 };

@@ -36,7 +36,9 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  初期化
-	 * \param  spriteManager スプライトマネージャ
+	 * \param  spriteManager スプライト管理クラス
+	 * \param  textureFilePath ファイルパス
+	 * \note   
 	 */
 	void Initialize(SpriteManager* spriteManager,std::string textureFilePath);
 

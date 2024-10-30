@@ -17,8 +17,6 @@
 void Sprite::Initialize(SpriteManager* spriteManager, std::string textureFilePath) {
 	//引数で受け取ってメンバ変数に記録する
 	this->spriteManager_ = spriteManager;
-	//単位行列の書き込み
-	textureIndex = TextureManager::Getinstance()->GetTextureIndexByFilePath(textureFilePath);
 
 	//頂点バッファの作成
 	CreateVertexBuffer();
@@ -28,6 +26,9 @@ void Sprite::Initialize(SpriteManager* spriteManager, std::string textureFilePat
 	CreateMaterialBuffer();
 	//トランスフォーメーションマトリックスバッファの作成
 	CreateTransformationMatrixBuffer();
+
+	//単位行列の書き込み
+	textureIndex = TextureManager::Getinstance()->GetTextureIndexByFilePath(textureFilePath);
 }
 
 ///=============================================================================

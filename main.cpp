@@ -193,10 +193,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Input> input = std::make_unique<Input>();
 	//入力の初期化
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
-
-	///====================テクスチャマネージャ====================///
-	TextureManager::Getinstance()->Initialize(dxManager.get());
-
 	///====================スプライト系クラス====================///
 	///----------------スプライト基盤システム----------------///
 	//ユニークポインタ
@@ -204,18 +200,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//スプライト共通部の初期化
 	spriteManager->Initialize(dxManager.get());
 
+	///====================テクスチャマネージャ====================///
+	TextureManager::Getinstance()->Initialize(dxManager.get());
+	TextureManager::Getinstance()->LoadTexture("resources/uvChecker.png");
+
 	///----------------スプライト----------------///
 	//ユニークポインタ
 	std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
 	//スプライトの初期化
-	sprite->Initialize(spriteManager.get());
+	sprite->Initialize(spriteManager.get(),"resources/uvChecker.png");
 	// 複数枚描画用
 	std::vector<std::unique_ptr<Sprite>> sprites;
 	for (uint32_t i = 0; i < 5; ++i) {
 		// ユニークポインタでスプライトを作成
 		//NOTE:autoを使用せず明示的を心がけろ
 		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(spriteManager.get(), "resources/");
+		sprite->Initialize(spriteManager.get(), "resources/uvChecker.png");
 
 		// std::move で vector に追加
 		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
@@ -239,50 +239,50 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 
 
-	///====================VettexResourceSpriteを生成(スプライト用)====================////'
-	///----------------頂点リソースの作成----------------///
-	//NOTE:一般的にこれらのデータはオブジェクト事に必要である
-	Microsoft::WRL::ComPtr <ID3D12Resource> vertexResouceSprite = dxManager->CreateBufferResource(sizeof(VertexData) * 6);
+	/////====================VettexResourceSpriteを生成(スプライト用)====================////'
+	/////----------------頂点リソースの作成----------------///
+	////NOTE:一般的にこれらのデータはオブジェクト事に必要である
+	//Microsoft::WRL::ComPtr <ID3D12Resource> vertexResouceSprite = dxManager->CreateBufferResource(sizeof(VertexData) * 6);
 
-	///----------------VettexBufferViewSpriteを作成する----------------///
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
-	//リソースの先頭のアドレスから使う
-	vertexBufferViewSprite.BufferLocation = vertexResouceSprite->GetGPUVirtualAddress();
-	//使用するリソースサイズは頂点3つ分のサイズ
-	vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
-	//1頂点あたりのサイズ
-	vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
+	/////----------------VettexBufferViewSpriteを作成する----------------///
+	//D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
+	////リソースの先頭のアドレスから使う
+	//vertexBufferViewSprite.BufferLocation = vertexResouceSprite->GetGPUVirtualAddress();
+	////使用するリソースサイズは頂点3つ分のサイズ
+	//vertexBufferViewSprite.SizeInBytes = sizeof(VertexData) * 6;
+	////1頂点あたりのサイズ
+	//vertexBufferViewSprite.StrideInBytes = sizeof(VertexData);
 
-	///----------------リソースにデータを書き込む----------------///
-	VertexData* vertexDataSprite = nullptr;
-	//書き込むためのアドレス
-	vertexResouceSprite->Map(0, nullptr,
-		reinterpret_cast<void**>( &vertexDataSprite ));
-	//左下
-	vertexDataSprite[0].position = { 0.0f,360.0f,0.0f,1.0f };
-	vertexDataSprite[0].texCoord = { 0.0f,1.0f };
-	vertexDataSprite[0].normal = { 0.0f,0.0f,-1.0f };
-	//上
-	vertexDataSprite[1].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexDataSprite[1].texCoord = { 0.0f,0.0f };
-	vertexDataSprite[1].normal = { 0.0f,0.0f,-1.0f };
-	//右下
-	vertexDataSprite[2].position = { 640.0f,360.0f,0.0f,1.0f };
-	vertexDataSprite[2].texCoord = { 1.0f,1.0f };
-	vertexDataSprite[2].normal = { 0.0f,0.0f,-1.0f };
-	///二番目の三角形
-	//左下
-	vertexDataSprite[3].position = { 0.0f,0.0f,0.0f,1.0f };
-	vertexDataSprite[3].texCoord = { 0.0f,0.0f };
-	vertexDataSprite[3].normal = { 0.0f,0.0f,-1.0f };
-	//上
-	vertexDataSprite[4].position = { 640.0f,0.0f,0.0f,1.0f };
-	vertexDataSprite[4].texCoord = { 1.0f,0.0f };
-	vertexDataSprite[4].normal = { 0.0f,0.0f,-1.0f };
-	//右下
-	vertexDataSprite[5].position = { 640.5f,360.0f,0.0f,1.0f };
-	vertexDataSprite[5].texCoord = { 1.0f,1.0f };
-	vertexDataSprite[5].normal = { 0.0f,0.0f,-1.0f };
+	/////----------------リソースにデータを書き込む----------------///
+	//VertexData* vertexDataSprite = nullptr;
+	////書き込むためのアドレス
+	//vertexResouceSprite->Map(0, nullptr,
+	//	reinterpret_cast<void**>( &vertexDataSprite ));
+	////左下
+	//vertexDataSprite[0].position = { 0.0f,360.0f,0.0f,1.0f };
+	//vertexDataSprite[0].texCoord = { 0.0f,1.0f };
+	//vertexDataSprite[0].normal = { 0.0f,0.0f,-1.0f };
+	////上
+	//vertexDataSprite[1].position = { 0.0f,0.0f,0.0f,1.0f };
+	//vertexDataSprite[1].texCoord = { 0.0f,0.0f };
+	//vertexDataSprite[1].normal = { 0.0f,0.0f,-1.0f };
+	////右下
+	//vertexDataSprite[2].position = { 640.0f,360.0f,0.0f,1.0f };
+	//vertexDataSprite[2].texCoord = { 1.0f,1.0f };
+	//vertexDataSprite[2].normal = { 0.0f,0.0f,-1.0f };
+	/////二番目の三角形
+	////左下
+	//vertexDataSprite[3].position = { 0.0f,0.0f,0.0f,1.0f };
+	//vertexDataSprite[3].texCoord = { 0.0f,0.0f };
+	//vertexDataSprite[3].normal = { 0.0f,0.0f,-1.0f };
+	////上
+	//vertexDataSprite[4].position = { 640.0f,0.0f,0.0f,1.0f };
+	//vertexDataSprite[4].texCoord = { 1.0f,0.0f };
+	//vertexDataSprite[4].normal = { 0.0f,0.0f,-1.0f };
+	////右下
+	//vertexDataSprite[5].position = { 640.5f,360.0f,0.0f,1.0f };
+	//vertexDataSprite[5].texCoord = { 1.0f,1.0f };
+	//vertexDataSprite[5].normal = { 0.0f,0.0f,-1.0f };
 
 	///====================並行光源用のリソース====================///
 	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightResource = dxManager->CreateBufferResource(sizeof(DirectionalLight));
@@ -326,54 +326,61 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//単位行列を書き込む
 	*transformationMatrixData = transformationMatrix;
 
+
+
+
 	///====================textureResourceの読み込み====================///
 	/// ===一枚目=== ///
+	// NOTE:ここから動かせ
 	//Textureを読んで転送する
-	DirectX::ScratchImage mipImages = dxManager->LoadTexture("resources/uvChecker.png");
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
-	//テクスチャリソース
-	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = dxManager->CreateTextureResource(metadata);
-	//中間リソース
-	//NOTE:中間リソースはGPU側に設置したリソースの経由地点になるらしい。
-	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource = dxManager->UploadTextureData(textureResource, mipImages);
+	//DirectX::ScratchImage mipImages = dxManager->LoadTexture("resources/uvChecker.png");
+	//const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+	////テクスチャリソース
+	//Microsoft::WRL::ComPtr <ID3D12Resource> textureResource = dxManager->CreateTextureResource(metadata);
+	////中間リソース
+	////NOTE:中間リソースはGPU側に設置したリソースの経由地点になるらしい。
+	//Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource = dxManager->UploadTextureData(textureResource, mipImages);
 
 	/// ===二枚目=== ///
-	//Textureを読んで転送する
-	//DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
-	DirectX::ScratchImage mipImages2 = dxManager->LoadTexture(modelData.material.textureFilePath);
-	const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
-	//テクスチャリソース
-	Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
-	//中間リソース
-	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource2 = dxManager->UploadTextureData(textureResource2, mipImages2);
+	////Textureを読んで転送する
+	////DirectX::ScratchImage mipImages2 = LoadTexture("resources/monsterBall.png");
+	//DirectX::ScratchImage mipImages2 = dxManager->LoadTexture(modelData.material.textureFilePath);
+	//const DirectX::TexMetadata& metadata2 = mipImages2.GetMetadata();
+	////テクスチャリソース
+	//Microsoft::WRL::ComPtr <ID3D12Resource> textureResource2 = dxManager->CreateTextureResource(metadata2);
+	////中間リソース
+	//Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource2 = dxManager->UploadTextureData(textureResource2, mipImages2);
 
 
 	///====================実際にShaderResourceViewを作る====================///
 	///----------------一枚目----------------///
 	//metaDataを元にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-	srvDesc.Format = metadata.format;
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
-	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = dxManager->GetSRVCPUDescriptorHandle(1);
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU = dxManager->GetSRVGPUDescriptorHandle(1);
-	//SRVの生成
-	dxManager->GetDevice().Get()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHadleCPU);
+	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	//srvDesc.Format = metadata.format;
+	//srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	//srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+	////SRVを作成するDescriptorHeapの場所を決める
+	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU = dxManager->GetSRVCPUDescriptorHandle(1);
+	//D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU = dxManager->GetSRVGPUDescriptorHandle(1);
+	////SRVの生成
+	//dxManager->GetDevice().Get()->CreateShaderResourceView(textureResource.Get(), &srvDesc, textureSrvHadleCPU);
 
 	///----------------二枚目----------------///
 	//metaDataを元にSRVの設定
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
-	srvDesc2.Format = metadata.format;
-	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
-	srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
-	//SRVを作成するDescriptorHeapの場所を決める
-	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = dxManager->GetSRVCPUDescriptorHandle(2);
-	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = dxManager->GetSRVGPUDescriptorHandle(2);
-	//SRVの生成
-	dxManager->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHadleCPU2);
+	//D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2{};
+	//srvDesc2.Format = metadata.format;
+	//srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	//srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	//srvDesc2.Texture2D.MipLevels = UINT(metadata2.mipLevels);
+	////SRVを作成するDescriptorHeapの場所を決める
+	//D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHadleCPU2 = dxManager->GetSRVCPUDescriptorHandle(2);
+	//D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHadleGPU2 = dxManager->GetSRVGPUDescriptorHandle(2);
+	////SRVの生成
+	//dxManager->GetDevice()->CreateShaderResourceView(textureResource2.Get(), &srvDesc2, textureSrvHadleCPU2);
+
+
+
 
 
 	///====================ViewportとScissor====================///
@@ -582,7 +589,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource->GetGPUVirtualAddress());
 			//テクスチャの切り替え
-			dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2, usaMonsterBall ? textureSrvHadleGPU2 : textureSrvHadleGPU);
+			//dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2, usaMonsterBall ? textureSrvHadleGPU2 : textureSrvHadleGPU);
+			//dxManager->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetSrvHandleGPU(1));
 			// DirectionalLight用のCBV設定 (b1)
 			dxManager->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 			// 描画コマンド(頂点データ)
@@ -595,11 +603,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			///----------------2D描画----------------///
 			///Spriteクラス
-			sprite->Draw(textureSrvHadleGPU);
+			sprite->Draw();
 			//複数枚描画
 			for (const auto& sprite : sprites) {
 				// スプライトを描画
-				sprite->Draw(textureSrvHadleGPU);
+				sprite->Draw();
 			}
 
 			// ImGui描画

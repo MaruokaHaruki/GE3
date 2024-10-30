@@ -698,22 +698,22 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::UploadTextureData(Microso
 	return intermediateResource;
 }
 
-///====================DXTecを使ってファイルを読む====================///
-DirectX::ScratchImage DirectXManager::LoadTexture(const std::string& filePath) {
-	/// ===テクスチャファイルを読んでプログラムを扱えるようにする=== ///
-	DirectX::ScratchImage image{};
-	std::wstring filePathW = ConvertString(filePath);
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
-	assert(SUCCEEDED(hr));
-
-	/// ===ミニマップの作成=== ///
-	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
-	assert(SUCCEEDED(hr));
-
-	/// ===ミニマップ付きのデータを返す=== ///
-	return mipImages;
-}
+/////====================DXTecを使ってファイルを読む====================///
+//DirectX::ScratchImage DirectXManager::LoadTexture(const std::string& filePath) {
+//	/// ===テクスチャファイルを読んでプログラムを扱えるようにする=== ///
+//	DirectX::ScratchImage image{};
+//	std::wstring filePathW = ConvertString(filePath);
+//	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+//	assert(SUCCEEDED(hr));
+//
+//	/// ===ミニマップの作成=== ///
+//	DirectX::ScratchImage mipImages{};
+//	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+//	assert(SUCCEEDED(hr));
+//
+//	/// ===ミニマップ付きのデータを返す=== ///
+//	return mipImages;
+//}
 
 
 ///====================DescriptorHandleの取得を関数化====================///
