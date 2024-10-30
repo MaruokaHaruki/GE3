@@ -268,7 +268,7 @@ public:
 	/// </summary>
 	/// <param name="texture"></param>
 	/// <param name="mipImages"></param>
-	void UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
+	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
 	/// <summary>
 	/// DXTecを使ってファイルを読む
@@ -373,6 +373,9 @@ public:
 	/// 内部に保存されているsrvDescriptorHeap_変数の値を返す。
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 
+	///----------------GetDescriptorSizeSRV----------------///
+	uint32_t GetDescriptorSizeSRV() const { return descriptorSizeSRV; }
+
 private:
 	///----------------------------------------------------///
 	///						メンバ変数
@@ -458,5 +461,11 @@ private:
 	IDxcCompiler3* dxcCompiler_ = nullptr;
 	//現時点でincludeはしないが、includeに対応するために設定を行う
 	IDxcIncludeHandler* includeHandler_ = nullptr;
+
+
+	///====================テクスチャマネージャ関係====================///
+public:
+	//最大SRV数(最大テクスチャ枚数)
+	static const uint32_t kMaxSRVCount_ = 512;
 };
 

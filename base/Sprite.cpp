@@ -1,13 +1,20 @@
-///===================================================================///
-///							Spriteクラス.cpp 
-///===================================================================///
+/*********************************************************************
+ * \file   Sprite.cpp
+ * \brief  スプライト
+ *
+ * \author Harukichimaru
+ * \date   October 2024
+ * \note
+ *********************************************************************/
 #include "Sprite.h"
 #include "SpriteManager.h"
+#include "TextureManager.h"
 #include <AffineCalc.h>
 #include <RendPipeLine.h>
 
-///====================初期化====================///
-void Sprite::Initialize(SpriteManager* spriteManager) {
+ ///=============================================================================
+ ///								初期化
+void Sprite::Initialize(SpriteManager* spriteManager, std::string textureFilePath) {
 	//引数で受け取ってメンバ変数に記録する
 	this->spriteManager_ = spriteManager;
 
@@ -19,9 +26,13 @@ void Sprite::Initialize(SpriteManager* spriteManager) {
 	CreateMaterialBuffer();
 	//トランスフォーメーションマトリックスバッファの作成
 	CreateTransformationMatrixBuffer();
+
+	//単位行列の書き込み
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 }
 
-///====================更新====================///
+///=============================================================================
+///									更新
 //NOTE:引数としてローカル行列とビュー行列を持ってくること
 void Sprite::Update(Matrix4x4 viewMatrix) {
 	///----------------SRTの反映----------------///
@@ -48,19 +59,19 @@ void Sprite::Update(Matrix4x4 viewMatrix) {
 	transformationMatrixData_->WVP = worldViewProjectionMatrixSprite;
 }
 
-///====================描画====================///
-void Sprite::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
+///=============================================================================
+///									描画
+void Sprite::Draw() {
 	///2D描画
 	//NOTE:Material用のCBuffer(色)とSRV(Texture)は3Dの三角形と同じものを使用。無駄を省け。
 	//NOTE:同じものを使用したな？気をつけろ、別々の描画をしたいときは個別のオブジェクトとして宣言し直せ。
 	// まず、描画時に使うバッファが有効か確認する
 	if (!vertexBuffer_ || !indexBuffer_ || !materialBuffer_ || !transfomationMatrixBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
-		return;
 	}
 
 	// コマンドリスト取得
-	Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> commandList = spriteManager_->GetDXManager()->GetCommandList();
+	auto commandList = spriteManager_->GetDXManager()->GetCommandList();
 
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
@@ -68,27 +79,25 @@ void Sprite::Draw(D3D12_GPU_DESCRIPTOR_HANDLE textureHandle) {
 	// インデックスバッファの設定
 	commandList->IASetIndexBuffer(&indexBufferView_);
 
-	// プリミティブのトポロジーを設定（通常のトライアングルリスト）
+	// プリミティブのトポロジーを設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Material の設定（定数バッファビューにセット）
+	// Material と TransformationMatrix の設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
-
-	// TransformationMatrix の設定（定数バッファビューにセット）
 	commandList->SetGraphicsRootConstantBufferView(1, transfomationMatrixBuffer_->GetGPUVirtualAddress());
 
-	// テクスチャの設定（SRVハンドルを設定）
-	commandList->SetGraphicsRootDescriptorTable(2, textureHandle);
+	// テクスチャの設定
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
 
 	// 描画コール
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
 
 
-///----------------------------------------------------///
-///					プライベート関数
-///----------------------------------------------------///
-///====================頂点バッファの作成====================///
+///=============================================================================
+///									ローカル関数
+///=============================================================================
+///								頂点バッファの作成
 void Sprite::CreateVertexBuffer() {
 	// 頂点データ用のバッファリソースを作成
 	vertexBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(VertexData) * 6);
@@ -131,8 +140,8 @@ void Sprite::CreateVertexBuffer() {
 	vertexData_[5].texCoord = { 1.0f, 1.0f };
 	vertexData_[5].normal = { 0.0f, 0.0f, -1.0f };
 }
-
-///====================インデックスバッファの作成====================///
+///=============================================================================
+///							インデックスバッファの作成
 void Sprite::CreateIndexBuffer() {
 	// インデックスデータ用のバッファリソースを作成
 	indexBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(uint32_t) * 6);
@@ -159,7 +168,8 @@ void Sprite::CreateIndexBuffer() {
 	indexData_[5] = 5;
 }
 
-///====================マテリアルバッファの作成====================///
+///--------------------------------------------------------------
+///						マテリアルバッファの作成
 void Sprite::CreateMaterialBuffer() {
 	// マテリアルデータ用のバッファリソースを作成
 	materialBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(Material));
@@ -173,7 +183,8 @@ void Sprite::CreateMaterialBuffer() {
 	*materialData_ = materialSprite;
 }
 
-///====================トランスフォーメーションマトリックスバッファの作成====================///
+///--------------------------------------------------------------
+///			トランスフォーメーションマトリックスバッファの作成
 void Sprite::CreateTransformationMatrixBuffer() {
 	//wvp用のリソースを作る
 	transfomationMatrixBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(TransformationMatrix));
