@@ -40,7 +40,7 @@ public:
 	 * \brief Getinstance 
 	 * \return インスタンス
 	 */
-	static TextureManager* Getinstance();
+	static TextureManager* GetInstance();
 
 	/**----------------------------------------------------------------------------
 	* \brief 初期化

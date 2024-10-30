@@ -14,7 +14,7 @@ TextureManager* TextureManager::instance_ = nullptr;
 
 ///=============================================================================
 ///							インスタンス生成
-TextureManager* TextureManager::Getinstance() {
+TextureManager* TextureManager::GetInstance() {
 	if (instance_ == nullptr) {
 		instance_ = new TextureManager;
 	}

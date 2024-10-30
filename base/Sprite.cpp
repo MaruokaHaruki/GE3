@@ -28,7 +28,7 @@ void Sprite::Initialize(SpriteManager* spriteManager, std::string textureFilePat
 	CreateTransformationMatrixBuffer();
 
 	//単位行列の書き込み
-	textureIndex = TextureManager::Getinstance()->GetTextureIndexByFilePath(textureFilePath);
+	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
 }
 
 ///=============================================================================
@@ -68,11 +68,10 @@ void Sprite::Draw() {
 	// まず、描画時に使うバッファが有効か確認する
 	if (!vertexBuffer_ || !indexBuffer_ || !materialBuffer_ || !transfomationMatrixBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
-		return;
 	}
 
 	// コマンドリスト取得
-	Microsoft::WRL::ComPtr <ID3D12GraphicsCommandList> commandList = spriteManager_->GetDXManager()->GetCommandList();
+	auto commandList = spriteManager_->GetDXManager()->GetCommandList();
 
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
@@ -80,17 +79,15 @@ void Sprite::Draw() {
 	// インデックスバッファの設定
 	commandList->IASetIndexBuffer(&indexBufferView_);
 
-	// プリミティブのトポロジーを設定（通常のトライアングルリスト）
+	// プリミティブのトポロジーを設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Material の設定（定数バッファビューにセット）
+	// Material と TransformationMatrix の設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
-
-	// TransformationMatrix の設定（定数バッファビューにセット）
 	commandList->SetGraphicsRootConstantBufferView(1, transfomationMatrixBuffer_->GetGPUVirtualAddress());
 
-	// テクスチャの設定（SRVハンドルを設定）
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::Getinstance()->GetSrvHandleGPU(textureIndex));
+	// テクスチャの設定
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
 
 	// 描画コール
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);

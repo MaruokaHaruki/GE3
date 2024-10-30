@@ -270,12 +270,12 @@ public:
 	/// <param name="mipImages"></param>
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(Microsoft::WRL::ComPtr <ID3D12Resource> texture, const DirectX::ScratchImage& mipImages);
 
-	///// <summary>
-	///// DXTecを使ってファイルを読む
-	///// </summary>
-	///// <param name="filePath"></param>
-	///// <returns></returns>
-	//static DirectX::ScratchImage LoadTexture(const std::string& filePath);
+	/// <summary>
+	/// DXTecを使ってファイルを読む
+	/// </summary>
+	/// <param name="filePath"></param>
+	/// <returns></returns>
+	static DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 
 	///----------------------------------------------------///
