@@ -58,6 +58,16 @@
 #include"RendPipeLine.h"				// レンダリングパイプライン
 #include "base/utils/WstringUtility.h"	// Wstring変換
 #include "base/utils/Logger.h"			// ログ出力
+#include"RendPipeLine.h"
+///----------------Wstring変換
+#include "base/utils/WstringUtility.h"
+///----------------ログ出力
+#include "base/utils/Logger.h"
+#include"RendPipeLine.h"
+///----------------Wstring変換
+#include "base/utils/WstringUtility.h"
+///----------------ログ出力
+#include "base/utils/Logger.h"
 
 
 ///=============================================================================
