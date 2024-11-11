@@ -28,6 +28,9 @@ void Sprite::Initialize(SpriteManager* spriteManager, std::string textureFilePat
 
 	//単位行列の書き込み
 	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+
+	//テクスチャのサイズを取得
+	AdjustTextureSize();
 }
 
 ///=============================================================================
@@ -37,7 +40,7 @@ void Sprite::Update(Matrix4x4 viewMatrix) {
 
 	//---------------------------------------
 	// テクスチャ範囲の反映
-	ReflectTextureRange();
+	//ReflectTextureRange();
 
 	//---------------------------------------
 	// アンカーポイントの反映
@@ -264,4 +267,17 @@ void Sprite::ReflectTextureRange() {
 ///--------------------------------------------------------------
 ///						 テクスチャサイズをイメージと統合
 void Sprite::AdjustTextureSize() {
+	// テクスチャのメタデータを取得
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureIndex);
+
+	// テクスチャの幅と高さを取得
+	float textureWidth = static_cast<float>( metadata.width );
+	float textureHeight = static_cast<float>( metadata.height );
+
+	// スプライトのサイズをテクスチャのサイズに設定
+	size_ = { textureWidth, textureHeight };
+
+	// テクスチャの切り取り範囲をテクスチャ全体に設定
+	textureLeftTop_ = { 0.0f, 0.0f };
+	textureSize_ = { textureWidth, textureHeight };
 }

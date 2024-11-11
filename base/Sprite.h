@@ -104,13 +104,13 @@ private:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  ReflectTextureRange テクスチャ範囲指定の反映
-	 * \note   
+	 * \note
 	 */
 	void ReflectTextureRange();
-	
+
 	/**----------------------------------------------------------------------------
 	 * \brief  AdjustTextureSize テクスチャサイズの調整
-	 * \note   
+	 * \note
 	 */
 	void AdjustTextureSize();
 
@@ -228,13 +228,13 @@ public:
 	/**----------------------------------------------------------------------------
 	 * \brief  GetTextureLeftTop テクスチャ左上座標の取得
 	 * \return textureLeftTop_ テクスチャ左上座標
-	 * \note   
+	 * \note
 	 */
 	const Vector2& GetTextureLeftTop() const { return textureLeftTop_; }
 	/**----------------------------------------------------------------------------
 	 * \brief  SetTextureLeftTop テクスチャ左上座標の設定
 	 * \param  textureLeftTop テクスチャ左上座標
-	 * \note   
+	 * \note
 	 */
 	void SetTextureLeftTop(const Vector2& textureLeftTop) { this->textureLeftTop_ = textureLeftTop; }
 
@@ -242,13 +242,13 @@ public:
 	/**----------------------------------------------------------------------------
 	 * \brief  GetTextureSize テクスチャ切り出しサイズの取得
 	 * \return textureSize_ テクスチャ切り出しサイズ
-	 * \note   
+	 * \note
 	 */
 	const Vector2& GetTextureSize() const { return textureSize_; }
 	/**----------------------------------------------------------------------------
 	 * \brief  SetTextureSize テクスチャ切り出しサイズの設定
 	 * \param  textureSize テクスチャ切り出しサイズ
-	 * \note   
+	 * \note
 	 */
 	void SetTextureSize(const Vector2& textureSize) { this->textureSize_ = textureSize; }
 
@@ -320,7 +320,7 @@ private:
 	//テクスチャ左上座標
 	Vector2 textureLeftTop_ = { 0.0f,0.0f };
 	//テクスチャ切り出しサイズ
-	Vector2 textureSize_ = { 100.0f,100.0f };
+	Vector2 textureSize_ = { 0.0f,0.0f };
 
 
 };
