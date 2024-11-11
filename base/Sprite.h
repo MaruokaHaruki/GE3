@@ -7,8 +7,8 @@
  * \note   スプライト1枚分のクラス
  *********************************************************************/
 #pragma once
-//========================================
-// Windows include
+ //========================================
+ // Windows include
 #include <cstdint>
 //========================================
 // DX12include
@@ -90,6 +90,32 @@ private:
 	 */
 	void CreateTransformationMatrixBuffer();
 
+	/**----------------------------------------------------------------------------
+	 * \brief  ReflectSRT SRTの反映
+	 * \note
+	 */
+	void ReflectSRT();
+
+	/**----------------------------------------------------------------------------
+	 * \brief  ReflectAnchorPoint アンカーポイントとフリップの反映
+	 * \note
+	 */
+	void ReflectAnchorPointAndFlip();
+
+	/**----------------------------------------------------------------------------
+	 * \brief  ReflectTextureRange テクスチャ範囲指定の反映
+	 * \note
+	 */
+	void ReflectTextureRange();
+
+	/**----------------------------------------------------------------------------
+	 * \brief  AdjustTextureSize テクスチャサイズの調整
+	 * \note
+	 */
+	void AdjustTextureSize();
+
+
+
 	///--------------------------------------------------------------
 	///						 入出力関数
 public:
@@ -106,6 +132,7 @@ public:
 	 */
 	void SetPosition(const Vector2& position) { this->position_ = position; }
 
+
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRotation 回転の取得
 	 * \return rotation_
@@ -118,6 +145,7 @@ public:
 	 * \note
 	 */
 	void SetRotation(float rotation) { this->rotation_ = rotation; }
+
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetColor 色の取得
@@ -132,13 +160,13 @@ public:
 	 */
 	void SetColor(const Vector4& color) { materialData_->color = color; }
 
+
 	/**----------------------------------------------------------------------------
 	 * \brief  GetSize 大きさの取得
 	 * \return
 	 * \note
 	 */
 	const Vector2 GetSize() const { return size_; }
-
 	/**----------------------------------------------------------------------------
 	 * \brief  SetSize 大きさの設定
 	 * \param  size
@@ -153,6 +181,76 @@ public:
 	 * \note
 	 */
 	void SetTexture(std::string& textureFilePath) { textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath); }
+
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetAnchorPoint アンカーポイントの取得
+	 * \return anchorPoint_
+	 * \note
+	 */
+	const Vector2& GetAnchorPoint() const { return anchorPoint_; }
+	/**----------------------------------------------------------------------------
+	 * \brief  SetAnchorPoint アンカーポイントの設定
+	 * \param  anchorPoint アンカーポイント
+	 * \note
+	 */
+	void SetAnchorPoint(const Vector2& anchorPoint) { this->anchorPoint_ = anchorPoint; }
+
+
+	/**----------------------------------------------------------------------------
+		 * \brief  GetFlipX 左右フリップの取得
+		 * 	 * \return isFlipX_
+		 * 	 * \note
+		 * 	 */
+	const bool& GetFlipX() const { return isFlipX_; }
+	/**----------------------------------------------------------------------------
+	* \brief  SetFlipX 左右フリップの設定
+	* \param  isFlipX
+	* \note
+	*/
+	void SetFlipX(bool isFlipX) { this->isFlipX_ = isFlipX; }
+
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetFlipY 上下フリップの取得
+	* \return isFlipY_
+	* \note
+	*/
+	const bool& GetFlipY() const { return isFlipY_; }
+	/**----------------------------------------------------------------------------
+	* \brief  SetFlipY 上下フリップの設定
+	* \param  isFlipY
+	* \note
+	*/
+	void SetFlipY(bool isFlipY) { this->isFlipY_ = isFlipY; }
+
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetTextureLeftTop テクスチャ左上座標の取得
+	 * \return textureLeftTop_ テクスチャ左上座標
+	 * \note
+	 */
+	const Vector2& GetTextureLeftTop() const { return textureLeftTop_; }
+	/**----------------------------------------------------------------------------
+	 * \brief  SetTextureLeftTop テクスチャ左上座標の設定
+	 * \param  textureLeftTop テクスチャ左上座標
+	 * \note
+	 */
+	void SetTextureLeftTop(const Vector2& textureLeftTop) { this->textureLeftTop_ = textureLeftTop; }
+
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetTextureSize テクスチャ切り出しサイズの取得
+	 * \return textureSize_ テクスチャ切り出しサイズ
+	 * \note
+	 */
+	const Vector2& GetTextureSize() const { return textureSize_; }
+	/**----------------------------------------------------------------------------
+	 * \brief  SetTextureSize テクスチャ切り出しサイズの設定
+	 * \param  textureSize テクスチャ切り出しサイズ
+	 * \note
+	 */
+	void SetTextureSize(const Vector2& textureSize) { this->textureSize_ = textureSize; }
 
 
 	///--------------------------------------------------------------
@@ -205,5 +303,25 @@ private:
 	///---------------------------------------
 	/// テクスチャ番号
 	uint32_t textureIndex = 0;
+
+	///---------------------------------------
+	/// アンカーポイント
+	Vector2 anchorPoint_ = { 0.0f,0.0f };
+
+	///---------------------------------------
+	/// フリップ
+	//左右フリップ
+	bool isFlipX_ = false;
+	//上下フリップ
+	bool isFlipY_ = false;
+
+	///---------------------------------------
+	/// テクスチャ範囲指定
+	//テクスチャ左上座標
+	Vector2 textureLeftTop_ = { 0.0f,0.0f };
+	//テクスチャ切り出しサイズ
+	Vector2 textureSize_ = { 0.0f,0.0f };
+
+
 };
 

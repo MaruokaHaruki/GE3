@@ -242,6 +242,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
 	//スプライトの初期化
 	sprite->Initialize(spriteManager.get(), "resources/uvChecker.png");
+	//サイズ
+	sprite->SetSize({ 256.0f,256.0f });
+		
 	// 複数枚描画用
 	std::vector<std::unique_ptr<Sprite>> sprites;
 	for (uint32_t i = 0; i < 5; ++i) {
@@ -249,8 +252,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
 			if (i % 2 == 0) {
 				sprite->Initialize(spriteManager.get(), "resources/monsterBall.png");
+				//サイズ
+				sprite->SetSize({ 256.0f,256.0f });
 			} else {
 				sprite->Initialize(spriteManager.get(), "resources/uvChecker.png");
+				//サイズ
+				sprite->SetSize({ 256.0f,256.0f });
 			}
 			sprites.push_back(std::move(sprite));
 		}
@@ -434,7 +441,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//========================================
 	// 2Dオブジェクト用
 	//TransformSprite
-	Transform transformSprite{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//マテリアル
 	Vector4 materialSprite = sprite->GetColor();
 	//複数枚回転
@@ -585,7 +592,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			for (const auto& sprite : sprites) {
 				// スプライトを更新 (operator-> でアクセス)
 				sprite->Update();
-				sprite->SetSize(Vector2{ 0.05f,0.1f });
+				sprite->SetSize(Vector2{ 128.0f,128.0f });
 				sprite->SetRotation(sprite->GetRotation() + spritesRotate);
 				sprite->SetPosition(Vector2{ index * offset, 1.0f });
 				index++;
