@@ -1,9 +1,13 @@
 ///===================================================================///
 ///DirectXManagerクラス
 ///===================================================================///
-#include "DirectXManager.h"
-#include "externals/DirectXTex/DirectXTex.h"
+///====================Win====================///
+#include <vector>
+///----------------DirectXTex----------------///
+#include "externals/DirectXTex/d3dx12.h"
 #pragma comment(lib,"winmm.lib")
+///----------------自作クラス----------------///
+#include "DirectXManager.h"
 
 ///====================コンストラクタ====================///
 DirectXManager::DirectXManager() {
@@ -283,8 +287,8 @@ void DirectXManager::CreateVariousDescriptorHeap() {
 ///====================SRVディスクリプタヒープ====================///
 void DirectXManager::CreateSRVDescriptorHeap() {
 	//rtvはDXM内
-	//SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなのでShaderVisibleはTrue
-	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	//SRV用のヒープでディスクリプタの数は512。SRVはShader内で触るものなのでShaderVisibleはTrue
+	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
 }
 
 
@@ -642,10 +646,11 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 	resouceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);	//Textureの次元数。普段つかているのは2次元。
 
 	/// ===2.利用するHeapの設定===///
+	//TODO:リソースの場所を変更する03_00_ex
 	D3D12_HEAP_PROPERTIES heapProperties{};
-	heapProperties.Type = D3D12_HEAP_TYPE_CUSTOM;//細かい設定を行う
-	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
-	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//細かい設定を行う
+	//heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
+	//heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
 
 	/// ===3.resouceを生成する=== ///
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
@@ -653,7 +658,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 		&heapProperties,					//Heapの設定
 		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定、特になし
 		&resouceDesc,						//Resourceの設定
-		D3D12_RESOURCE_STATE_GENERIC_READ,	//初回のResouceState。Textureは基本読むだけ
+		D3D12_RESOURCE_STATE_COPY_DEST,	//初回のResouceState。Textureは基本読むだけ
 		nullptr,
 		IID_PPV_ARGS(&resource)
 	);
@@ -662,24 +667,35 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::CreateTextureResource(con
 }
 
 ///====================テクスチャデータの転送====================///
-void DirectXManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
-	/// ===Mata情報を取得=== ///
-	const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
+//TODO:以下の手順を行う
+//3.CPUで書き込む用にUploadHeapnnoResourceを作成
+//4.3に対してCPUでデータを書き込む
+//5.CommandListに3を2に転送するコマンドを積む
+//NOTE:以下の文字は属性というもの。戻り値を破棄してはならないことを示す。
+[[nodiscard]]
+Microsoft::WRL::ComPtr<ID3D12Resource> DirectXManager::UploadTextureData(Microsoft::WRL::ComPtr<ID3D12Resource> texture, const DirectX::ScratchImage& mipImages) {
+	///----------------中間リソースの作成----------------///
+	std::vector<D3D12_SUBRESOURCE_DATA> subresource;
+	DirectX::PrepareUpload(device_.Get(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresource);
+	//Subresourceの数を元に、コピー元となるintermediateResourceに必要なサイズを計算する
+	uint64_t intermediateSize = GetRequiredIntermediateSize(texture.Get(), 0, UINT(subresource.size()));
+	//計算したサイズでintermediateResourceを作る
+	Microsoft::WRL::ComPtr<ID3D12Resource> intermediateResource = CreateBufferResource(intermediateSize);
 
-	/// ===全MipMapについて=== ///
-	for (size_t mipLevel = 0; mipLevel < metadata.mipLevels; ++mipLevel) {
-		//全MipMapLevelを指定して書くImageを取得
-		const DirectX::Image* img = mipImages.GetImage(mipLevel, 0, 0);
-		//Textureに転送
-		HRESULT hr = texture.Get()->WriteToSubresource(
-			UINT(mipLevel),
-			nullptr,				//全領域へコピー
-			img->pixels,			//元データアドレス
-			UINT(img->rowPitch),	//1ラインサイズ
-			UINT(img->slicePitch)	//1枚サイズ
-		);
-		assert(SUCCEEDED(hr));
-	}
+	///----------------データ転送をコマンドに積む----------------///
+	//interにsubreのデータを書き込み、textureに転送する
+	UpdateSubresources(commandList_.Get(), texture.Get(), intermediateResource.Get(), 0, 0, UINT(subresource.size()), subresource.data());
+
+	///----------------読み込み変更コマンド----------------///
+	D3D12_RESOURCE_BARRIER barrier{};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = texture.Get();
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
+	commandList_->ResourceBarrier(1, &barrier);
+	return intermediateResource;
 }
 
 ///====================DXTecを使ってファイルを読む====================///
