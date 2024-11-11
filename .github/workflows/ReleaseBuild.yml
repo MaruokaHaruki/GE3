@@ -1,0 +1,31 @@
+name: ReleaseBuild
+
+# トリガー
+# ワークフローの発動条件となる
+on:
+  push:
+    branches:
+    - master
+
+# 環境変数
+env:
+  # リポジトリのルートディレクトリを起点としたソリューションファイルのパス
+  SOLUTION_FILE_PATH: GE3_DirectXGame.sln
+  # VISUAL Studio の構成(Debug / Release)
+  CONFIGURATION: Release
+
+# ジョブ
+jobs:
+  build:
+    runs-on: windows-2022
+    # ステップ
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Build
+        run: |
+          msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Platform=x64,Configuration=${{ env.CONFIGURATION }}
