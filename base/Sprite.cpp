@@ -8,7 +8,6 @@
  *********************************************************************/
 #include "Sprite.h"
 #include "SpriteManager.h"
-#include "TextureManager.h"
 #include <AffineCalc.h>
 #include <RendPipeLine.h>
 

@@ -1,30 +1,37 @@
 /*********************************************************************
  * \file   Sprite.h
  * \brief  スプライト
- * 
+ *
  * \author Harukichimaru
  * \date   October 2024
- * \note   
+ * \note   スプライト1枚分のクラス
  *********************************************************************/
 #pragma once
-//NOTE:スプライト1枚分のクラス
+//========================================
+// Windows include
 #include <cstdint>
-//DX12include
+//========================================
+// DX12include
 #include<d3d12.h>
 #include<dxgi1_6.h>
 #include <wrl/client.h>
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
-//DXC
+//========================================
+// DXC
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
-//自作クラス
+//========================================
+// 自作構造体
 #include "VertexData.h"
 #include "Material.h"
 #include "TransformationMatrix.h"
 #include "Transform.h"
 #include "Matrix4x4.h"
-#include <Calc4x4.h>
+//========================================
+// 自作クラス
+#include "Calc4x4.h"
+#include "TextureManager.h"
 
 ///=============================================================================
 ///								クラス
@@ -38,9 +45,9 @@ public:
 	 * \brief  初期化
 	 * \param  spriteManager スプライト管理クラス
 	 * \param  textureFilePath ファイルパス
-	 * \note   
+	 * \note
 	 */
-	void Initialize(SpriteManager* spriteManager,std::string textureFilePath);
+	void Initialize(SpriteManager* spriteManager, std::string textureFilePath);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  更新
@@ -52,7 +59,7 @@ public:
 	/**----------------------------------------------------------------------------
 	 * \brief  描画
 	 * \param  textureHandle テクスチャハンドルの取得
-	 * \note   
+	 * \note
 	 */
 	void Draw();
 
@@ -61,25 +68,25 @@ public:
 private:
 	/**----------------------------------------------------------------------------
 	 * \brief  頂点バッファの作成
-	 * \note   
+	 * \note
 	 */
 	void CreateVertexBuffer();
 
 	/**----------------------------------------------------------------------------
 	 * \brief  インデックスバッファの作成
-	 * \note   
+	 * \note
 	 */
 	void CreateIndexBuffer();
 
 	/**----------------------------------------------------------------------------
 	 * \brief  マテリアルバッファの作成
-	 * \note   
+	 * \note
 	 */
 	void CreateMaterialBuffer();
 
 	/**----------------------------------------------------------------------------
 	 * \brief  トランスフォーメーションマトリックスバッファの作成
-	 * \note   
+	 * \note
 	 */
 	void CreateTransformationMatrixBuffer();
 
@@ -89,54 +96,63 @@ public:
 	/**----------------------------------------------------------------------------
 	 * \brief  GetPosition 座標の取得
 	 * \return position 座標
-	 * \note   
+	 * \note
 	 */
 	const Vector2& GetPosition() const { return position_; }
 	/**----------------------------------------------------------------------------
 	 * \brief  position 座標の設定
 	 * \param  position
-	 * \note   
+	 * \note
 	 */
 	void SetPosition(const Vector2& position) { this->position_ = position; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRotation 回転の取得
 	 * \return rotation_
-	 * \note   
+	 * \note
 	 */
 	const float& GetRotation() const { return rotation_; }
 	/**----------------------------------------------------------------------------
 	 * \brief  SetRotation 回転の設定
 	 * \param  rotation
-	 * \note   
+	 * \note
 	 */
 	void SetRotation(float rotation) { this->rotation_ = rotation; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetColor 色の取得
 	 * \return 色
-	 * \note   
+	 * \note
 	 */
 	const Vector4& GetColor() const { return materialData_->color; }
 	/**----------------------------------------------------------------------------
 	 * \brief  SetColor 色の設定
 	 * \param  color
-	 * \note   
+	 * \note
 	 */
 	void SetColor(const Vector4& color) { materialData_->color = color; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetSize 大きさの取得
-	 * \return 
-	 * \note   
+	 * \return
+	 * \note
 	 */
 	const Vector2 GetSize() const { return size_; }
+
 	/**----------------------------------------------------------------------------
 	 * \brief  SetSize 大きさの設定
 	 * \param  size
-	 * \note   
+	 * \note
 	 */
 	void SetSize(const Vector2& size) { this->size_ = size; }
+
+
+	/**----------------------------------------------------------------------------
+	 * \brief  SetTexture テクスチャの差し替え
+	 * \param  textureFilePath
+	 * \note
+	 */
+	void SetTexture(std::string& textureFilePath) { textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath); }
 
 
 	///--------------------------------------------------------------
