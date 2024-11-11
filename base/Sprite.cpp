@@ -40,7 +40,7 @@ void Sprite::Update(Matrix4x4 viewMatrix) {
 
 	//---------------------------------------
 	// テクスチャ範囲の反映
-	//ReflectTextureRange();
+	ReflectTextureRange();
 
 	//---------------------------------------
 	// アンカーポイントの反映
@@ -253,9 +253,9 @@ void Sprite::ReflectTextureRange() {
 
 	//テクスチャの左上座標を取得
 	float textureLeft = textureLeftTop_.x / textureWidth;
-	float textureRight = ( textureLeftTop_.x + size_.x ) / textureWidth;
+	float textureRight = ( textureLeftTop_.x + textureSize_.x ) / textureWidth;
 	float textureTop = textureLeftTop_.y / textureHeight;	
-	float textureBottom = ( textureLeftTop_.y + size_.y ) / textureHeight;
+	float textureBottom = ( textureLeftTop_.y + textureSize_.y ) / textureHeight;
 
 	//頂点リソースにデータを書き込む
 	vertexData_[0].texCoord = { textureLeft, textureBottom };
