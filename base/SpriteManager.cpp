@@ -10,9 +10,9 @@
 
  ///=============================================================================
  ///						初期化
-void SpriteManager::Initialize(DirectXManager* dxManager) {
+void SpriteManager::Initialize(DirectXCore* dxCore) {
 	/// ===引数でdxManagerを受取=== ///
-	dxManager_ = dxManager;
+	dxCore_ = dxCore;
 
 	/// ===グラフィックスパイプラインの生成=== ///
 	CreateGraphicsPipeline();
@@ -22,11 +22,11 @@ void SpriteManager::Initialize(DirectXManager* dxManager) {
 ///						共通描画設定
 void SpriteManager::CommonDrawSetup() {
 	//ルートシグネイチャのセット
-	dxManager_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
+	dxCore_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	//グラフィックスパイプラインステートをセット
-	dxManager_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
+	dxCore_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
 	//プリミティブトポロジーをセットする
-	dxManager_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	dxCore_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 ///=============================================================================
@@ -91,7 +91,7 @@ void SpriteManager::CreateRootSignature() {
 	}
 
 	/// ===バイナリを元に生成=== ///
-	hr = dxManager_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
+	hr = dxCore_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	if (FAILED(hr)) {
 		throw std::runtime_error("Failed to create root signature");
@@ -136,12 +136,12 @@ void SpriteManager::CreateGraphicsPipeline() {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	/// ===Shaderをcompileする=== ///
-	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxManager_->CompileShader(L"Object3D.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"Object3D.VS.hlsl", L"vs_6_0");
 	if (!vertexShaderBlob) {
 		throw std::runtime_error("Failed to compile vertex shader");
 	}
 
-	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxManager_->CompileShader(L"Object3D.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"Object3D.PS.hlsl", L"ps_6_0");
 	if (!pixelShaderBlob) {
 		throw std::runtime_error("Failed to compile pixel shader");
 	}
@@ -169,7 +169,7 @@ void SpriteManager::CreateGraphicsPipeline() {
 	graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	//実際に生成
-	HRESULT hr = dxManager_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
+	HRESULT hr = dxCore_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState_));
 	if (FAILED(hr)) {
 		throw std::runtime_error("Failed to create graphics pipeline state");

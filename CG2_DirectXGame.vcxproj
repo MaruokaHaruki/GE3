@@ -99,7 +99,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="base\DirectXManager.cpp" />
+    <ClCompile Include="base\DirectXCore.cpp" />
     <ClCompile Include="base\utils\WstringUtility.cpp" />
     <ClCompile Include="base\utils\Logger.cpp" />
     <ClCompile Include="base\externals\imgui\imgui.cpp" />
@@ -117,7 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="base\TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="base\DirectXManager.h" />
+    <ClInclude Include="base\DirectXCore.h" />
     <ClInclude Include="base\utils\WstringUtility.h" />
     <ClInclude Include="base\utils\Logger.h" />
     <ClInclude Include="base\externals\imgui\imconfig.h" />

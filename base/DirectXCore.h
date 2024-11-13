@@ -1,5 +1,5 @@
 ///===================================================================///
-///						DirectXManagerクラス
+///						DirectXCoreクラス
 ///===================================================================///
 //NOTE:ダイレクトXを管理する
 #include <cstdint>
@@ -36,7 +36,7 @@ using namespace Logger;
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #pragma once
-class DirectXManager {
+class DirectXCore {
 public:
 	///----------------------------------------------------///
 	///						メンバ関数
@@ -45,12 +45,12 @@ public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	DirectXManager();
+	DirectXCore();
 
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~DirectXManager();
+	~DirectXCore();
 
 	/// <summary>
 	/// ループ前処理

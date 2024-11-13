@@ -7,7 +7,7 @@
  * \note   スプライト共通部
  *********************************************************************/
 #pragma once
-#include "DirectXManager.h"
+#include "DirectXCore.h"
 
 ///=============================================================================
 ///						クラス
@@ -21,7 +21,7 @@ public:
 	 * \param  dxManager ダイレクトXマネージャー
 	 * \note   
 	 */
-	void Initialize(DirectXManager* dxManager);
+	void Initialize(DirectXCore* dxCore);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  CommonDrawSetup 共通描画設定
@@ -53,7 +53,7 @@ public:
 	 * \return 
 	 * \note   
 	 */
-	DirectXManager* GetDXManager() const { return dxManager_; }
+	DirectXCore* GetDXManager() const { return dxCore_; }
 
 
 	///--------------------------------------------------------------
@@ -61,8 +61,8 @@ public:
 private:
 	
 
-	///====================DirectXManagerポインタ====================///
-	DirectXManager* dxManager_ = nullptr;;
+	///====================DirectXCoreポインタ====================///
+	DirectXCore* dxCore_ = nullptr;;
 
 	///====================RootSignature====================///
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;

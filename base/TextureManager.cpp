@@ -23,13 +23,13 @@ TextureManager* TextureManager::GetInstance() {
 
 ///=============================================================================
 ///								初期化
-void TextureManager::Initialize(DirectXManager* dxManager) {
+void TextureManager::Initialize(DirectXCore* dxCore) {
 	//---------------------------------------
 	// SRVの数と同期
-	textureDatas_.reserve(DirectXManager::kMaxSRVCount_);
+	textureDatas_.reserve(DirectXCore::kMaxSRVCount_);
 	//---------------------------------------
 	// 引数でdxManagerを受取
-	dxManager_ = dxManager;
+	dxCore_ = dxCore;
 }
 
 ///=============================================================================
@@ -75,14 +75,14 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	//テクスチャメタデータの取得
 	textureData.metadata = mipImages.GetMetadata();
 	//テクスチャリソースの作成
-	textureData.resource = dxManager_->CreateTextureResource(textureData.metadata);
+	textureData.resource = dxCore_->CreateTextureResource(textureData.metadata);
 	//テクスチャデータの要素数番号をSRVのインデックスとする
 	uint32_t srvIndex = static_cast<uint32_t>( textureDatas_.size() - 1 + kSRVIndexTop );
 	//中間リソース
-	textureData.interMediateResource = dxManager_->UploadTextureData(textureData.resource, mipImages);
+	textureData.interMediateResource = dxCore_->UploadTextureData(textureData.resource, mipImages);
 	//各ハンドルを取得
-	textureData.srvHandleCPU = dxManager_->GetSRVCPUDescriptorHandle(srvIndex); //CPU
-	textureData.srvHandleGPU = dxManager_->GetSRVGPUDescriptorHandle(srvIndex); //GPU
+	textureData.srvHandleCPU = dxCore_->GetSRVCPUDescriptorHandle(srvIndex); //CPU
+	textureData.srvHandleGPU = dxCore_->GetSRVGPUDescriptorHandle(srvIndex); //GPU
 
 	//---------------------------------------
 	// SRVの生成
@@ -93,7 +93,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	srvDesc.Texture2D.MipLevels = UINT(textureData.metadata.mipLevels);
 	//SRVの生成
-	dxManager_->GetDevice().Get()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
+	dxCore_->GetDevice().Get()->CreateShaderResourceView(textureData.resource.Get(), &srvDesc, textureData.srvHandleCPU);
 }
 
 ///=============================================================================
@@ -119,7 +119,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 //	///---------------------------------------
 //	/// 3.resouceを生成する
 //	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-//	HRESULT hr = dxManager_->GetDevice()->CreateCommittedResource(
+//	HRESULT hr = dxCore_->GetDevice()->CreateCommittedResource(
 //		&heapProperties,					//Heapの設定
 //		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定、特になし
 //		&resouceDesc,						//Resourceの設定

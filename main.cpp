@@ -27,7 +27,7 @@
 ///--------------------------------------------------------------
 ///						 自作クラス
 #include "base/WinApp.h"
-#include "base/DirectXManager.h"
+#include "base/DirectXCore.h"
 #include "input/Input.h"
 #include "base/SpriteManager.h"
 #include "base/Sprite.h"
@@ -210,7 +210,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
 	//インスタンスの取得
-	std::unique_ptr<DirectXManager> dxManager = std::make_unique<DirectXManager>();
+	std::unique_ptr<DirectXCore> dxManager = std::make_unique<DirectXCore>();
 	//ダイレクトXの初期化
 	dxManager->InitializeDirectX(win.get());
 

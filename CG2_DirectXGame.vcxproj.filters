@@ -45,7 +45,7 @@
     <ClCompile Include="base\externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="base\DirectXManager.cpp">
+    <ClCompile Include="base\DirectXCore.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="base\utils\WstringUtility.cpp">
@@ -95,7 +95,7 @@
     <ClInclude Include="base\externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="base\DirectXManager.h">
+    <ClInclude Include="base\DirectXCore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="math\structure\Matrix4x4.h">
