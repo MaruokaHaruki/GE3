@@ -32,6 +32,8 @@
 #include "spriteSetup.h"
 #include "Sprite.h"
 #include "TextureManager.h"
+#include "Object3dSetup.h"
+#include "Object3d.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -52,22 +54,18 @@
 #include "ModelData.h"
 ///--------------------------------------------------------------
 ///						 自作数学関数
-#include "Calc3x3.h"					// 3x3行列演算
-#include "Calc4x4.h"					// 4x4行列演算
-#include "AffineCalc.h"					// 3次元アフィン演算
-#include "RendPipeLine.h"				// レンダリングパイプライン
-#include "WstringUtility.h"	// Wstring変換
-#include "Logger.h"			// ログ出力
+#include "Calc3x3.h"			// 3x3行列演算
+#include "Calc4x4.h"			// 4x4行列演算
+#include "AffineCalc.h"			// 3次元アフィン演算
+#include "RendPipeLine.h"		// レンダリングパイプライン
+#include "WstringUtility.h"		// Wstring変換
+#include "Logger.h"				// ログ出力
 #include "RendPipeLine.h"
+#include "WstringUtility.h"		//Wstring変換
+#include "Logger.h"
+#include "RendPipeLine.h"		//ログ出力
 ///----------------Wstring変換
 #include "WstringUtility.h"
-///----------------ログ出力
-#include "Logger.h"
-#include "RendPipeLine.h"
-///----------------Wstring変換
-#include "WstringUtility.h"
-///----------------ログ出力
-#include "Logger.h"
 
 
 ///=============================================================================
@@ -222,10 +220,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
 
 	///--------------------------------------------------------------
-	///						 スプライト系クラス
+	///						 2D系クラス
 	//========================================
-	// スプライト系クラス
-	//ユニークポインタ
+	// スプライト共通部
 	std::unique_ptr<SpriteSetup> spriteSetup = std::make_unique<SpriteSetup>();
 	//スプライト共通部の初期化
 	spriteSetup->Initialize(dxManager.get());
@@ -270,6 +267,44 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
 		sprites.push_back(std::move(sprite));
 	}
+
+	//TODO:06_02にて実装
+	///--------------------------------------------------------------
+	///						 3D系クラス
+	//========================================
+	// 3Dオブジェクト共通部
+	std::unique_ptr<Object3dSetup> object3dSetup = std::make_unique<Object3dSetup>();
+	//3Dオブジェクト共通部の初期化
+	//object3dSetup->Initialize(dxManager.get());
+
+	//========================================
+	// 3Dオブジェクトクラス
+	std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
+	//3Dオブジェクトの初期化
+	//object3d->Initialize(object3dSetup.get(), "resources/uvChecker.png");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	///--------------------------------------------------------------

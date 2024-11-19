@@ -45,11 +45,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)engine/externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)engine/externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,6 +117,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\2d\SpriteSetup.cpp" />
     <ClCompile Include="engine\2d\Sprite.cpp" />
     <ClCompile Include="engine\2d\TextureManager.cpp" />
+    <ClCompile Include="engine\3d\Object3dSetup.cpp" />
+    <ClCompile Include="engine\3d\Object3d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\base\DirectXCore.h" />
@@ -151,6 +153,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="math\structure\Vector2.h" />
     <ClInclude Include="engine\2d\TextureManager.h" />
+    <ClInclude Include="engine\3d\Object3dSetup.h" />
+    <ClInclude Include="engine\3d\Object3d.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl">
