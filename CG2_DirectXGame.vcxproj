@@ -45,11 +45,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/imgui;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals\imgui;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/imgui;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals\imgui;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
