@@ -112,13 +112,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\externals\imgui\imgui_tables.cpp" />
     <ClCompile Include="engine\externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
-    <ClCompile Include="externals\imgui\imgui.cpp" />
-    <ClCompile Include="externals\imgui\imgui_demo.cpp" />
-    <ClCompile Include="externals\imgui\imgui_draw.cpp" />
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="externals\imgui\imgui_tables.cpp" />
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\base\WinApp.cpp" />
     <ClCompile Include="engine\2d\SpriteSetup.cpp" />
@@ -138,14 +131,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\externals\imgui\imstb_textedit.h" />
     <ClInclude Include="engine\externals\imgui\imstb_truetype.h" />
     <ClInclude Include="engine\input\Input.h" />
-    <ClInclude Include="externals\imgui\imconfig.h" />
-    <ClInclude Include="externals\imgui\imgui.h" />
-    <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="externals\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="externals\imgui\imgui_internal.h" />
-    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="math\Calc4x4.h" />
     <ClInclude Include="math\structure\drawData\DirectionalLight.h" />
     <ClInclude Include="math\structure\drawData\Material.h" />
@@ -185,35 +170,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <None Include=".editorconfig" />
     <None Include="externals\imgui\imgui.vcxproj" />
     <None Include="externals\imgui\imgui.vcxproj.filters" />
-    <None Include="externals\imgui\x64\Debug\imgui.lib.recipe" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\CL.10164.write.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\CL.command.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Cl.items.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\CL.read.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\imgui.lastbuildstate" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Lib-link.read.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Lib-link.write.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Lib.command.1.tlog" />
     <None Include="Object3d.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="engine\externals\imgui\LICENSE.txt" />
-    <Text Include="externals\imgui\LICENSE.txt" />
-    <Text Include="externals\imgui\x64\Debug\imgui.log" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
       <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="externals\imgui\x64\Debug\imgui.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_demo.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_draw.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_impl_dx12.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_impl_win32.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_tables.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_widgets.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

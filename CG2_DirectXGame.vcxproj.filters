@@ -69,27 +69,6 @@
     <ClCompile Include="engine\base\WinApp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="externals\imgui\imgui.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_demo.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_draw.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_tables.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\structure\Matrix4x4.h">
@@ -188,30 +167,6 @@
     <ClInclude Include="engine\externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="externals\imgui\imconfig.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui_impl_dx12.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui_impl_win32.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui_internal.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imstb_rectpack.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imstb_textedit.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imstb_truetype.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl" />
@@ -222,28 +177,8 @@
     <None Include="Object3d.hlsli" />
     <None Include="externals\imgui\imgui.vcxproj" />
     <None Include="externals\imgui\imgui.vcxproj.filters" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\CL.10164.write.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\CL.command.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Cl.items.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\CL.read.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\imgui.lastbuildstate" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Lib.command.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Lib-link.read.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.tlog\Lib-link.write.1.tlog" />
-    <None Include="externals\imgui\x64\Debug\imgui.lib.recipe" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="engine\externals\imgui\LICENSE.txt" />
-    <Text Include="externals\imgui\LICENSE.txt" />
-    <Text Include="externals\imgui\x64\Debug\imgui.log" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="externals\imgui\x64\Debug\imgui.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_demo.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_draw.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_impl_dx12.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_impl_win32.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_tables.obj" />
-    <Object Include="externals\imgui\x64\Debug\imgui_widgets.obj" />
   </ItemGroup>
 </Project>
