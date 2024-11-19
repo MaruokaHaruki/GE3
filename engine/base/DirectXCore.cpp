@@ -4,7 +4,7 @@
 ///====================Win====================///
 #include <vector>
 ///----------------DirectXTex----------------///
-#include "externals/DirectXTex/d3dx12.h"
+#include "d3dx12.h"
 #pragma comment(lib,"winmm.lib")
 ///----------------自作クラス----------------///
 #include "DirectXCore.h"

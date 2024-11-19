@@ -97,41 +97,6 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 }
 
 ///=============================================================================
-///							テクスチャリソース生成
-//Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(const DirectX::TexMetadata& metadata) {
-//	///---------------------------------------
-//	/// 1.metadataを元にResouceの設定
-//	D3D12_RESOURCE_DESC resouceDesc{};
-//	resouceDesc.Width = UINT(metadata.width);								//Textureの幅
-//	resouceDesc.Height = UINT(metadata.height);								//Textureの高さ
-//	resouceDesc.MipLevels = UINT16(metadata.mipLevels);						//mipmapの数
-//	resouceDesc.DepthOrArraySize = UINT16(metadata.arraySize);				//奥行き or 配列Textureの配列数
-//	resouceDesc.Format = metadata.format;									//TextureのFormat
-//	resouceDesc.SampleDesc.Count = 1;										//サンプリングカウント
-//	resouceDesc.Dimension = D3D12_RESOURCE_DIMENSION(metadata.dimension);	//Textureの次元数。普段つかているのは2次元。
-//	///---------------------------------------
-//	/// 2.利用するHeapの設定
-//	//TODO:リソースの場所を変更する03_00_ex
-//	D3D12_HEAP_PROPERTIES heapProperties{};
-//	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//細かい設定を行う
-//	//heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
-//	//heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
-//	///---------------------------------------
-//	/// 3.resouceを生成する
-//	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
-//	HRESULT hr = dxCore_->GetDevice()->CreateCommittedResource(
-//		&heapProperties,					//Heapの設定
-//		D3D12_HEAP_FLAG_NONE,				//Heapの特殊な設定、特になし
-//		&resouceDesc,						//Resourceの設定
-//		D3D12_RESOURCE_STATE_COPY_DEST,	//初回のResouceState。Textureは基本読むだけ
-//		nullptr,
-//		IID_PPV_ARGS(&resource)
-//	);
-//	assert(SUCCEEDED(hr));
-//	return resource;
-//}
-
-///=============================================================================
 ///								終了処理
 void TextureManager::Finalize() {
 	//インスタンスの削除

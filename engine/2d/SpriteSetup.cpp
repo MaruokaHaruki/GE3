@@ -1,16 +1,16 @@
 /*********************************************************************
- * \file   SpriteManager.cpp
+ * \file   SpriteSetup.cpp
  * \brief  スプライト管理クラス
  *
  * \author Harukichimaru
  * \date   November 2024
  * \note
  *********************************************************************/
-#include "SpriteManager.h"
+#include "SpriteSetup.h"
 
  ///=============================================================================
  ///						初期化
-void SpriteManager::Initialize(DirectXCore* dxCore) {
+void SpriteSetup::Initialize(DirectXCore* dxCore) {
 	/// ===引数でdxManagerを受取=== ///
 	dxCore_ = dxCore;
 
@@ -20,7 +20,7 @@ void SpriteManager::Initialize(DirectXCore* dxCore) {
 
 ///=============================================================================
 ///						共通描画設定
-void SpriteManager::CommonDrawSetup() {
+void SpriteSetup::CommonDrawSetup() {
 	//ルートシグネイチャのセット
 	dxCore_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	//グラフィックスパイプラインステートをセット
@@ -31,7 +31,7 @@ void SpriteManager::CommonDrawSetup() {
 
 ///=============================================================================
 ///						ルートシグネチャーの作成
-void SpriteManager::CreateRootSignature() {
+void SpriteSetup::CreateRootSignature() {
 	/// ===RootSignature作成=== ///
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags =
@@ -100,7 +100,7 @@ void SpriteManager::CreateRootSignature() {
 
 ///=============================================================================
 ///						グラフィックスパイプラインの作成
-void SpriteManager::CreateGraphicsPipeline() {
+void SpriteSetup::CreateGraphicsPipeline() {
 	/// ===RoorSignatureの作成=== ///
 	CreateRootSignature();
 

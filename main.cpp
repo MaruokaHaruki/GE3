@@ -26,12 +26,12 @@
 #include <sstream>
 ///--------------------------------------------------------------
 ///						 自作クラス
-#include "base/WinApp.h"
-#include "base/DirectXCore.h"
-#include "input/Input.h"
-#include "base/SpriteManager.h"
-#include "base/Sprite.h"
-#include "base/TextureManager.h"
+#include "WinApp.h"
+#include "DirectXCore.h"
+#include "Input.h"
+#include "spriteSetup.h"
+#include "Sprite.h"
+#include "TextureManager.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -54,20 +54,20 @@
 ///						 自作数学関数
 #include "Calc3x3.h"					// 3x3行列演算
 #include "Calc4x4.h"					// 4x4行列演算
-#include"AffineCalc.h"					// 3次元アフィン演算
-#include"RendPipeLine.h"				// レンダリングパイプライン
-#include "base/utils/WstringUtility.h"	// Wstring変換
-#include "base/utils/Logger.h"			// ログ出力
-#include"RendPipeLine.h"
+#include "AffineCalc.h"					// 3次元アフィン演算
+#include "RendPipeLine.h"				// レンダリングパイプライン
+#include "WstringUtility.h"	// Wstring変換
+#include "Logger.h"			// ログ出力
+#include "RendPipeLine.h"
 ///----------------Wstring変換
-#include "base/utils/WstringUtility.h"
+#include "WstringUtility.h"
 ///----------------ログ出力
-#include "base/utils/Logger.h"
-#include"RendPipeLine.h"
+#include "Logger.h"
+#include "RendPipeLine.h"
 ///----------------Wstring変換
-#include "base/utils/WstringUtility.h"
+#include "WstringUtility.h"
 ///----------------ログ出力
-#include "base/utils/Logger.h"
+#include "Logger.h"
 
 
 ///=============================================================================
@@ -80,12 +80,12 @@ MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const st
 	std::string line;
 	std::ifstream file(directoryPath + "/" + filename);
 
-	while (std::getline(file, line)) {
+	while(std::getline(file, line)) {
 		std::string identifier;
 		std::istringstream s(line);
 		s >> identifier;
 
-		if (identifier == "map_Kd") {
+		if(identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
 			materialData.textureFilePath = directoryPath + "/" + textureFilename;
@@ -112,42 +112,42 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 
 	//========================================
 	// 3.実際にファイルを読み、ModelDataを構築していく
-	while (std::getline(file, line)) {
+	while(std::getline(file, line)) {
 		std::string identifier;
 		std::istringstream s(line);
 		s >> identifier; //先頭の識別子を読む
 
 		//---------------------------------------
 		// identifierに応じた処理
-		if (identifier == "v") {
+		if(identifier == "v") {
 			Vector4 position;
 			s >> position.x >> position.y >> position.z;
 			position.w = 1.0f; //NOTE:同次座標を送っているためw=1
 			position.x *= -1.0f; //反転
 			positions.push_back(position);
 
-		} else if (identifier == "vt") {
+		} else if(identifier == "vt") {
 			Vector2 texcoord;
 			s >> texcoord.x >> texcoord.y;
 			texcoord.y = 1.0f - texcoord.y; // y軸を反転
 			texcoords.push_back(texcoord);
 
-		} else if (identifier == "vn") {
+		} else if(identifier == "vn") {
 			Vector3 normal;
 			s >> normal.x >> normal.y >> normal.z;
 			normal.x *= -1.0f; //反転
 			normals.push_back(normal);
 
-		} else if (identifier == "f") {
+		} else if(identifier == "f") {
 			VertexData triangle[3];
 			//面は三角形限定。その他は未対応
-			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+			for(int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
 				std::string vertexDefinition;
 				s >> vertexDefinition;
 				//頂点の要素へのIndexは「位置/UV/法線」で格納されているので、分解してIndexを取得する
 				std::istringstream v(vertexDefinition);
 				uint32_t elementIndices[3];
-				for (int32_t element = 0; element < 3; ++element) {
+				for(int32_t element = 0; element < 3; ++element) {
 					std::string index;
 					std::getline(v, index, '/'); // /区切りでインデックスを読んでいく
 					elementIndices[element] = std::stoi(index);
@@ -163,7 +163,7 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 			modelData.vertices.push_back(triangle[1]);
 			modelData.vertices.push_back(triangle[0]);
 
-		} else if (identifier == "mtllib") {
+		} else if(identifier == "mtllib") {
 			//MaterialTemplateLibraryファイルの名前を取得する
 			std::string materialFilename;
 			s >> materialFilename;
@@ -182,7 +182,7 @@ ModelData LoadObjFile(const std::string& directoryPath, const std::string& filen
 struct D3DResourceLeakCheker {
 	~D3DResourceLeakCheker() {
 		Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
-		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+		if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
 			//開放を忘れてエラーが出た場合、205行目をコメントアウト
 			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
@@ -226,9 +226,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//========================================
 	// スプライト系クラス
 	//ユニークポインタ
-	std::unique_ptr<SpriteManager> spriteManager = std::make_unique<SpriteManager>();
+	std::unique_ptr<SpriteSetup> spriteSetup = std::make_unique<SpriteSetup>();
 	//スプライト共通部の初期化
-	spriteManager->Initialize(dxManager.get());
+	spriteSetup->Initialize(dxManager.get());
 
 	//========================================
 	// テクスチャマネージャ
@@ -241,21 +241,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ユニークポインタ
 	std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
 	//スプライトの初期化
-	sprite->Initialize(spriteManager.get(), "resources/uvChecker.png");
+	sprite->Initialize(spriteSetup.get(), "resources/uvChecker.png");
 	//サイズ
 	sprite->SetSize({ 256.0f,256.0f });
-		
+
 	// 複数枚描画用
 	std::vector<std::unique_ptr<Sprite>> sprites;
-	for (uint32_t i = 0; i < 5; ++i) {
-		for (uint32_t i = 0; i < 5; ++i) {
+	for(uint32_t i = 0; i < 5; ++i) {
+		for(uint32_t i = 0; i < 5; ++i) {
 			std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-			if (i % 2 == 0) {
-				sprite->Initialize(spriteManager.get(), "resources/monsterBall.png");
+			if(i % 2 == 0) {
+				sprite->Initialize(spriteSetup.get(), "resources/monsterBall.png");
 				//サイズ
 				sprite->SetSize({ 256.0f,256.0f });
 			} else {
-				sprite->Initialize(spriteManager.get(), "resources/uvChecker.png");
+				sprite->Initialize(spriteSetup.get(), "resources/uvChecker.png");
 				//サイズ
 				sprite->SetSize({ 256.0f,256.0f });
 			}
@@ -264,7 +264,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// ユニークポインタでスプライトを作成
 		//NOTE:autoを使用せず明示的を心がけろ
 		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(spriteManager.get(), "resources/uvChecker.png");
+		sprite->Initialize(spriteSetup.get(), "resources/uvChecker.png");
 
 		// std::move で vector に追加
 		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
@@ -465,8 +465,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///=============================================================================
 	///						 メインループ
 	MSG msg{};
-	while (msg.message != WM_QUIT) {
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+	while(msg.message != WM_QUIT) {
+		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} else {
@@ -589,7 +589,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//NOTE:中身の分だけfor文を回す
 			float offset = 100.0f;//ずらす距離
 			int index = 0;
-			for (const auto& sprite : sprites) {
+			for(const auto& sprite : sprites) {
 				// スプライトを更新 (operator-> でアクセス)
 				sprite->Update();
 				sprite->SetSize(Vector2{ 128.0f,128.0f });
@@ -606,7 +606,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// ループ前処理
 			dxManager->PreDraw();
 			//共通描画設定
-			spriteManager->CommonDrawSetup();
+			spriteSetup->CommonDrawSetup();
 
 			//========================================
 			// 3D描画
@@ -636,7 +636,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//Spriteクラス
 			sprite->Draw();
 			//複数枚描画
-			for (const auto& sprite : sprites) {
+			for(const auto& sprite : sprites) {
 				// スプライトを描画
 				sprite->Draw();
 			}

@@ -7,15 +7,15 @@
  * \note
  *********************************************************************/
 #include "Sprite.h"
-#include "SpriteManager.h"	
+#include "SpriteSetup.h"	
 #include <AffineCalc.h>
 #include <RendPipeLine.h>
 
  ///=============================================================================
  ///								初期化
-void Sprite::Initialize(SpriteManager* spriteManager, std::string textureFilePath) {
+void Sprite::Initialize(SpriteSetup* SpriteSetup, std::string textureFilePath) {
 	//引数で受け取ってメンバ変数に記録する
-	this->spriteManager_ = spriteManager;
+	this->spriteSetup_ = SpriteSetup;
 
 	//頂点バッファの作成
 	CreateVertexBuffer();
@@ -59,8 +59,8 @@ void Sprite::Update(Matrix4x4 viewMatrix) {
 	// 正射影行列の作成
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(
 		0.0f, 0.0f,
-		float(spriteManager_->GetDXManager()->GetWinApp().GetWindowWidth()),
-		float(spriteManager_->GetDXManager()->GetWinApp().GetWindowHeight()),
+		float(spriteSetup_->GetDXManager()->GetWinApp().GetWindowWidth()),
+		float(spriteSetup_->GetDXManager()->GetWinApp().GetWindowHeight()),
 		0.0f, 100.0f);
 
 	//---------------------------------------
@@ -81,7 +81,7 @@ void Sprite::Draw() {
 	}
 
 	// コマンドリスト取得
-	auto commandList = spriteManager_->GetDXManager()->GetCommandList();
+	auto commandList = spriteSetup_->GetDXManager()->GetCommandList();
 
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
@@ -110,7 +110,7 @@ void Sprite::Draw() {
 ///						 頂点バッファの作成
 void Sprite::CreateVertexBuffer() {
 	// 頂点データ用のバッファリソースを作成
-	vertexBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(VertexData) * 4);
+	vertexBuffer_ = spriteSetup_->GetDXManager()->CreateBufferResource(sizeof(VertexData) * 4);
 
 	if(!vertexBuffer_) {
 		throw std::runtime_error("Failed to Create Vertex Buffer");
@@ -145,7 +145,7 @@ void Sprite::CreateVertexBuffer() {
 
 void Sprite::CreateIndexBuffer() {
 	// インデックスデータ用のバッファリソースを作成
-	indexBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(uint32_t) * 6);
+	indexBuffer_ = spriteSetup_->GetDXManager()->CreateBufferResource(sizeof(uint32_t) * 6);
 
 	if(!indexBuffer_) {
 		throw std::runtime_error("Failed to Create Index Buffer");
@@ -173,7 +173,7 @@ void Sprite::CreateIndexBuffer() {
 ///						マテリアルバッファの作成
 void Sprite::CreateMaterialBuffer() {
 	// マテリアルデータ用のバッファリソースを作成
-	materialBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(Material));
+	materialBuffer_ = spriteSetup_->GetDXManager()->CreateBufferResource(sizeof(Material));
 	//書き込むためのアドレス取得
 	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &materialData_ ));
 	//マテリアルデータ書き込み用変数(赤色を書き込み)
@@ -188,7 +188,7 @@ void Sprite::CreateMaterialBuffer() {
 ///			トランスフォーメーションマトリックスバッファの作成
 void Sprite::CreateTransformationMatrixBuffer() {
 	//wvp用のリソースを作る
-	transfomationMatrixBuffer_ = spriteManager_->GetDXManager()->CreateBufferResource(sizeof(TransformationMatrix));
+	transfomationMatrixBuffer_ = spriteSetup_->GetDXManager()->CreateBufferResource(sizeof(TransformationMatrix));
 	//書き込むためのアドレスを取得
 	transfomationMatrixBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &transformationMatrixData_ ));
 	//書き込み用変数

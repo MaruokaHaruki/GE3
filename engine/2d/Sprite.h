@@ -35,7 +35,7 @@
 
 ///=============================================================================
 ///								クラス
-class SpriteManager;
+class SpriteSetup;
 class Sprite {
 	///--------------------------------------------------------------
 	///						 メンバ関数
@@ -47,7 +47,7 @@ public:
 	 * \param  textureFilePath ファイルパス
 	 * \note
 	 */
-	void Initialize(SpriteManager* spriteManager, std::string textureFilePath);
+	void Initialize(SpriteSetup* spriteManager, std::string textureFilePath);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  更新
@@ -258,7 +258,7 @@ public:
 private:
 	///---------------------------------------
 	/// スプライトマネージャ
-	SpriteManager* spriteManager_ = nullptr;
+	SpriteSetup* spriteSetup_ = nullptr;
 
 	///---------------------------------------
 	/// バッファデータ

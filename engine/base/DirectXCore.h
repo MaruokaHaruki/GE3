@@ -10,9 +10,9 @@
 #include <chrono>
 #include <thread>
 //自作関数
-#include"utils/WstringUtility.h"
+#include"WstringUtility.h"
 using namespace WstringUtility;
-#include "utils/Logger.h"
+#include "Logger.h"
 using namespace Logger;
 #include "WinApp.h"
 //ReportLiveObj
@@ -28,7 +28,7 @@ using namespace Logger;
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
 //DXtec
-#include"externals/DirectXTex/DirectXTex.h"
+#include"DirectXTex.h"
 //imgui
 #include "externals/imgui/imgui.h"
 #include"externals/imgui/imgui_impl_dx12.h"
