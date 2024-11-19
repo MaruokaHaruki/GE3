@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -45,12 +45,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(ProjectDir)\math\structure\drawData;$(IncludePath)</IncludePath>
-    <ExecutablePath>$(ProjectDir)/math/structure/Vector2.h;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)engine/externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)\math;$(ProjectDir)\math\structure;$(ProjectDir)\math\structure\drawData;$(IncludePath)</IncludePath>
-    <ExecutablePath>$(ProjectDir)/math/structure/Vector2.h;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)engine/externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -62,6 +62,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -85,6 +86,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -99,36 +101,38 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="base\DirectXManager.cpp" />
-    <ClCompile Include="base\utils\WstringUtility.cpp" />
-    <ClCompile Include="base\utils\Logger.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui_demo.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui_draw.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui_tables.cpp" />
-    <ClCompile Include="base\externals\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="input\Input.cpp" />
+    <ClCompile Include="engine\base\DirectXCore.cpp" />
+    <ClCompile Include="engine\utils\WstringUtility.cpp" />
+    <ClCompile Include="engine\utils\Logger.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui_demo.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui_draw.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui_tables.cpp" />
+    <ClCompile Include="engine\externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="base\WinApp.cpp" />
-    <ClCompile Include="base\SpriteManager.cpp" />
-    <ClCompile Include="base\Sprite.cpp" />
-    <ClCompile Include="base\TextureManager.cpp" />
+    <ClCompile Include="engine\base\WinApp.cpp" />
+    <ClCompile Include="engine\2d\SpriteSetup.cpp" />
+    <ClCompile Include="engine\2d\Sprite.cpp" />
+    <ClCompile Include="engine\2d\TextureManager.cpp" />
+    <ClCompile Include="engine\3d\Object3dSetup.cpp" />
+    <ClCompile Include="engine\3d\Object3d.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="base\DirectXManager.h" />
-    <ClInclude Include="base\utils\WstringUtility.h" />
-    <ClInclude Include="base\utils\Logger.h" />
-    <ClInclude Include="base\externals\imgui\imconfig.h" />
-    <ClInclude Include="base\externals\imgui\imgui.h" />
-    <ClInclude Include="base\externals\imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="base\externals\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="base\externals\imgui\imgui_internal.h" />
-    <ClInclude Include="base\externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="base\externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="base\externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="input\Input.h" />
+    <ClInclude Include="engine\base\DirectXCore.h" />
+    <ClInclude Include="engine\utils\WstringUtility.h" />
+    <ClInclude Include="engine\utils\Logger.h" />
+    <ClInclude Include="engine\externals\imgui\imconfig.h" />
+    <ClInclude Include="engine\externals\imgui\imgui.h" />
+    <ClInclude Include="engine\externals\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="engine\externals\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="engine\externals\imgui\imgui_internal.h" />
+    <ClInclude Include="engine\externals\imgui\imstb_rectpack.h" />
+    <ClInclude Include="engine\externals\imgui\imstb_textedit.h" />
+    <ClInclude Include="engine\externals\imgui\imstb_truetype.h" />
+    <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="math\Calc4x4.h" />
     <ClInclude Include="math\structure\drawData\DirectionalLight.h" />
     <ClInclude Include="math\structure\drawData\Material.h" />
@@ -144,11 +148,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="math\RendPipeLine.h" />
     <ClInclude Include="math\Calc3x3.h" />
     <ClInclude Include="math\structure\Matrix3x3.h" />
-    <ClInclude Include="base\WinApp.h" />
-    <ClInclude Include="base\SpriteManager.h" />
-    <ClInclude Include="base\Sprite.h" />
+    <ClInclude Include="engine\base\WinApp.h" />
+    <ClInclude Include="engine\2d\SpriteSetup.h" />
+    <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="math\structure\Vector2.h" />
-    <ClInclude Include="base\TextureManager.h" />
+    <ClInclude Include="engine\2d\TextureManager.h" />
+    <ClInclude Include="engine\3d\Object3dSetup.h" />
+    <ClInclude Include="engine\3d\Object3d.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Object3d.VS.hlsl">
@@ -166,13 +172,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="externals\imgui\imgui.vcxproj" />
+    <None Include="externals\imgui\imgui.vcxproj.filters" />
     <None Include="Object3d.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="base\externals\imgui\LICENSE.txt" />
+    <Text Include="engine\externals\imgui\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="base\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
+    <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
       <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
     </ProjectReference>
   </ItemGroup>

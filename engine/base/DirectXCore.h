@@ -1,5 +1,5 @@
 ///===================================================================///
-///						DirectXManagerクラス
+///						DirectXCoreクラス
 ///===================================================================///
 //NOTE:ダイレクトXを管理する
 #include <cstdint>
@@ -10,9 +10,9 @@
 #include <chrono>
 #include <thread>
 //自作関数
-#include"utils/WstringUtility.h"
+#include"WstringUtility.h"
 using namespace WstringUtility;
-#include "utils/Logger.h"
+#include "Logger.h"
 using namespace Logger;
 #include "WinApp.h"
 //ReportLiveObj
@@ -28,15 +28,15 @@ using namespace Logger;
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
 //DXtec
-#include"externals/DirectXTex/DirectXTex.h"
+#include"DirectXTex.h"
 //imgui
-#include "externals/imgui/imgui.h"
-#include"externals/imgui/imgui_impl_dx12.h"
-#include "externals/imgui/imgui_impl_win32.h"
+#include "imgui.h"
+#include "imgui_impl_dx12.h"
+#include "imgui_impl_win32.h"
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 #pragma once
-class DirectXManager {
+class DirectXCore {
 public:
 	///----------------------------------------------------///
 	///						メンバ関数
@@ -45,12 +45,12 @@ public:
 	/// <summary>
 	/// コンストラクタ
 	/// </summary>
-	DirectXManager();
+	DirectXCore();
 
 	/// <summary>
 	/// デストラクタ
 	/// </summary>
-	~DirectXManager();
+	~DirectXCore();
 
 	/// <summary>
 	/// ループ前処理

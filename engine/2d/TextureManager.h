@@ -7,7 +7,7 @@
  *********************************************************************/
 #pragma once
 #include <string>
-#include "DirectXManager.h"
+#include "DirectXCore.h"
 
  ///--------------------------------------------------------------
  ///							構造体
@@ -47,7 +47,7 @@ public:
 	* \param dxManager ダイレクトXマネージャーのポインタ
 	* \note  生ポインタの受け渡しを行うこと
 	*/
-	void Initialize(DirectXManager* dxManager);
+	void Initialize(DirectXCore* dxManager);
 
 	/**----------------------------------------------------------------------------
 	 * \brief ファイルの読み込み
@@ -110,8 +110,8 @@ private:
 	TextureManager& operator = (TextureManager&) = default;
 
 	//---------------------------------------
-	// DirectXManagerポインタ
-	DirectXManager* dxManager_ = nullptr;;
+	// DirectXCoreポインタ
+	DirectXCore* dxCore_ = nullptr;;
 
 	//---------------------------------------
 	// テクスチャデータ
