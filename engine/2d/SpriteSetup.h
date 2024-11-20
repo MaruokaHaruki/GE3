@@ -62,7 +62,7 @@ private:
 	
 
 	///====================DirectXCoreポインタ====================///
-	DirectXCore* dxCore_ = nullptr;;
+	DirectXCore* dxCore_ = nullptr;
 
 	///====================RootSignature====================///
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
