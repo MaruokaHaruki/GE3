@@ -45,11 +45,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)engine/externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)engine/externals/imgui;$(ProjectDir)externals/DirectXTex;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -62,7 +62,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -86,7 +86,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
