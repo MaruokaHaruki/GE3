@@ -104,14 +104,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\base\DirectXCore.cpp" />
     <ClCompile Include="engine\utils\WstringUtility.cpp" />
     <ClCompile Include="engine\utils\Logger.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui_demo.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui_draw.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui_tables.cpp" />
-    <ClCompile Include="engine\externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
+    <ClCompile Include="externals\imgui\imgui.cpp" />
+    <ClCompile Include="externals\imgui\imgui_demo.cpp" />
+    <ClCompile Include="externals\imgui\imgui_draw.cpp" />
+    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp" />
+    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="externals\imgui\imgui_tables.cpp" />
+    <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\base\WinApp.cpp" />
     <ClCompile Include="engine\2d\SpriteSetup.cpp" />
@@ -125,14 +125,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\utils\WstringUtility.h" />
     <ClInclude Include="engine\utils\Logger.h" />
     <ClInclude Include="engine\externals\imgui\imconfig.h" />
-    <ClInclude Include="engine\externals\imgui\imgui.h" />
-    <ClInclude Include="engine\externals\imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="engine\externals\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="engine\externals\imgui\imgui_internal.h" />
-    <ClInclude Include="engine\externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="engine\externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="engine\externals\imgui\imstb_truetype.h" />
     <ClInclude Include="engine\input\Input.h" />
+    <ClInclude Include="externals\imgui\imconfig.h" />
+    <ClInclude Include="externals\imgui\imgui.h" />
+    <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="externals\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="externals\imgui\imgui_internal.h" />
+    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
+    <ClInclude Include="externals\imgui\imstb_textedit.h" />
+    <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="math\Calc4x4.h" />
     <ClInclude Include="math\structure\drawData\DirectionalLight.h" />
     <ClInclude Include="math\structure\drawData\Material.h" />
@@ -178,6 +179,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <Text Include="engine\externals\imgui\LICENSE.txt" />
+    <Text Include="externals\imgui\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
