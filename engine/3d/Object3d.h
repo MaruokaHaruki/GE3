@@ -1,21 +1,18 @@
 /*********************************************************************
  * \file   Object3d.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   November 2024
- * \note   
+ * \note
  *********************************************************************/
 #pragma once
-#include "MaterialData.h"
-#include "ModelData.h"
-#include "VertexData.h"
-#include "Material.h"
 #include "TransformationMatrix.h"
 #include "DirectionalLight.h"
 #include "Transform.h"
-//========================================
-// DX12include
+#include "Model.h"
+ //========================================
+ // DX12include
 #include<d3d12.h>
 #include<dxgi1_6.h>
 #include <wrl/client.h>
@@ -30,7 +27,7 @@ class Object3dSetup;
 class Object3d {
 	///--------------------------------------------------------------
 	///							メンバ関数
-	public:
+public:
 
 	/// \brief 初期化
 	void Initialize(Object3dSetup* object3dSetup);
@@ -44,41 +41,6 @@ class Object3d {
 	///--------------------------------------------------------------
 	///						 静的メンバ関数
 private:
-	/**----------------------------------------------------------------------------
-	 * \brief  LoadMaterialTemplateFile .mtlファイル読み込み
-	 * \param  directoryPath ディレクトリパス
-	 * \param  filename ファイルネーム
-	 * \return materialData マテリアルデータ
-	 * \note   
-	 */
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
-
-	/**----------------------------------------------------------------------------
-	 * \brief  LoadObjFile .objファイル読み込み
-	 * \param  directoryPath ディレクトリパス
-	 * \param  filename ファイルネーム
-	 * \note   そのままmodelDataに格納
-	 */
-	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
-
-	/**----------------------------------------------------------------------------
-	 * \brief  頂点バッファの作成
-	 * \note
-	 */
-	void CreateVertexBuffer();
-
-	/**----------------------------------------------------------------------------
-	 * \brief  インデックスバッファの作成
-	 * \note
-	 */
-	//void CreateIndexBuffer();
-
-	/**----------------------------------------------------------------------------
-	 * \brief  マテリアルバッファの作成
-	 * \note
-	 */
-	void CreateMaterialBuffer();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  トランスフォーメーションマトリックスバッファの作成
 	 * \note
@@ -95,6 +57,21 @@ private:
 	///							入出力関数
 public:
 
+	/**----------------------------------------------------------------------------
+	 * \brief  SetModel
+	 * \param  model
+	 * \note
+	 */
+	void SetModel(Model* model) { this->model_ = model; }
+
+	void SetScale(const Vector3& scale) { transform_.scale = scale; }
+	const Vector3& GetScale() const { return transform_.scale; }
+
+	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	const Vector3& GetRotate() const { return transform_.rotate; }
+
+	void SetTranslate(const Vector3& translate) { transform_.translate = translate; } 
+	const Vector3& GetTranslate() const { return transform_.translate; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -106,15 +83,9 @@ private:
 
 	//---------------------------------------
 	// モデルデータ
-	ModelData modelData_;
+	Model* model_ = nullptr;
 
 	//---------------------------------------
-	// 頂点データ
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_;
-	//インデックス
-	//Microsoft::WRL::ComPtr <ID3D12Resource> indexBuffer_;
-	//マテリアル
-	Microsoft::WRL::ComPtr <ID3D12Resource> materialBuffer_;
 	//トランスフォーメーションマトリックス
 	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
 	//並行光源
@@ -122,33 +93,14 @@ private:
 
 	///---------------------------------------
 	/// バッファリソース内のデータを指すポインタ
-	//頂点
-	VertexData* vertexData_ = nullptr;
-	//インデックス
-	//uint32_t* indexData_ = nullptr;
-	//マテリアル
-	Material* materialData_ = nullptr;
 	//トランスフォーメーションマトリックス
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 	//並行光源
 	DirectionalLight* directionalLightData_ = nullptr;
 
-	///---------------------------------------
-	/// バッファリソースの使い道を指すポインタ
-	//頂点
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
-	//インデックス
-	//D3D12_INDEX_BUFFER_VIEW indexBufferView_;
-
-
-	//---------------------------------------
-	// テスト用変数
-	uint32_t textureIndex_ = 0;
-
 	///--------------------------------------
 	/// Transform
 	Transform transform_;
 	Transform cameraTransform_;
-	
 };
 

@@ -30,6 +30,8 @@
 #include "TextureManager.h"
 #include "Object3dSetup.h"
 #include "Object3d.h"
+#include "ModelSetup.h"
+#include "Model.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -262,6 +264,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 3D系クラス
 	//========================================
+	// ModelSetup
+	std::unique_ptr<ModelSetup> modelSetup = std::make_unique<ModelSetup>();
+	modelSetup->Initialize(dxCore.get());
+
+	//========================================
+	// Model
+	std::unique_ptr<Model> model = std::make_unique<Model>();
+	model->Initialize(modelSetup.get());
+
+	//========================================
 	// 3Dオブジェクト共通部
 	std::unique_ptr<Object3dSetup> object3dSetup = std::make_unique<Object3dSetup>();
 	//3Dオブジェクト共通部の初期化
@@ -271,7 +283,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 3Dオブジェクトクラス
 	std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
 	//3Dオブジェクトの初期化
-	object3d->Initialize(object3dSetup.get()/*, "resources/uvChecker.png"*/);
+	object3d->Initialize(object3dSetup.get());
+	object3d->SetModel(model.get());
 
 
 
