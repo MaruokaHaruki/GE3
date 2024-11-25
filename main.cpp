@@ -6,10 +6,6 @@
  * \date   November 2024
  * \note
  *********************************************************************/
-
- ///----------------------------------------------------///
- ///					インクルードスペース
- ///----------------------------------------------------///
 #include <Windows.h>
 ///--------------------------------------------------------------
 ///						 Win関係
@@ -53,19 +49,12 @@
 #include "MaterialData.h"
 #include "ModelData.h"
 ///--------------------------------------------------------------
-///						 自作数学関数
-#include "Calc3x3.h"			// 3x3行列演算
+///						 自作数学
 #include "Calc4x4.h"			// 4x4行列演算
 #include "AffineCalc.h"			// 3次元アフィン演算
 #include "RendPipeLine.h"		// レンダリングパイプライン
 #include "WstringUtility.h"		// Wstring変換
 #include "Logger.h"				// ログ出力
-#include "RendPipeLine.h"
-#include "WstringUtility.h"		//Wstring変換
-#include "Logger.h"
-#include "RendPipeLine.h"		//ログ出力
-///----------------Wstring変換
-#include "WstringUtility.h"
 
 
 ///=============================================================================
@@ -268,7 +257,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		sprites.push_back(std::move(sprite));
 	}
 
-	//TODO:06_02にて実装
+
+	//TODO:06_03にて実装
 	///--------------------------------------------------------------
 	///						 3D系クラス
 	//========================================
@@ -279,29 +269,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//========================================
 	// 3Dオブジェクトクラス
-	//std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
+	std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
 	//3Dオブジェクトの初期化
-	//object3d->Initialize(object3dSetup.get(), "resources/uvChecker.png");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	object3d->Initialize(object3dSetup.get()/*, "resources/uvChecker.png"*/);
 
 
 
@@ -437,8 +407,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ビューポート
 	D3D12_VIEWPORT viewport{};
 	//クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = win->GetWindowWidth();
-	viewport.Height = win->GetWindowHeight();
+	viewport.Width = static_cast<float>(win->GetWindowWidth());
+	viewport.Height = static_cast<float>(win->GetWindowHeight());
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
 	viewport.MinDepth = 0;
@@ -525,7 +495,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Begin("3D Object");
 			// カラーピッカーを表示
 			ImGui::Text("3D Material Settings");
-			ImGui::ColorPicker4("Color", &material.color.x, 0.01f);
+			ImGui::ColorPicker4("Color", reinterpret_cast<float*>( &material.color.x ), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
 			*materialData = material;
 			// 空白とセパレータ
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -564,7 +534,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Begin("2D Object");
 			// カラーピッカーを表示
 			ImGui::Text("2D Material Settings");
-			ImGui::ColorPicker4("Color", &materialSprite.x, 0.01f);
+            ImGui::ColorPicker4("Color", reinterpret_cast<float*>(&materialSprite.x), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
 			//スプライトに適用
 			sprite->SetColor(materialSprite);
 			// 空白とセパレータ
@@ -606,6 +576,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Matrix4x4 worldViewProjectionMatrix = Multiply4x4(worldMatrix, Multiply4x4(viewMatrix, projectionMatrix));
 			transformationMatrix.WVP = worldViewProjectionMatrix;
 			*transformationMatrixData = transformationMatrix;
+			materialData->uvTransform = Identity4x4();
 
 			//========================================
 			// 2Dオブジェクト処理
@@ -616,11 +587,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//座標のセット
 			sprite->SetPosition(Vector2{ transformSprite.translate.x, transformSprite.translate.y });
 
-			materialData->uvTransform = Identity4x4();
-
 
 			//========================================
-			// スプライト更新
+			// 2D更新
 			//単体
 			sprite->Update();
 			//複数枚処理
@@ -636,6 +605,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				index++;
 			}
 
+			//========================================
+			// 3D更新 
+			object3d->Update();
+
+
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
 			//ImGuiの内部コマンド生成
@@ -645,34 +619,43 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			dxCore->PreDraw();
 			//3Dオブジェクト共通描画設定
 			object3dSetup->CommonDrawSetup();
-			//2Dオブジェクト共通描画設定
-			spriteSetup->CommonDrawSetup();
 
 			//========================================
 			// 3D描画
 			dxCore->GetCommandList()->RSSetViewports(1, &viewport);
 			dxCore->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 
-			dxCore->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
-			// インデックスバッファをバインド
-			//dxCore->GetCommandList()->IASetIndexBuffer(&indexBufferView);
-			dxCore->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-			dxCore->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource->GetGPUVirtualAddress());
-			//テクスチャの切り替え
-			dxCore->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHadleGPU);
-			//dxCore->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetSrvHandleGPU(1));
-			// DirectionalLight用のCBV設定 (b1)
-			dxCore->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-			// 描画コマンド(頂点データ)
-			//dxCore->GetCommandList()->DrawInstanced(kNumVertices, 1, 0, 0);
-			// 描画コマンド(インデックスデータ)
-			//dxCore->GetCommandList()->DrawIndexedInstanced(kNumIndices, 1, 0, 0, 0);
-			// 描画コマンド(モデルデータ)
-			dxCore->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+			//dxCore->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+			//// インデックスバッファをバインド
+			////dxCore->GetCommandList()->IASetIndexBuffer(&indexBufferView);
+			//dxCore->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+			//dxCore->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResource->GetGPUVirtualAddress());
+			////テクスチャの切り替え
+			//dxCore->GetCommandList()->SetGraphicsRootDescriptorTable(2, textureSrvHadleGPU);
+			////dxCore->GetCommandList()->SetGraphicsRootDescriptorTable(2, TextureManager::GetSrvHandleGPU(1));
+			//// DirectionalLight用のCBV設定 (b1)
+			//dxCore->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+			//// 描画コマンド(頂点データ)
+			////dxCore->GetCommandList()->DrawInstanced(kNumVertices, 1, 0, 0);
+			//// 描画コマンド(インデックスデータ)
+			////dxCore->GetCommandList()->DrawIndexedInstanced(kNumIndices, 1, 0, 0, 0);
+			//// 描画コマンド(モデルデータ)
+			//dxCore->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+
+			//========================================
+			// 3D描画
+			object3d->Draw();
+
+
+
+
+
 
 
 			//========================================
-			// 2D描画
+			// 2Dオブジェクト共通描画設定
+			spriteSetup->CommonDrawSetup();
+
 			//Spriteクラス
 			sprite->Draw();
 			//複数枚描画

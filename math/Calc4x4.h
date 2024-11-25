@@ -1,18 +1,24 @@
-///=====================================================/// 
-///4x4の行列演算
-///=====================================================///
+/*********************************************************************
+ * \file   Calc4x4.h
+ * \brief  4x4行列の計算関数
+ * 
+ * \author Harukichimaru
+ * \date   November 2024
+ * \note   
+ *********************************************************************/
 //NOTE:04_02_09を見ると関数分けがわかるぞ
 
 #pragma once
 #include <stdexcept>
 #include "Matrix4x4.h"
 
-/// <summary>
-/// 1.行列の加法
-/// </summary>
-/// <param name="m1"></param>
-/// <param name="m2"></param>
-/// <returns></returns>
+/**----------------------------------------------------------------------------
+ * \brief  Add4x4 行列の加算
+ * \param  m1 
+ * \param  m2 
+ * \return Matrix4x4
+ * \note   
+ */
 inline Matrix4x4 Add4x4(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; ++i) {
@@ -23,12 +29,13 @@ inline Matrix4x4 Add4x4(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-/// <summary>
-/// 2.行列の減算
-/// </summary>
-/// <param name="m1"></param>
-/// <param name="m2"></param>
-/// <returns></returns>
+/**----------------------------------------------------------------------------
+ * \brief  Subtract4x4 行列の減算
+ * \param  m1 
+ * \param  m2 
+ * \return Matrix4x4
+ * \note   
+ */
 inline Matrix4x4 Subtract4x4(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; ++i) {
@@ -39,12 +46,13 @@ inline Matrix4x4 Subtract4x4(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-/// <summary>
-/// 3.行列の積
-/// </summary>
-/// <param name="m1"></param>
-/// <param name="m2"></param>
-/// <returns></returns>
+/**----------------------------------------------------------------------------
+ * \brief  Multiply4x4 行列の乗算
+ * \param  m1
+ * \param  m2
+ * \return Matrix4x4
+ * \note
+ */
 inline Matrix4x4 Multiply4x4(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 
@@ -72,17 +80,19 @@ inline Matrix4x4 Multiply4x4(const Matrix4x4& m1, const Matrix4x4& m2) {
 	return result;
 }
 
-/// <summary>
-/// 逆行列を計算する関数
-/// </summary>
-/// <param name="matrix"></param>
-/// <returns></returns>
-// 行列の余因子行列を計算するヘルパー関数
-inline Matrix4x4 Cofactor4x4(const Matrix4x4& matrix);
 
 // 余因子行列の計算に必要なサブ行列を計算するヘルパー関数
+inline Matrix4x4 Cofactor4x4(const Matrix4x4& matrix);
+
+// 余因子行列の計算に必要な小行列式を計算するヘルパー関数
 inline float Minor(const Matrix4x4& matrix, int row, int col);
 
+/**----------------------------------------------------------------------------
+ * \brief  Inverse4x4 逆行列を求める
+ * \param  matrix 
+ * \return Matrix4x4
+ * \note   
+ */
 inline Matrix4x4 Inverse4x4(const Matrix4x4& matrix) {
 	// 行列式を計算
 	float det =
@@ -136,6 +146,12 @@ inline Matrix4x4 Inverse4x4(const Matrix4x4& matrix) {
 	return inverseMatrix;
 }
 
+/**----------------------------------------------------------------------------
+ * \brief  Cofactor4x4 余因子行列を求める
+ * \param  matrix
+ * \return 
+ * \note   
+ */
 inline Matrix4x4 Cofactor4x4(const Matrix4x4& matrix) {
 	Matrix4x4 cofactorMatrix;
 	for (int i = 0; i < 4; i++) {
@@ -148,6 +164,14 @@ inline Matrix4x4 Cofactor4x4(const Matrix4x4& matrix) {
 	return cofactorMatrix;
 }
 
+/**----------------------------------------------------------------------------
+ * \brief  Minor 小行列式を求める
+ * \param  matrix
+ * \param  row
+ * \param  col
+ * \return 
+ * \note   
+ */
 inline float Minor(const Matrix4x4& matrix, int row, int col) {
 	float subMatrix[3][3];
 	int subRow = 0;
@@ -167,11 +191,12 @@ inline float Minor(const Matrix4x4& matrix, int row, int col) {
 		subMatrix[0][2] * ( subMatrix[1][0] * subMatrix[2][1] - subMatrix[1][1] * subMatrix[2][0] );
 }
 
-/// <summary>
-/// 5.転置行列
-/// </summary>
-/// <param name="matrix"></param>
-/// <returns></returns>
+/**----------------------------------------------------------------------------
+ * \brief  Transpose4x4 転置行列を求める
+ * \param  matrix
+ * \return 
+ * \note   
+ */
 inline Matrix4x4 Transpose4x4(const Matrix4x4& matrix) {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; ++i) {
@@ -182,10 +207,11 @@ inline Matrix4x4 Transpose4x4(const Matrix4x4& matrix) {
 	return result;
 }
 
-/// <summary>
-/// 単位行列の作成
-/// </summary>
-/// <returns></returns>
+/**----------------------------------------------------------------------------
+ * \brief  Identity4x4 単位行列を生成する
+ * \return 
+ * \note   
+ */
 inline Matrix4x4 Identity4x4() {
 	Matrix4x4 result;
 	for (int i = 0; i < 4; ++i) {
