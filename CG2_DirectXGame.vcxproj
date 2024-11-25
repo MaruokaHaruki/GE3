@@ -147,7 +147,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="math\structure\Vector4.h" />
     <ClInclude Include="math\AffineCalc.h" />
     <ClInclude Include="math\RendPipeLine.h" />
-    <ClInclude Include="math\Calc3x3.h" />
     <ClInclude Include="math\structure\Matrix3x3.h" />
     <ClInclude Include="engine\base\WinApp.h" />
     <ClInclude Include="engine\2d\SpriteSetup.h" />
