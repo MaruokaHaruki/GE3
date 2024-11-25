@@ -23,11 +23,11 @@
 
 ///=============================================================================
 ///						初期化
-void Model::Initialize(ModelSetup* modelSetup) {
+void Model::Initialize(ModelSetup* modelSetup, const std::string& directorypath, const std::string& filename) {
 	//modelSetupから受け取る
 	modelSetup_ = modelSetup;
 	//モデルデータの読み込み
-	LoadObjFile("resources", "axis.obj");
+	LoadObjFile(directorypath, filename);
 	//頂点バッファの作成
 	CreateVertexBuffer();
 	//マテリアルバッファの作成
