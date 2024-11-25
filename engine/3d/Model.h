@@ -30,7 +30,7 @@ class Model {
 public:
 
 	/// \brief 初期化
-	void Initialize(ModelSetup* modelSetup);
+	void Initialize(ModelSetup* modelSetup, const std::string& directorypath, const std::string& filename);
 
 	/// \brief 更新
 	void Update();

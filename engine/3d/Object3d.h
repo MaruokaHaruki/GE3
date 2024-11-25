@@ -11,6 +11,7 @@
 #include "DirectionalLight.h"
 #include "Transform.h"
 #include "Model.h"
+#include "ModelManager.h"
  //========================================
  // DX12include
 #include<d3d12.h>
@@ -58,19 +59,49 @@ private:
 public:
 
 	/**----------------------------------------------------------------------------
-	 * \brief  SetModel
-	 * \param  model
+	* \brief  SetModel モデルの設定
+	* \param  filePath ファイルパス
+	* \note
+	*/
+	void SetModel(const std::string& filePath) {model_ = ModelManager::GetInstance()->FindModel(filePath);}
+
+	/**----------------------------------------------------------------------------
+	 * \brief  SetModel モデルの設定
+	 * \param  model モデル
 	 * \note
 	 */
-	void SetModel(Model* model) { this->model_ = model; }
-
 	void SetScale(const Vector3& scale) { transform_.scale = scale; }
+	/**----------------------------------------------------------------------------
+	 * \brief  GetScale スケールの取得
+	 * \return Vector3 スケール
+	 * \note
+	 */
 	const Vector3& GetScale() const { return transform_.scale; }
 
+	/**----------------------------------------------------------------------------
+	 * \brief  SetRotate 回転の設定
+	 * \param  rotate 回転
+	 * \note
+	 */
 	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	/**----------------------------------------------------------------------------
+	 * \brief  GetRotate 回転の取得
+	 * \return Vector3 回転
+	 * \note
+	 */
 	const Vector3& GetRotate() const { return transform_.rotate; }
 
+	/**----------------------------------------------------------------------------
+	 * \brief  SetTranslate 移動の設定
+	 * \param  translate 移動
+	 * \note
+	 */
 	void SetTranslate(const Vector3& translate) { transform_.translate = translate; } 
+	/**----------------------------------------------------------------------------
+	 * \brief  GetTranslate 移動の取得
+	 * \return Vector3 移動
+	 * \note
+	 */
 	const Vector3& GetTranslate() const { return transform_.translate; }
 
 	///--------------------------------------------------------------
@@ -91,16 +122,17 @@ private:
 	//並行光源
 	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightBuffer_;
 
-	///---------------------------------------
-	/// バッファリソース内のデータを指すポインタ
+	//---------------------------------------
+	// バッファリソース内のデータを指すポインタ
 	//トランスフォーメーションマトリックス
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 	//並行光源
 	DirectionalLight* directionalLightData_ = nullptr;
 
-	///--------------------------------------
-	/// Transform
+	//--------------------------------------
+	// Transform
 	Transform transform_;
+	// カメラのTransform
 	Transform cameraTransform_;
 };
 

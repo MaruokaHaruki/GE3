@@ -32,6 +32,7 @@
 #include "Object3d.h"
 #include "ModelSetup.h"
 #include "Model.h"
+#include "ModelManager.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -264,14 +265,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 3D系クラス
 	//========================================
-	// ModelSetup
-	std::unique_ptr<ModelSetup> modelSetup = std::make_unique<ModelSetup>();
-	modelSetup->Initialize(dxCore.get());
+	// モデルマネージャの初期化
+	ModelManager::GetInstance()->Initialize(dxCore.get());
+	//モデルの読み込み
+	ModelManager::GetInstance()->LoadMedel("axis.obj");
 
 	//========================================
 	// Model
-	std::unique_ptr<Model> model = std::make_unique<Model>();
-	model->Initialize(modelSetup.get());
+	//std::unique_ptr<Model> model = std::make_unique<Model>();
+	//model->Initialize();
 
 	//========================================
 	// 3Dオブジェクト共通部
@@ -284,10 +286,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
 	//3Dオブジェクトの初期化
 	object3d->Initialize(object3dSetup.get());
-	object3d->SetModel(model.get());
-
-
-
+	object3d->SetModel("axis.obj");
 
 
 	///--------------------------------------------------------------
@@ -699,13 +698,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ImGui::DestroyContext();  // ImGuiコンテキストの破棄
 
 	//========================================
-	// テクスチャマネージャ
+	// テクスチャマネージャの終了処理
 	TextureManager::GetInstance()->Finalize();	//終了処理
+
+	//========================================
+	// モデルマネージャの終了処理
+	ModelManager::GetInstance()->Finalize();	//終了処理
 
 	//========================================
 	// ダイレクトX
 	dxCore->ReleaseDirectX();  // DirectXの解放処理
-	//delete dxCore;
 
 	//========================================
 	// ウィンドウの終了
