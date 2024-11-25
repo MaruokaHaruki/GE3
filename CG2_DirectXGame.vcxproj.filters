@@ -135,6 +135,12 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>exetrnals\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="engine\3d\Model.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\3d\ModelSetup.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="math\structure\Matrix4x4.h">
@@ -238,6 +244,12 @@
     </ClInclude>
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>exetrnals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\Model.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\3d\ModelSetup.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
