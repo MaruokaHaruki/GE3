@@ -1,24 +1,23 @@
-///===================================================================///
-///DirectXCoreクラス
-///===================================================================///
-///====================Win====================///
+/*********************************************************************
+ * \file   DirectXCore.cpp
+ * \brief  
+ * 
+ * \author Harukichimaru
+ * \date   November 2024
+ * \note   
+ *********************************************************************/
+#include "DirectXCore.h"
+//========================================
+// 標準ライブラリ
 #include <vector>
-///----------------DirectXTex----------------///
+//========================================
+// DirectXTex
 #include "d3dx12.h"
 #pragma comment(lib,"winmm.lib")
-///----------------自作クラス----------------///
-#include "DirectXCore.h"
 
-///====================コンストラクタ====================///
-DirectXCore::DirectXCore() {
 
-}
-
-///====================デストラクタ====================///
-DirectXCore::~DirectXCore() {
-}
-
-///====================描画前処理====================///
+///=============================================================================
+///						描画前処理
 //TODO:ループ内の前処理後処理を作成
 void DirectXCore::PreDraw() {
 	/// バックバッファの決定
@@ -31,9 +30,14 @@ void DirectXCore::PreDraw() {
 	// ImGuiの描画用DescriptorHeap設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+
+	// ViewPortとScissorRectの設定
+	commandList_->RSSetViewports(1, &viewport_);
+	commandList_->RSSetScissorRects(1, &scissorRect_);
 }
 
-///====================描画後処理====================///
+///=============================================================================
+///						描画後処理
 void DirectXCore::PostDraw() {
 	//FPS固定
 	UpdateFixFPS();
@@ -42,7 +46,8 @@ void DirectXCore::PostDraw() {
 	ExecuteCommandList();
 }
 
-///====================DirectXの初期化====================///
+///=============================================================================
+///						DirectXの初期化
 void DirectXCore::InitializeDirectX(WinApp* winApp) {
 	//FPS固定初期化
 	InitializeFixFPS();
@@ -53,52 +58,65 @@ void DirectXCore::InitializeDirectX(WinApp* winApp) {
 	/// メンバ変数に記録
 	this->winApp_ = winApp;
 
+	// ウィンドウハンドルの取得
 	CreateDebugLayer();
-
+	// DXGIファクトリーの生成
 	CreateDxgiFactory();
-
+	// アダプタの選択
 	SelectAdapter();
-
+	// D3D12デバイスの生成
 	CreateD3D12Device();
-
+	// コマンドキューの生成
 	SetupErrorHandling();
-
+	// コマンドキューの生成
 	CreateCommandQueue();
-
+	// コマンドアロケータの生成
 	CreateCommandAllocator();
-
+	// コマンドリストの生成
 	CreateSwapChain();
-
+	// フェンスの生成
 	CreateFence();
-
 	//深度バッファの生成
 	CreateDepthBuffer();
-
 	//様々なヒープサイズの取得
 	CreateVariousDescriptorHeap();
-
+	//SRVディスクリプタヒープの生成
 	CreateSRVDescriptorHeap();
-
+	//RTVディスクリプタヒープの生成
 	CreateRTVDescriptorHeap();
-
+	//スワップチェーンからリソースを取得
 	GetResourcesFromSwapChain();
-
+	//RTVの生成
 	CreateRenderTargetViews();
-
+	//コマンドリストの決定
 	SettleCommandList();
-
+	//バリアの設定
 	SetupTransitionBarrier();
 	//DXCコンパイラーの初期化
 	CreateDXCCompiler();
+	//ビューポートとシザーレクトの生成
+	CreateVirePortAndScissorRect();
+
+	//=======================================
+	//コマンドリストの設定
+	CloseCommandList();
+	//コマンドキック
+	ExecuteCommandList();
+	//フェンス生成
+	FenceGeneration();
+	//Imguiの初期化
+	ImGuiInitialize();
 }
 
-///====================開放処理====================///
+///=============================================================================
+///						開放処理
 void DirectXCore::ReleaseDirectX() {
 	///開放処理
 	ReleaseResources();
 }
 
-///====================デバックレイヤーの生成====================///
+///=============================================================================
+///						デバックレイヤーの生成
 void DirectXCore::CreateDebugLayer() {
 #ifdef _DEBUG
 	debugController_ = nullptr;
@@ -111,7 +129,8 @@ void DirectXCore::CreateDebugLayer() {
 #endif
 }
 
-///====================DXGIファクトリーの生成====================///
+///=============================================================================
+///						DXGIファクトリーの生成
 void DirectXCore::CreateDxgiFactory() {
 	dxgiFactory_ = nullptr;
 	//HRESULTはWindows系のエラーコードであり、
@@ -121,7 +140,8 @@ void DirectXCore::CreateDxgiFactory() {
 	assert(SUCCEEDED(hr_));
 }
 
-///====================使用するアダプタ用変数====================///
+///=============================================================================
+///						使用するアダプタ用変数
 void DirectXCore::SelectAdapter() {
 	useAdapter_ = nullptr;
 	//良い順にアダプタを頼む
@@ -143,7 +163,8 @@ void DirectXCore::SelectAdapter() {
 	assert(useAdapter_ != nullptr);
 }
 
-///====================D3D12Deviceの作成====================///
+///=============================================================================
+///						D3D12Deviceの作成
 void DirectXCore::CreateD3D12Device() {
 	device_ = nullptr;
 	//機能レベルとログ出力用の文字列
@@ -170,7 +191,8 @@ void DirectXCore::CreateD3D12Device() {
 	Log("ENGINE MESSAGE: Complete create D3D12Device!!!\n");
 }
 
-///====================エラー・警告の場合即停止(初期化完了のあとに行う)====================///
+///=============================================================================
+///						エラー・警告の場合即停止(初期化完了のあとに行う)
 void DirectXCore::SetupErrorHandling() {
 #ifdef  _DEBUG
 	infoQueue_ = nullptr;
@@ -204,7 +226,8 @@ void DirectXCore::SetupErrorHandling() {
 }
 
 
-///====================コマンドキューを作成する====================///
+///=============================================================================
+///						コマンドキューを作成する
 void DirectXCore::CreateCommandQueue() {
 	commandQueue_ = nullptr;
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
@@ -215,7 +238,8 @@ void DirectXCore::CreateCommandQueue() {
 }
 
 
-///====================コマンドアロケータを生成する====================///
+///=============================================================================
+///						コマンドアロケータを生成する
 void DirectXCore::CreateCommandAllocator() {
 	commandAllocator_ = nullptr;
 	hr_ = device_->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator_));
@@ -231,7 +255,8 @@ void DirectXCore::CreateCommandAllocator() {
 }
 
 
-///====================スワップチェーンを生成する====================///
+///=============================================================================
+///						スワップチェーンを生成する
 void DirectXCore::CreateSwapChain() {
 	swapChain_ = nullptr;
 	swapChainDesc_.Width = winApp_->GetWindowWidth();
@@ -246,8 +271,8 @@ void DirectXCore::CreateSwapChain() {
 	assert(SUCCEEDED(hr_));
 }
 
-
-///====================FenceとEventの生成====================///
+///=============================================================================
+///						FenceとEventの生成
 void DirectXCore::CreateFence() {
 	//初期値0でFenceを作る
 	fence_ = nullptr;
@@ -260,7 +285,8 @@ void DirectXCore::CreateFence() {
 	assert(SUCCEEDED(hr_));
 }
 
-///====================深度バッファの生成====================///
+///=============================================================================
+///						深度バッファの生成
 void DirectXCore::CreateDepthBuffer() {
 	/// ===DepthStencilTextureをウィンドウのサイズで作成=== ///
 	depthStencilResource_ = CreateDepthStencilTextureResource(winApp_->GetWindowWidth(), winApp_->GetWindowHeight());
@@ -276,7 +302,8 @@ void DirectXCore::CreateDepthBuffer() {
 	dsvHandle_ = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 }
 
-///====================各種ディスクリプタヒープの生成====================///
+///=============================================================================
+///						各種ディスクリプタヒープの生成
 void DirectXCore::CreateVariousDescriptorHeap() {
 	/// ===DescriptorHeapのサイズを取得=== ///
 	descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -284,7 +311,8 @@ void DirectXCore::CreateVariousDescriptorHeap() {
 	descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
 
-///====================SRVディスクリプタヒープ====================///
+///=============================================================================
+///						SRVディスクリプタヒープ
 void DirectXCore::CreateSRVDescriptorHeap() {
 	//rtvはDXM内
 	//SRV用のヒープでディスクリプタの数は512。SRVはShader内で触るものなのでShaderVisibleはTrue
@@ -292,7 +320,8 @@ void DirectXCore::CreateSRVDescriptorHeap() {
 }
 
 
-///====================RTVディスクリプタヒープ====================///
+///=============================================================================
+///						RTVディスクリプタヒープ
 void DirectXCore::CreateRTVDescriptorHeap() {
 	//ディスクリプタヒープの生成
 	rtvDescriptorHeap_ = nullptr;
@@ -303,7 +332,8 @@ void DirectXCore::CreateRTVDescriptorHeap() {
 	assert(SUCCEEDED(hr_));
 }
 
-///====================SwapChainからResource====================///
+///=============================================================================
+///						SwapChainからResource
 void DirectXCore::GetResourcesFromSwapChain() {
 	//SwapChainからResourceを引っ張ってくる
 	hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResource_[0]));
@@ -314,7 +344,8 @@ void DirectXCore::GetResourcesFromSwapChain() {
 }
 
 
-///====================RTVの作成====================///
+///=============================================================================
+///						RTVの作成
 void DirectXCore::CreateRenderTargetViews() {
 	rtvDesc_.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;		//出力結果をSRGBに変換して書き込む
 	rtvDesc_.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;	//2dテクスチャとして書き込む
@@ -332,7 +363,8 @@ void DirectXCore::CreateRenderTargetViews() {
 }
 
 
-///====================Fenceの生成====================///
+///=============================================================================
+///						Fenceの生成
 void DirectXCore::FenceGeneration() {
 	fenceValue_++;
 	//GPUがここまでたどり着いついたときに、Fenceの値を指定した値に代入するようにSignalを送る
@@ -347,14 +379,16 @@ void DirectXCore::FenceGeneration() {
 }
 
 
-///====================コマンド積み込んで確定させる====================///
+///=============================================================================
+///						コマンド積み込んで確定させる
 void DirectXCore::SettleCommandList() {
 	//これから書き込むバックバッファのインデックスを取得
 	backBufferIndex_ = swapChain_->GetCurrentBackBufferIndex();
 }
 
 
-///====================TransitionBarrierを張る====================///
+///=============================================================================
+///						TransitionBarrierを張る
 void DirectXCore::SetupTransitionBarrier() {
 	//TransitionBarrierの設定
 
@@ -373,7 +407,8 @@ void DirectXCore::SetupTransitionBarrier() {
 }
 
 
-///====================RenderTargetの設定====================///
+///=============================================================================
+///						RenderTargetの設定
 void DirectXCore::RenderTargetPreference() {
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex_], false, &dsvHandle_);
@@ -383,7 +418,29 @@ void DirectXCore::RenderTargetPreference() {
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0F, 0, 0, nullptr);
 }
 
-///====================コマンドリストの決定====================///
+///=============================================================================
+///						ビューポートとシザーレクトの生成
+void DirectXCore::CreateVirePortAndScissorRect() {
+	//========================================
+	// ビューポート
+	//クライアント領域のサイズと一緒にして画面全体に表示
+	viewport_.Width = static_cast<float>( winApp_->GetWindowWidth() );
+	viewport_.Height = static_cast<float>( winApp_->GetWindowHeight() );
+	viewport_.TopLeftX = 0;
+	viewport_.TopLeftY = 0;
+	viewport_.MinDepth = 0;
+	viewport_.MaxDepth = 1.0f;
+	//========================================
+	// シザー矩形
+	//基本的にビューポートと同じ矩形が構成されるようになる
+	scissorRect_.left = 0;
+	scissorRect_.right = winApp_->GetWindowWidth();
+	scissorRect_.top = 0;
+	scissorRect_.bottom = winApp_->GetWindowHeight();
+}
+
+///=============================================================================
+///						コマンドリストの決定
 void DirectXCore::CloseCommandList() {
 
 	//画面に書く処理はすべて終わり。画面に映すので状態を遷移
@@ -397,7 +454,8 @@ void DirectXCore::CloseCommandList() {
 	assert(SUCCEEDED(hr_));
 }
 
-///====================コマンドのキック====================///
+///=============================================================================
+///						コマンドのキック
 void DirectXCore::ExecuteCommandList() {
 	//GPUにコマンドリストの実行を行わせる
 	Microsoft::WRL::ComPtr <ID3D12CommandList> commandLists[] = { commandList_ };
@@ -423,7 +481,8 @@ void DirectXCore::ExecuteCommandList() {
 	assert(SUCCEEDED(hr_));
 }
 
-///====================開放処理====================///
+///=============================================================================
+///						開放処理
 void DirectXCore::ReleaseResources() {
 	CloseHandle(fenceEvent_);
 #ifdef _DEBUG
@@ -432,7 +491,8 @@ void DirectXCore::ReleaseResources() {
 	CloseWindow(winApp_->GetWindowHandle());
 }
 
-///====================リソースリークチェック====================///
+///=============================================================================
+///						リソースリークチェック
 void DirectXCore::CheckResourceLeaks() {
 	Microsoft::WRL::ComPtr <IDXGIDebug> debug;
 	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
@@ -443,7 +503,8 @@ void DirectXCore::CheckResourceLeaks() {
 	}
 }
 
-///====================ImGuiの初期化====================///
+///=============================================================================
+///						ImGuiの初期化
 void DirectXCore::ImGuiInitialize() {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -457,7 +518,8 @@ void DirectXCore::ImGuiInitialize() {
 		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
 }
 
-///====================DXCコンパイラーの初期化====================///
+///=============================================================================
+///						DXCコンパイラーの初期化
 void DirectXCore::CreateDXCCompiler() {
 	//dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils_));
@@ -469,11 +531,8 @@ void DirectXCore::CreateDXCCompiler() {
 	assert(SUCCEEDED(hr_));
 }
 
-///----------------------------------------------------///
-///						生成関数
-///----------------------------------------------------///
-
-///====================深度BufferステンシルBufferの生成関数====================///
+///=============================================================================
+///						深度BufferステンシルBufferの生成関数
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateDepthStencilTextureResource(int32_t width, int32_t height) {
 	/// ===生成するResouceの設定=== ///
 	D3D12_RESOURCE_DESC resourceDesc{};
@@ -509,7 +568,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateDepthStencilTextureRes
 	return resource;
 }
 
-///====================DescriptorHeap関数====================///
+///=============================================================================
+///						DescriptorHeapの生成関数
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCore::CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible) {
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> descriptorHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{};
@@ -523,20 +583,22 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCore::CreateDescriptorHeap(D
 	return descriptorHeap;
 }
 
-///====================SRVDescriptorHandleの取得を関数化====================///
-///----------------CPU----------------///
+///=============================================================================
+///						SRVDescriptorHandleの取得を関数化
+///--------------------------------------------------------------
+///						 CPU
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVCPUDescriptorHandle(uint32_t index) {
 	return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
 }
 
-///----------------GPU----------------///
+///--------------------------------------------------------------
+///						 GPU
 D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVGPUDescriptorHandle(uint32_t index) {
 	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
 }
 
-///-------------------------------------------/// 
-///シェーダーコンパイル
-///-------------------------------------------///
+///=============================================================================
+///						シェーダーのコンパイル
 IDxcBlob* DirectXCore::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
 
 	/// ===hlseファイルを読む=== ///
@@ -596,7 +658,8 @@ IDxcBlob* DirectXCore::CompileShader(const std::wstring& filePath, const wchar_t
 	return shaderBlob;
 }
 
-///====================リソース生成====================///
+///=============================================================================
+///						バッファーリソースの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateBufferResource(size_t sizeInByte) { 		// バッファリソースの設定を作成
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
@@ -633,7 +696,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateBufferResource(size_t 
 	return resource;
 }
 
-///====================テクスチャリソース生成====================///
+///=============================================================================
+///						テクスチャリソースの生成
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateTextureResource(const DirectX::TexMetadata& metadata) {
 	/// ===1.metadataを元にResouceの設定=== ///
 	D3D12_RESOURCE_DESC resouceDesc{};
@@ -666,8 +730,9 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateTextureResource(const 
 	return resource;
 }
 
-///====================テクスチャデータの転送====================///
-//TODO:以下の手順を行う
+///=============================================================================
+///						テクスチャデータの転送
+// NOTE:以下の手順を行う
 //3.CPUで書き込む用にUploadHeapnnoResourceを作成
 //4.3に対してCPUでデータを書き込む
 //5.CommandListに3を2に転送するコマンドを積む
@@ -698,7 +763,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::UploadTextureData(Microsoft:
 	return intermediateResource;
 }
 
-///====================DXTecを使ってファイルを読む====================///
+///=============================================================================
+///						DXTecを使ってファイルを読む
 DirectX::ScratchImage DirectXCore::LoadTexture(const std::string& filePath) {
 	/// ===テクスチャファイルを読んでプログラムを扱えるようにする=== ///
 	DirectX::ScratchImage image{};
@@ -716,15 +782,18 @@ DirectX::ScratchImage DirectXCore::LoadTexture(const std::string& filePath) {
 }
 
 
-///====================DescriptorHandleの取得を関数化====================///
-///----------------CPU----------------///
+///=============================================================================
+///						DescriptorHandleの取得を関数化
+///--------------------------------------------------------------
+///						 CPU
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	handleCPU.ptr += ( descriptorSize * index );
 	return handleCPU;
 }
 
-///----------------GPU----------------///
+///--------------------------------------------------------------
+///						 GPU
 D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
 	handleGPU.ptr += ( descriptorSize * index );
@@ -732,10 +801,10 @@ D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetGPUDescriptorHandle(Microsoft::WRL::
 }
 
 
-///----------------------------------------------------///
-///						60FPS固定
-///----------------------------------------------------///
-///====================InitializeFixFPS====================///
+///=============================================================================
+///						60FPS固定の処理
+///--------------------------------------------------------------
+///						 InitializeFixFPS
 void DirectXCore::InitializeFixFPS() {
 	//システムタイマーの分解能を上げる
 	timeBeginPeriod(1);
@@ -743,7 +812,8 @@ void DirectXCore::InitializeFixFPS() {
 	reference_ = std::chrono::steady_clock::now();
 }
 
-///====================UpdateFixFPS====================///
+///--------------------------------------------------------------
+///						 UpdateFixFPS
 void DirectXCore::UpdateFixFPS() {
 	// 1/60秒ピッタリの時間
 	const std::chrono::microseconds kMinTime(uint64_t(1000000.0f / 60.0f));
