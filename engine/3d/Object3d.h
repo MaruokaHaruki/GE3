@@ -57,13 +57,19 @@ private:
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
-
 	/**----------------------------------------------------------------------------
 	* \brief  SetModel モデルの設定
 	* \param  filePath ファイルパス
 	* \note
 	*/
 	void SetModel(const std::string& filePath) {model_ = ModelManager::GetInstance()->FindModel(filePath);}
+
+	/**----------------------------------------------------------------------------
+	 * \brief  SetTransform トランスフォーメーションの設定
+	 * \param  transform トランスフォーメーション
+	 * \note
+	 */
+	void SetTransform(const Transform& transform) { transform_ = transform; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  SetModel モデルの設定
@@ -83,26 +89,26 @@ public:
 	 * \param  rotate 回転
 	 * \note
 	 */
-	void SetRotate(const Vector3& rotate) { transform_.rotate = rotate; }
+	void SetRotation(const Vector3& rotate) { transform_.rotate = rotate; }
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRotate 回転の取得
 	 * \return Vector3 回転
 	 * \note
 	 */
-	const Vector3& GetRotate() const { return transform_.rotate; }
+	const Vector3& GetRotation() const { return transform_.rotate; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  SetTranslate 移動の設定
 	 * \param  translate 移動
 	 * \note
 	 */
-	void SetTranslate(const Vector3& translate) { transform_.translate = translate; } 
+	void SetPosition(const Vector3& translate) { transform_.translate = translate; } 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetTranslate 移動の取得
 	 * \return Vector3 移動
 	 * \note
 	 */
-	const Vector3& GetTranslate() const { return transform_.translate; }
+	const Vector3& GetPosition() const { return transform_.translate; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数

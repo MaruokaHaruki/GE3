@@ -263,13 +263,13 @@ private:
 	///---------------------------------------
 	/// バッファデータ
 	//頂点
-	Microsoft::WRL::ComPtr <ID3D12Resource> vertexBuffer_;
+	Microsoft::WRL::ComPtr <ID3D12Resource> vertexBuffer_ = nullptr;
 	//インデックス
-	Microsoft::WRL::ComPtr <ID3D12Resource> indexBuffer_;
+	Microsoft::WRL::ComPtr <ID3D12Resource> indexBuffer_ = nullptr;
 	//マテリアル
-	Microsoft::WRL::ComPtr <ID3D12Resource> materialBuffer_;
+	Microsoft::WRL::ComPtr <ID3D12Resource> materialBuffer_ = nullptr;
 	//トランスフォーメーションマトリックス
-	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
+	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_ = nullptr;
 
 	///---------------------------------------
 	/// バッファリソース内のデータを指すポインタ
@@ -285,9 +285,9 @@ private:
 	///---------------------------------------
 	/// バッファリソースの使い道を指すポインタ
 	//頂点
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+    D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 	//インデックス
-	D3D12_INDEX_BUFFER_VIEW indexBufferView_;
+	D3D12_INDEX_BUFFER_VIEW indexBufferView_ = {};
 
 	///---------------------------------------
 	/// SRT設定
