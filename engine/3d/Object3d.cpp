@@ -87,7 +87,7 @@ void Object3d::CreateTransformationMatrixBuffer() {
 	//wvp用のリソースを作る
 	transfomationMatrixBuffer_ = object3dSetup_->GetDXManager()->CreateBufferResource(sizeof(TransformationMatrix));
 	//書き込み用変数
-	TransformationMatrix transformationMatrix;
+	TransformationMatrix transformationMatrix = {};
 	//書き込むためのアドレスを取得
 	transfomationMatrixBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &transformationMatrixData_ ));
 	//書き込み

@@ -107,30 +107,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 複数枚描画用
 	std::vector<std::unique_ptr<Sprite>> sprites;
-	for(uint32_t i = 0; i < 5; ++i) {
-		for(uint32_t i = 0; i < 5; ++i) {
-			std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-			if(i % 2 == 0) {
-				sprite->Initialize(spriteSetup.get(), "resources/monsterBall.png");
+	// 設定
+	for(uint32_t row = 0; row < 5; ++row) {
+		for(uint32_t col = 0; col < 5; ++col) {
+			std::unique_ptr<Sprite> spriteSet = std::make_unique<Sprite>();
+			if(col % 2 == 0) {
+				spriteSet->Initialize(spriteSetup.get(), "resources/monsterBall.png");
 				//サイズ
-				sprite->SetSize({ 256.0f,256.0f });
+				spriteSet->SetSize({ 256.0f,256.0f });
 			} else {
-				sprite->Initialize(spriteSetup.get(), "resources/uvChecker.png");
+				spriteSet->Initialize(spriteSetup.get(), "resources/uvChecker.png");
 				//サイズ
-				sprite->SetSize({ 256.0f,256.0f });
+				spriteSet->SetSize({ 256.0f,256.0f });
 			}
-			sprites.push_back(std::move(sprite));
+			sprites.push_back(std::move(spriteSet));
 		}
-		// ユニークポインタでスプライトを作成
-		//NOTE:autoを使用せず明示的を心がけろ
-		std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-		sprite->Initialize(spriteSetup.get(), "resources/uvChecker.png");
-
-		// std::move で vector に追加
-		//NOTE:unique_ptr はコピーができないので、std::move を使ってオーナーシップを移動させる必要がある
-		sprites.push_back(std::move(sprite));
 	}
-
 
 	//TODO:06_03にて実装
 	///--------------------------------------------------------------
@@ -281,12 +273,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//NOTE:中身の分だけfor文を回す
 			float offset = 100.0f;//ずらす距離
 			int index = 0;
-			for(const auto& sprite : sprites) {
+			for(const auto& spriteSet : sprites) {
 				// スプライトを更新 (operator-> でアクセス)
-				sprite->Update();
-				sprite->SetSize(Vector2{ 128.0f,128.0f });
-				sprite->SetRotation(sprite->GetRotation() + spritesRotate);
-				sprite->SetPosition(Vector2{ index * offset, 1.0f });
+				spriteSet->Update();
+				spriteSet->SetSize(Vector2{ 128.0f,128.0f });
+				spriteSet->SetRotation(spriteSet->GetRotation() + spritesRotate);
+				spriteSet->SetPosition(Vector2{ index * offset, 1.0f });
 				index++;
 			}
 
@@ -323,9 +315,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//Spriteクラス
 			sprite->Draw();
 			//複数枚描画
-			for(const auto& sprite : sprites) {
+			for(const auto& spriteSet : sprites) {
 				// スプライトを描画
-				sprite->Draw();
+				spriteSet->Draw();
 			}
 
 			//========================================

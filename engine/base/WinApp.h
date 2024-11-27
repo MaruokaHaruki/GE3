@@ -58,10 +58,10 @@ private:
 	WNDCLASS wc_{};
 
 	/// ===WRC=== ///
-	RECT wrc_;
+	RECT wrc_{};
 
 	/// ===ウィンドウハンドル=== ///
-	HWND hwnd_;
+	HWND hwnd_{};
 
 };
 

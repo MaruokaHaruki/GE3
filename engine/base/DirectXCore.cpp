@@ -1,14 +1,14 @@
 /*********************************************************************
  * \file   DirectXCore.cpp
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   November 2024
- * \note   
+ * \note
  *********************************************************************/
 #include "DirectXCore.h"
-//========================================
-// 標準ライブラリ
+ //========================================
+ // 標準ライブラリ
 #include <vector>
 //========================================
 // DirectXTex
@@ -120,7 +120,7 @@ void DirectXCore::ReleaseDirectX() {
 void DirectXCore::CreateDebugLayer() {
 #ifdef _DEBUG
 	debugController_ = nullptr;
-	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
+	if(SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController_)))) {
 		//デバックレイヤーを有効化する
 		debugController_->EnableDebugLayer();
 		//GPU側でもチェックを行うようにする
@@ -145,14 +145,14 @@ void DirectXCore::CreateDxgiFactory() {
 void DirectXCore::SelectAdapter() {
 	useAdapter_ = nullptr;
 	//良い順にアダプタを頼む
-	for (UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(i,
+	for(UINT i = 0; dxgiFactory_->EnumAdapterByGpuPreference(i,
 		DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&useAdapter_)) !=
 		DXGI_ERROR_NOT_FOUND; i++) {
 		//アダプターの情報を取得
 		hr_ = useAdapter_->GetDesc3(&adapterDesc_);
 		assert(SUCCEEDED(hr_));//取得不可
 		//ソフトウェアアダプタでなければ採用
-		if (!( adapterDesc_.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE )) {
+		if(!( adapterDesc_.Flags & DXGI_ADAPTER_FLAG3_SOFTWARE )) {
 			//採用したアダプタの情報をログに出力。Wstringの方に注意
 			Log(ConvertString(std::format(L"Use Adapter;{}\n", adapterDesc_.Description)));
 			break;
@@ -173,11 +173,11 @@ void DirectXCore::CreateD3D12Device() {
 	};
 	const char* feartureLevelStrings[] = { "12.2","12.1","12.0" };
 	//高い順に生成できるか試してみる
-	for (size_t i = 0; i < _countof(featureLevels); ++i) {
+	for(size_t i = 0; i < _countof(featureLevels); ++i) {
 		//採用したアダプタでデバイスを作成
 		hr_ = D3D12CreateDevice(useAdapter_.Get(), featureLevels[i], IID_PPV_ARGS(&device_));
 		//指定した機能レベルでデバイスが生成できたかを確認
-		if (SUCCEEDED(hr_)) {
+		if(SUCCEEDED(hr_)) {
 			//生成できたのでログ出力を行ってループを抜ける
 			Log(std::format("ENGINE MESSAGE: FeatureLevel : {}\n", feartureLevelStrings[i]));
 			break;
@@ -196,7 +196,7 @@ void DirectXCore::CreateD3D12Device() {
 void DirectXCore::SetupErrorHandling() {
 #ifdef  _DEBUG
 	infoQueue_ = nullptr;
-	if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue_)))) {
+	if(SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue_)))) {
 		///やべぇエラー時に停止
 		infoQueue_->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
 		///エラー時に停止
@@ -370,7 +370,7 @@ void DirectXCore::FenceGeneration() {
 	//GPUがここまでたどり着いついたときに、Fenceの値を指定した値に代入するようにSignalを送る
 	commandQueue_->Signal(fence_.Get(), fenceValue_);
 	//GetCompketedvalueの初期値はFence作成時に渡した初期値
-	if (fence_->GetCompletedValue() < fenceValue_) {
+	if(fence_->GetCompletedValue() < fenceValue_) {
 		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
 		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
 		//イベントを待つ
@@ -467,7 +467,7 @@ void DirectXCore::ExecuteCommandList() {
 	//GPUがここまでたどり着いついたときに、Fenceの値を指定した値に代入するようにSignalを送る
 	commandQueue_->Signal(fence_.Get(), fenceValue_);
 	//GetCompketedvalueの初期値はFence作成時に渡した初期値
-	if (fence_->GetCompletedValue() < fenceValue_) {
+	if(fence_->GetCompletedValue() < fenceValue_) {
 		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
 		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
 		//イベントを待つ
@@ -495,7 +495,7 @@ void DirectXCore::ReleaseResources() {
 ///						リソースリークチェック
 void DirectXCore::CheckResourceLeaks() {
 	Microsoft::WRL::ComPtr <IDXGIDebug> debug;
-	if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+	if(SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
 		//開放を忘れてエラーが出た場合、205行目をコメントアウト
 		debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
 		debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
@@ -564,7 +564,20 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateDepthStencilTextureRes
 		D3D12_RESOURCE_STATE_DEPTH_WRITE,	//深度値を書き込む状態にしておく
 		&depthClearValue,					//Clear最適値
 		IID_PPV_ARGS(&resource));			//作成するResourceポインタへのポインタ
+
+	//========================================
+	// エラーチェック
+#ifdef _DEBUG
 	assert(SUCCEEDED(hr));
+#endif // _DEBUG
+	if(FAILED(hr)) {
+		//深度ステンシルテクスチャの生成がうまくいかなかったので起動できない
+		Log("Failed to create depth stencil texture resource.");
+		return nullptr;
+	}
+
+	//========================================
+	// 出力
 	return resource;
 }
 
@@ -576,8 +589,17 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCore::CreateDescriptorHeap(D
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	// NOTE:debugモードでのみエラーチェックを行う理由は、assertを使っているため
 	HRESULT hr = device_->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+#ifdef _DEBUG
 	assert(SUCCEEDED(hr));
+#endif // _DEBUG
+	//
+	if(FAILED(hr)) {
+		// ディスクリプタヒープの生成がうまくいかなかったので起動できない
+		Log("Failed to Create Descriptor Heap.");
+		return nullptr;
+	}
 	// 成功したログを出力
 	Log("Descriptor heap created successfully.");
 	return descriptorHeap;
@@ -610,7 +632,7 @@ IDxcBlob* DirectXCore::CompileShader(const std::wstring& filePath, const wchar_t
 	//読めなかったら止める
 	assert(SUCCEEDED(hr));
 	//読み込んだファイルの内容を設定する
-	DxcBuffer shaderSourceBuffer;
+	DxcBuffer shaderSourceBuffer = {};
 	shaderSourceBuffer.Ptr = shaderSource->GetBufferPointer();
 	shaderSourceBuffer.Size = shaderSource->GetBufferSize();
 	shaderSourceBuffer.Encoding = DXC_CP_UTF8;//UTF-8の文字コードであることを通知
@@ -638,9 +660,15 @@ IDxcBlob* DirectXCore::CompileShader(const std::wstring& filePath, const wchar_t
 
 	/// ===警告・エラーがでてないか確認する=== ///
 	IDxcBlobUtf8* shaderError = nullptr;
-	shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
-	if (shaderError != nullptr && shaderError->GetStringLength() != 0) {
+	if(shaderResult->HasOutput(DXC_OUT_ERRORS)) {
+		shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
+	}
+	//エラーがある場合はエラーを出力して終了
+	if(shaderError != nullptr && shaderError->GetStringLength() != 0) {
 		Log(shaderError->GetStringPointer());
+		if(shaderResult->HasOutput(DXC_OUT_ERRORS)) {
+			shaderResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&shaderError), nullptr);
+		}
 		//警告・エラーダメ絶対
 		assert(false);
 	}
@@ -688,7 +716,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateBufferResource(size_t 
 	);
 
 	// エラーチェック
-	if (FAILED(hr) || !resource) {
+	if(FAILED(hr) || !resource) {
 		// リソースの作成に失敗した場合、エラーメッセージを出力して nullptr を返す
 		return nullptr;
 	}
@@ -713,8 +741,6 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateTextureResource(const 
 	//TODO:リソースの場所を変更する03_00_ex
 	D3D12_HEAP_PROPERTIES heapProperties{};
 	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;//細かい設定を行う
-	//heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//WriteBackポリシーでCPUアクセス可能
-	//heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//プロセッサの近くに配置
 
 	/// ===3.resouceを生成する=== ///
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
@@ -726,7 +752,20 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateTextureResource(const 
 		nullptr,
 		IID_PPV_ARGS(&resource)
 	);
+
+	//========================================
+	// エラーチェック
+#ifdef _DEBUG
 	assert(SUCCEEDED(hr));
+#endif // _DEBUG
+	if(FAILED(hr)) {
+		//深度ステンシルテクスチャの生成がうまくいかなかったので起動できない
+		Log("Failed to create depth stencil texture resource.");
+		return nullptr;
+	}
+
+	//========================================
+	// 出力
 	return resource;
 }
 
@@ -788,7 +827,8 @@ DirectX::ScratchImage DirectXCore::LoadTexture(const std::string& filePath) {
 ///						 CPU
 D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += ( descriptorSize * index );
+	// NOTE:サブ式よりも先に乗算を行うため、括弧をつける
+	handleCPU.ptr += ( static_cast<unsigned long long>( descriptorSize ) * index );
 	return handleCPU;
 }
 
@@ -796,7 +836,8 @@ D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetCPUDescriptorHandle(Microsoft::WRL::
 ///						 GPU
 D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
 	D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeap->GetGPUDescriptorHandleForHeapStart();
-	handleGPU.ptr += ( descriptorSize * index );
+	// NOTE:サブ式よりも先に乗算を行うため、括弧をつける
+	handleGPU.ptr += ( static_cast<unsigned long long>( descriptorSize ) * index );
 	return handleGPU;
 }
 
@@ -827,9 +868,9 @@ void DirectXCore::UpdateFixFPS() {
 		std::chrono::duration_cast<std::chrono::microseconds>( now - reference_ );
 
 	// 1/60秒(よりわずかに短い時間)経っていない場合
-	if (elapsed < kMinCheckTime) {
+	if(elapsed < kMinCheckTime) {
 		//1/60秒経過するまで軽微なスリープを繰り返す
-		while (std::chrono::steady_clock::now() - reference_ < kMinTime) {
+		while(std::chrono::steady_clock::now() - reference_ < kMinTime) {
 			//1マイクロ秒スリープ
 			std::this_thread::sleep_for(std::chrono::microseconds(1));
 		}
