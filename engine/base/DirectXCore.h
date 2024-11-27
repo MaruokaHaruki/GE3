@@ -377,7 +377,7 @@ public:
 	 * \return
 	 * \note
 	 */
-	HRESULT GetHr() { return hr_; }
+	HRESULT GetHr() const { return hr_; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  SetDevice デバイスの設定
@@ -412,14 +412,14 @@ public:
 	 * \return
 	 * \note
 	 */
-	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc_; }
+	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRtvDesc RTVディスクリプタの取得
 	 * \return
 	 * \note
 	 */
-	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc_; }
+	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc_; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRtvDescriptorHeap RTVディスクリプタヒープの取得

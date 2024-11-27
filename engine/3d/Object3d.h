@@ -137,8 +137,8 @@ private:
 
 	//--------------------------------------
 	// Transform
-	Transform transform_;
+	Transform transform_ = {};
 	// カメラのTransform
-	Transform cameraTransform_;
+	Transform cameraTransform_ = {};
 };
 
