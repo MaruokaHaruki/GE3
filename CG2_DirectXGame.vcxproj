@@ -62,7 +62,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -86,7 +86,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)math;$(ProjectDir)math/structure;$(ProjectDir)math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,24 +137,24 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_rectpack.h" />
     <ClInclude Include="externals\imgui\imstb_textedit.h" />
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
-    <ClInclude Include="math\Calc4x4.h" />
-    <ClInclude Include="math\structure\drawData\DirectionalLight.h" />
-    <ClInclude Include="math\structure\drawData\Material.h" />
-    <ClInclude Include="math\structure\drawData\MaterialData.h" />
-    <ClInclude Include="math\structure\drawData\ModelData.h" />
-    <ClInclude Include="math\structure\drawData\TransformationMatrix.h" />
-    <ClInclude Include="math\structure\drawData\VertexData.h" />
-    <ClInclude Include="math\structure\Matrix4x4.h" />
-    <ClInclude Include="math\structure\Transform.h" />
-    <ClInclude Include="math\structure\Vector3.h" />
-    <ClInclude Include="math\structure\Vector4.h" />
-    <ClInclude Include="math\AffineCalc.h" />
-    <ClInclude Include="math\RendPipeLine.h" />
-    <ClInclude Include="math\structure\Matrix3x3.h" />
+    <ClInclude Include="engine\math\Calc4x4.h" />
+    <ClInclude Include="engine\math\structure\drawData\DirectionalLight.h" />
+    <ClInclude Include="engine\math\structure\drawData\Material.h" />
+    <ClInclude Include="engine\math\structure\drawData\MaterialData.h" />
+    <ClInclude Include="engine\math\structure\drawData\ModelData.h" />
+    <ClInclude Include="engine\math\structure\drawData\TransformationMatrix.h" />
+    <ClInclude Include="engine\math\structure\drawData\VertexData.h" />
+    <ClInclude Include="engine\math\structure\Matrix4x4.h" />
+    <ClInclude Include="engine\math\structure\Transform.h" />
+    <ClInclude Include="engine\math\structure\Vector3.h" />
+    <ClInclude Include="engine\math\structure\Vector4.h" />
+    <ClInclude Include="engine\math\AffineCalc.h" />
+    <ClInclude Include="engine\math\RendPipeLine.h" />
+    <ClInclude Include="engine\math\structure\Matrix3x3.h" />
     <ClInclude Include="engine\base\WinApp.h" />
     <ClInclude Include="engine\2d\SpriteSetup.h" />
     <ClInclude Include="engine\2d\Sprite.h" />
-    <ClInclude Include="math\structure\Vector2.h" />
+    <ClInclude Include="engine\math\structure\Vector2.h" />
     <ClInclude Include="engine\2d\TextureManager.h" />
     <ClInclude Include="engine\3d\Object3dSetup.h" />
     <ClInclude Include="engine\3d\Object3d.h" />

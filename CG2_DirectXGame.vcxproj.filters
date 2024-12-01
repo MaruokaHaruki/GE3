@@ -152,16 +152,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="math\structure\Matrix4x4.h">
+    <ClInclude Include="engine\math\structure\Matrix4x4.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\Vector4.h">
+    <ClInclude Include="engine\math\structure\Vector4.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\Transform.h">
+    <ClInclude Include="engine\math\structure\Transform.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\Vector3.h">
+    <ClInclude Include="engine\math\structure\Vector3.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -221,40 +221,40 @@
     <ClInclude Include="engine\3d\Model.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="math\Calc4x4.h">
+    <ClInclude Include="engine\math\Calc4x4.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="math\AffineCalc.h">
+    <ClInclude Include="engine\math\AffineCalc.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\DirectXCore.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="math\RendPipeLine.h">
+    <ClInclude Include="engine\math\RendPipeLine.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\Matrix3x3.h">
+    <ClInclude Include="engine\math\structure\Matrix3x3.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\Vector2.h">
+    <ClInclude Include="engine\math\structure\Vector2.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\drawData\ModelData.h">
+    <ClInclude Include="engine\math\structure\drawData\ModelData.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\drawData\MaterialData.h">
+    <ClInclude Include="engine\math\structure\drawData\MaterialData.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\drawData\VertexData.h">
+    <ClInclude Include="engine\math\structure\drawData\VertexData.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\drawData\TransformationMatrix.h">
+    <ClInclude Include="engine\math\structure\drawData\TransformationMatrix.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\drawData\Material.h">
+    <ClInclude Include="engine\math\structure\drawData\Material.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="math\structure\drawData\DirectionalLight.h">
+    <ClInclude Include="engine\math\structure\drawData\DirectionalLight.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\WinApp.h">
