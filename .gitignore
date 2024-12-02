@@ -17,7 +17,6 @@
 
 # Build results
 generated/
-junkBox/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -25,7 +24,7 @@ junkBox/
 #wwwroot/
 
 # Visual Studio 2017 auto generated files
-Generated\ Files/
+#Generated\ Files/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -53,6 +52,7 @@ artifacts/
 StyleCopReport.xml
 
 # Files built by Visual Studio
+
 
 # Chutzpah Test files
 _Chutzpah*
