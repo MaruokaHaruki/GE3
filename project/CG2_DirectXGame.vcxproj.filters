@@ -265,17 +265,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Object3d.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
     <None Include=".editorconfig">
       <Filter>exetrnals</Filter>
     </None>
