@@ -18,6 +18,7 @@
 # Build results
 generated/
 generated/output/debug/
+generated/output/release/
 #[Dd]ebug/
 [Dd]ebugPublic/
 #[Rr]elease/
