@@ -84,7 +84,7 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 		if(identifier == "map_Kd") {
 			std::string textureFilename;
 			s >> textureFilename;
-			materialData.textureFilePath = directoryPath + "/" + textureFilename;
+			materialData.textureFilePath = textureFilename;
 		}
 	}
 	return materialData;

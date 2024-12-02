@@ -47,7 +47,7 @@ public:
 	* \param dxManager ダイレクトXマネージャーのポインタ
 	* \note  生ポインタの受け渡しを行うこと
 	*/
-	void Initialize(DirectXCore* dxManager);
+	void Initialize(DirectXCore* dxManager, const std::string& textureDirectoryPath);
 
 	/**----------------------------------------------------------------------------
 	 * \brief ファイルの読み込み
@@ -121,5 +121,9 @@ private:
 	// SRVインデックスの開始番号
 	//NOTE:ImGuiが使っている番号を開けてその後ろのSRVヒープ1番から使用する
 	const uint32_t kSRVIndexTop = 1;
+
+	//---------------------------------------
+	// ディレクトリパス
+	std::string kTextureDirectoryPath = "resources/texture";
 };
 

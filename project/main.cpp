@@ -92,16 +92,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//========================================
 	// テクスチャマネージャ
-	TextureManager::GetInstance()->Initialize(dxCore.get());
-	TextureManager::GetInstance()->LoadTexture("resources/uvChecker.png");
-	TextureManager::GetInstance()->LoadTexture("resources/monsterBall.png");
+	TextureManager::GetInstance()->Initialize(dxCore.get(),"resources/texture/");
+	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
+	TextureManager::GetInstance()->LoadTexture("monsterBall.png");
 
 	//========================================
 	// スプライトクラス
 	//ユニークポインタ
 	std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
 	//スプライトの初期化
-	sprite->Initialize(spriteSetup.get(), "resources/uvChecker.png");
+	sprite->Initialize(spriteSetup.get(), "uvChecker.png");
 	//サイズ
 	sprite->SetSize({ 256.0f,256.0f });
 
@@ -112,11 +112,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		for(uint32_t col = 0; col < 5; ++col) {
 			std::unique_ptr<Sprite> spriteSet = std::make_unique<Sprite>();
 			if(col % 2 == 0) {
-				spriteSet->Initialize(spriteSetup.get(), "resources/monsterBall.png");
+				spriteSet->Initialize(spriteSetup.get(), "monsterBall.png");
 				//サイズ
 				spriteSet->SetSize({ 256.0f,256.0f });
 			} else {
-				spriteSet->Initialize(spriteSetup.get(), "resources/uvChecker.png");
+				spriteSet->Initialize(spriteSetup.get(), "uvChecker.png");
 				//サイズ
 				spriteSet->SetSize({ 256.0f,256.0f });
 			}
@@ -131,7 +131,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// モデルマネージャの初期化
 	ModelManager::GetInstance()->Initialize(dxCore.get());
 	//モデルの読み込み
-	ModelManager::GetInstance()->LoadMedel("axis.obj");
+	ModelManager::GetInstance()->LoadMedel("axisPlus.obj");
 
 	//========================================
 	// Model
@@ -149,14 +149,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
 	//3Dオブジェクトの初期化
 	object3d->Initialize(object3dSetup.get());
-	object3d->SetModel("axis.obj");
+	object3d->SetModel("axisPlus.obj");
 
 
 
 	///--------------------------------------------------------------
 	///						 メインループ用変数
 	//Transform変数を作る
-	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform{ {0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
 	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
 	Transform uvTransform{

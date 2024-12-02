@@ -23,25 +23,30 @@ TextureManager* TextureManager::GetInstance() {
 
 ///=============================================================================
 ///								初期化
-void TextureManager::Initialize(DirectXCore* dxCore) {
+void TextureManager::Initialize(DirectXCore* dxCore, const std::string& textureDirectoryPath) {
 	//---------------------------------------
 	// SRVの数と同期
 	textureDatas_.reserve(DirectXCore::kMaxSRVCount_);
 	//---------------------------------------
 	// 引数でdxManagerを受取
 	dxCore_ = dxCore;
+	//---------------------------------------
+	// ディレクトリパスの設定
+	kTextureDirectoryPath = textureDirectoryPath;
 }
 
 ///=============================================================================
 ///						テクスチャファイルの読み込み
-//TODO:作成中
 void TextureManager::LoadTexture(const std::string& filePath) {
+	//ディレクトリパスを追加
+	std::string fullPath = kTextureDirectoryPath + filePath;
+
 	//---------------------------------------
 	// 読み込み済みテクスチャを検索
 	auto it = std::find_if(
 		textureDatas_.begin(),
 		textureDatas_.end(),
-		[&](TextureData& textureData) {return textureData.filePath == filePath;
+		[&](TextureData& textureData) {return textureData.filePath == fullPath;
 		}
 	);
 	// 早期リターン
@@ -52,7 +57,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	//---------------------------------------
 	// テクスチャファイルを読んでプログラムを扱えるようにする
 	DirectX::ScratchImage image{};
-	std::wstring filePathW = ConvertString(filePath);
+	std::wstring filePathW = ConvertString(fullPath);
 	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	assert(SUCCEEDED(hr));
 
@@ -71,7 +76,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	//---------------------------------------
 	// テクスチャデータの書き込み
 	//ファイルパス
-	textureData.filePath = filePath;
+	textureData.filePath = fullPath;
 	//テクスチャメタデータの取得
 	textureData.metadata = mipImages.GetMetadata();
 	//テクスチャリソースの作成
@@ -107,12 +112,15 @@ void TextureManager::Finalize() {
 ///=============================================================================
 ///					SRVテクスチャインデックスの開始番号
 uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) {
+	//ディレクトリパスを追加
+	std::string fullPath = kTextureDirectoryPath + filePath;
+
 	//---------------------------------------
 	// 読み込み済みテクスチャデータを検索
 	auto it = std::find_if(
 		textureDatas_.begin(),
 		textureDatas_.end(),
-		[&](TextureData& textureData) {return textureData.filePath == filePath; }
+		[&](TextureData& textureData) {return textureData.filePath == fullPath; }
 	);
 	//---------------------------------------
 	// データの判別
