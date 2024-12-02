@@ -10,7 +10,7 @@ on:
 # 環境変数
 env:
   # リポジトリのルートディレクトリを起点としたソリューションファイルのパス
-  SOLUTION_FILE_PATH: GE3_DirectXGame.sln
+  SOLUTION_FILE_PATH: project/GE3_DirectXGame.sln
   # VISUAL Studio の構成(Debug / Release)
   CONFIGURATION: Release
 
