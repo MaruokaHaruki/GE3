@@ -1,17 +1,17 @@
 /*********************************************************************
  * \file   ModelSetup.h
  * \brief  モデル共通部クラス
- * 
+ *
  * \author Harukichimaru
  * \date   November 2024
- * \note   
+ * \note
  *********************************************************************/
 #pragma once
 #include "DirectXCore.h"
 
  ///=============================================================================
  ///						モデル共通部クラス
-class ModelSetup{
+class ModelSetup {
 
 	///--------------------------------------------------------------
 	///							メンバ関数
@@ -19,12 +19,6 @@ public:
 
 	/// \brief 初期化
 	void Initialize(DirectXCore* dxCore);
-
-	/// \brief 更新
-	void Update();
-
-	/// \brief 描画 
-	void Draw();
 
 	///--------------------------------------------------------------
 	///							静的メンバ関数
@@ -36,8 +30,8 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetDXManager DirectXCore取得
-	 * \return 
-	 * \note   
+	 * \return
+	 * \note
 	 */
 	DirectXCore* GetDXManager() const { return dxCore_; }
 
@@ -45,6 +39,8 @@ public:
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
+	//---------------------------------------
+	// DirectXCoreポインタ
 	DirectXCore* dxCore_ = nullptr;
 };
 

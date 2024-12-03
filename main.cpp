@@ -33,6 +33,7 @@
 #include "ModelSetup.h"
 #include "Model.h"
 #include "ModelManager.h"
+#include "Camera.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -53,11 +54,11 @@
 #include "ModelData.h"
 ///--------------------------------------------------------------
 ///						 自作数学
-#include "Calc4x4.h"			// 4x4行列演算
-#include "AffineCalc.h"			// 3次元アフィン演算
-#include "RendPipeLine.h"		// レンダリングパイプライン
-#include "WstringUtility.h"		// Wstring変換
-#include "Logger.h"				// ログ出力
+#include "MathFunc4x4.h"			// 4x4行列演算
+#include "AffineTransformations.h"	// 3次元アフィン演算
+#include "RenderingMatrices.h"		// レンダリングパイプライン
+#include "WstringUtility.h"			// Wstring変換
+#include "Logger.h"					// ログ出力
 
 ///=============================================================================
 ///						Windowsアプリでのエントリーポイント(main関数)
@@ -92,7 +93,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//========================================
 	// テクスチャマネージャ
-	TextureManager::GetInstance()->Initialize(dxCore.get(),"resources/texture/");
+	TextureManager::GetInstance()->Initialize(dxCore.get(), "resources/texture/");
 	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("monsterBall.png");
 
@@ -134,15 +135,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ModelManager::GetInstance()->LoadMedel("axisPlus.obj");
 
 	//========================================
-	// Model
-	//std::unique_ptr<Model> model = std::make_unique<Model>();
-	//model->Initialize();
-
-	//========================================
 	// 3Dオブジェクト共通部
 	std::unique_ptr<Object3dSetup> object3dSetup = std::make_unique<Object3dSetup>();
 	//3Dオブジェクト共通部の初期化
 	object3dSetup->Initialize(dxCore.get());
+
+	//========================================
+	// カメラ
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>();
+	//カメラの初期化
+	camera->Initialize();
+	//カメラの設定
+	object3dSetup->SetCamera(camera.get());
 
 	//========================================
 	// 3Dオブジェクトクラス

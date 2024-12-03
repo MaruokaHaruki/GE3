@@ -12,6 +12,7 @@
 
  ///=============================================================================
  ///						クラス
+class Camera;
 class Object3dSetup {
 	///--------------------------------------------------------------
 	///						 メンバ関数
@@ -56,6 +57,17 @@ public:
 	*/
 	DirectXCore* GetDXManager() const { return dxCore_; }
 
+	/**----------------------------------------------------------------------------
+	* \brief  SetCamera デフォルトカメラの設定
+	* \param  camera
+	*/
+	void SetCamera(Camera* camera) { this->defaultCamera_ = camera; }
+	/*
+	* \brief  GetCamera デフォルトカメラの取得
+	* \return
+	*/
+	Camera* GetCamera() { return defaultCamera_; }
+
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -73,4 +85,8 @@ private:
 	//========================================
 	// グラフィックスパイプライン
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
+
+	//========================================
+	// デフォルトカメラ
+	Camera* defaultCamera_ = nullptr;
 };

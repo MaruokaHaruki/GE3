@@ -25,6 +25,7 @@
 #pragma comment(lib,"dxcompiler.lib")
 
 class Object3dSetup;
+class Camera;
 class Object3d {
 	///--------------------------------------------------------------
 	///							メンバ関数
@@ -110,6 +111,12 @@ public:
 	 */
 	const Vector3& GetPosition() const { return transform_.translate; }
 
+	/**----------------------------------------------------------------------------
+	 * \brief  SetCamera カメラの設定
+	 * \param  camera
+	 */
+	void SetCamera(Camera* camera) { this->camera_ = camera; }
+
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
@@ -138,7 +145,9 @@ private:
 	//--------------------------------------
 	// Transform
 	Transform transform_ = {};
-	// カメラのTransform
-	Transform cameraTransform_ = {};
+
+	//--------------------------------------
+	// カメラ
+	Camera* camera_ = nullptr;
 };
 

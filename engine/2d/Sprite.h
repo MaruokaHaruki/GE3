@@ -30,7 +30,8 @@
 #include "Matrix4x4.h"
 //========================================
 // 自作クラス
-#include "Calc4x4.h"
+#include "AffineTransformations.h"
+#include "RenderingMatrices.h"
 #include "TextureManager.h"
 
 ///=============================================================================

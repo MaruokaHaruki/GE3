@@ -150,6 +150,9 @@
     <ClCompile Include="engine\utils\WstringUtility.cpp">
       <Filter>ソース ファイル\engine\utils</Filter>
     </ClCompile>
+    <ClCompile Include="engine\camera\Camera.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\math\structure\Matrix4x4.h">
@@ -221,16 +224,16 @@
     <ClInclude Include="engine\3d\Model.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\Calc4x4.h">
+    <ClInclude Include="engine\math\MathFunc4x4.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\AffineCalc.h">
+    <ClInclude Include="engine\math\AffineTransformations.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\base\DirectXCore.h">
       <Filter>ヘッダー ファイル\engine\base</Filter>
     </ClInclude>
-    <ClInclude Include="engine\math\RendPipeLine.h">
+    <ClInclude Include="engine\math\RenderingMatrices.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\structure\Matrix3x3.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="engine\externals\imgui\imconfig.h">
       <Filter>exetrnals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\Camera.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

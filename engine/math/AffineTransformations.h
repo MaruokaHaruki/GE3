@@ -1,7 +1,8 @@
 #pragma once
 #include "structure/Vector3.h"
 #include "structure/Matrix4x4.h"
-#include "Calc4x4.h"
+#include "RenderingMatrices.h"
+#include "MathFunc4x4.h"
 #include <cmath>
 #include <cassert>
 
