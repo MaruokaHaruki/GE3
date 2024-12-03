@@ -8,11 +8,11 @@
  *********************************************************************/
 #pragma once
 #include "DirectXCore.h"
+#include "Camera.h"
 
 
  ///=============================================================================
  ///						クラス
-class Camera;
 class Object3dSetup {
 	///--------------------------------------------------------------
 	///						 メンバ関数
@@ -61,12 +61,12 @@ public:
 	* \brief  SetCamera デフォルトカメラの設定
 	* \param  camera
 	*/
-	void SetCamera(Camera* camera) { this->defaultCamera_ = camera; }
+	void SetDefaultCamera(Camera* camera) { this->defaultCamera_ = camera; }
 	/*
 	* \brief  GetCamera デフォルトカメラの取得
 	* \return
 	*/
-	Camera* GetCamera() { return defaultCamera_; }
+	Camera* GetDefaultCamera() { return defaultCamera_; }
 
 
 	///--------------------------------------------------------------

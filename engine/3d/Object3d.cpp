@@ -40,7 +40,7 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 
 	//========================================
 	// カメラの取得
-	camera_ = object3dSetup_->GetCamera();
+	camera_ = object3dSetup_->GetDefaultCamera();
 }
 
 ///=============================================================================

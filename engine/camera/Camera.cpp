@@ -17,15 +17,15 @@
 ///						デフォルトコンストラクタ
 Camera::Camera()
 //	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(object3dSetup_->GetDXManager()->GetWinApp().GetWindowWidth()) / float(object3dSetup_->GetDXManager()->GetWinApp().GetWindowHeight()), 0.1f, 100.0f);
-	:transform_({ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} })
+	:transform_({ {1.0f,1.0f,1.0f},{0.2f,0.0f,0.0f},{0.0f,6.0f,-30.0f} })
 	, horizontalFieldOfView_(0.45f)
-	, aspectRatio_(WinApp::kWindowWidth_ / WinApp::kWindowHeight_)
+	, aspectRatio_(static_cast<float>( WinApp::kWindowWidth_ ) / static_cast<float>( WinApp::kWindowHeight_ ))
 	, nearClipRange_(0.1f)
 	, farClipRange_(100.0f)
-	, worldMatrix_(MakeAffineMatrix(transform_.scale,transform_.rotate,transform_.translate))
+	, worldMatrix_(MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate))
 	, viewMatrix_(Inverse4x4(worldMatrix_))
-	, projectionMatrix_(MakePerspectiveFovMatrix(horizontalFieldOfView_,aspectRatio_,nearClipRange_,farClipRange_))
-	, viewProjectionMatrix_(Multiply4x4(viewMatrix_,projectionMatrix_)) {
+	, projectionMatrix_(MakePerspectiveFovMatrix(horizontalFieldOfView_, aspectRatio_, nearClipRange_, farClipRange_))
+	, viewProjectionMatrix_(Multiply4x4(viewMatrix_, projectionMatrix_)) {
 }
 
 ///=============================================================================
@@ -44,7 +44,7 @@ void Camera::Update() {
 
 	//---------------------------------------
 	// 正射影行列の作成
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(
+	projectionMatrix_ = MakePerspectiveFovMatrix(
 		horizontalFieldOfView_,
 		aspectRatio_,
 		nearClipRange_,
@@ -52,7 +52,7 @@ void Camera::Update() {
 
 	//========================================
 	// ビュー・プロジェクション行列を計算
-	Matrix4x4 viewProjectionMatrix = Multiply4x4(viewMatrix_, projectionMatrix);
+	viewProjectionMatrix_ = Multiply4x4(viewMatrix_, projectionMatrix_);
 }
 
 ///=============================================================================

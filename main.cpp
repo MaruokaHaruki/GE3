@@ -143,10 +143,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//========================================
 	// カメラ
 	std::unique_ptr<Camera> camera = std::make_unique<Camera>();
-	//カメラの初期化
-	camera->Initialize();
 	//カメラの設定
-	object3dSetup->SetCamera(camera.get());
+	object3dSetup->SetDefaultCamera(camera.get());
 
 	//========================================
 	// 3Dオブジェクトクラス
@@ -160,9 +158,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 メインループ用変数
 	//Transform変数を作る
-	Transform transform{ {0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
-	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
+	Transform cameraTransform = camera->GetTransform();
 	Transform uvTransform{
 		{1.0f,1.0f,1.0f},
 		{0.0f,0.0f,0.0f},
@@ -260,8 +258,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Separator();
 			ImGui::End();
 
+			//========================================
+			// カメラの設定
+			ImGui::Begin("camera");
+			// カメラのトランスフォーム設定
+			ImGui::Text("Camera Transform");
+			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
+			ImGui::DragFloat3("cameraRotate", &cameraTransform.rotate.x, 0.01f);
+			camera->SetTransform(cameraTransform);
+			camera->SetRotate(cameraTransform.rotate);
+			// 空白とセパレータ
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::Separator();
+
+			ImGui::End();
+
 			///--------------------------------------------------------------
 			///						更新処理
+			//========================================
+			// カメラの更新
+			camera->Update();
+
 
 			//========================================
 			// 2D更新
