@@ -34,7 +34,7 @@ void Model::Initialize(ModelSetup* modelSetup, const std::string& directorypath,
 	//テクスチャの読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
 	//テクスチャ番号を取得して、メンバ変数に格納
-	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndex(modelData_.material.textureFilePath);
 
 }
 
@@ -59,7 +59,7 @@ void Model::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
 
 	//SRVのDescriptorTableの設定
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureFilePath));
 
 	//描画(DrawCall)
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);

@@ -29,6 +29,8 @@ public:
 	 */
 	uint32_t Allocate();
 
+	bool IsFull() { return useIndex_ >= kMaxSRVCount_; }
+
 	/**----------------------------------------------------------------------------
 	 * \brief  CreateSRVforTexture2D SRV生成(テクスチャ用)
 	 * \param  srvIndex インデックス

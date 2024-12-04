@@ -433,10 +433,10 @@ public:
 	 * \return
 	 * \note
 	 */
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
+	//Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 
 	///----------------GetDescriptorSizeSRV----------------///
-	uint32_t GetDescriptorSizeSRV() const { return descriptorSizeSRV; }
+	//uint32_t GetDescriptorSizeSRV() const { return descriptorSizeSRV; }
 
 	///--------------------------------------------------------------
 	///						 メンバ変数
@@ -500,13 +500,13 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
 
 //========================================
 // DescriptorHeapサイズ
-uint32_t descriptorSizeSRV = 0;  // SRV
+//uint32_t descriptorSizeSRV = 0;  // SRV
 uint32_t descriptorSizeRTV = 0;  // RTV
 uint32_t descriptorSizeDSV = 0;  // DSV
 
 //========================================
 // SRVディスクリプタヒープ
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
+//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
 
 //========================================
 // RTVディスクリプタヒープ
@@ -548,6 +548,6 @@ D3D12_RECT scissorRect_{};
 // テクスチャマネージャ関係
 public:
 //最大SRV数(最大テクスチャ枚数)
-static const uint32_t kMaxSRVCount_ = 512;
+//static const uint32_t kMaxSRVCount_ = 512;
 };
 

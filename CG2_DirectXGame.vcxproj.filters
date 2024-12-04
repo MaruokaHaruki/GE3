@@ -153,7 +153,7 @@
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="SrvSetup.cpp">
+    <ClCompile Include="engine\base\SrvSetup.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -272,7 +272,7 @@
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="SrvSetup.h">
+    <ClInclude Include="engine\base\SrvSetup.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
