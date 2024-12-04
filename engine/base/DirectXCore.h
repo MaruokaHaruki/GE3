@@ -145,12 +145,6 @@ public:
 	void CreateVariousDescriptorHeap();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  CreateSRVDescriptorHeap SRVディスクリプタヒープ
-	 * \note   
-	 */
-	void CreateSRVDescriptorHeap();
-
-	/**----------------------------------------------------------------------------
 	 * \brief  CreateRTVDescriptorHeap RTVディスクリプタヒープ
 	 * \note   
 	 */
@@ -255,23 +249,6 @@ public:
 	 * \note
 	 */
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-
-	// TODO:08-02で消去
-	/**----------------------------------------------------------------------------
-	 * \brief  GetSRVCPUDescriptorHandle SRVの指定番号のCPUディスクリプタ‐ハンドルを取得
-	 * \param  index インデックス
-	 * \return
-	 * \note
-	 */
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
-	// TODO:08-02で消去
-	/**----------------------------------------------------------------------------
-	 * \brief  GetSRVGPUDescriptorHandle SRVの指定番号のGPUディスクリプタ‐ハンドルを取得
-	 * \param  index インデックス
-	 * \return
-	 * \note
-	 */
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  CompileShader シェーダーのコンパイル
@@ -505,10 +482,6 @@ uint32_t descriptorSizeRTV = 0;  // RTV
 uint32_t descriptorSizeDSV = 0;  // DSV
 
 //========================================
-// SRVディスクリプタヒープ
-//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
-
-//========================================
 // RTVディスクリプタヒープ
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
 D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc_{};
@@ -543,11 +516,5 @@ D3D12_VIEWPORT viewport_{};
 //========================================
 // シザー矩形
 D3D12_RECT scissorRect_{};
-
-//========================================
-// テクスチャマネージャ関係
-public:
-//最大SRV数(最大テクスチャ枚数)
-//static const uint32_t kMaxSRVCount_ = 512;
 };
 

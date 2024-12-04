@@ -330,10 +330,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// ループ前処理
 			dxCore->PreDraw();
 			srvSetup->PreDraw();
-			//3Dオブジェクト共通描画設定
-			object3dSetup->CommonDrawSetup();
 
 			//========================================
+			//3Dオブジェクト共通描画設定
+			object3dSetup->CommonDrawSetup();
 			// 3D描画
 			object3d->Draw();
 
