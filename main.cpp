@@ -79,7 +79,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///--------------------------------------------------------------
 	///						 SrvSetupクラス
-	
+	std::unique_ptr<SrvSetup> srvSetup = std::make_unique<SrvSetup>();
+	//SrvSetupの初期化
+	srvSetup->Initialize(dxCore.get());
 
 	///--------------------------------------------------------------
 	///						 入力クラス

@@ -21,7 +21,6 @@ void SrvSetup::Initialize(DirectXCore* dxCore) {
 	descriptorHeap_ = dxCore_->CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
 	//ディスクリプタ1個分のサイズを取得して記録
 	descriptorSizeSRV_ = dxCore_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 }
 
 ///=============================================================================
