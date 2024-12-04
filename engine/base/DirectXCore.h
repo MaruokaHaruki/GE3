@@ -256,7 +256,7 @@ public:
 	 */
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 
-
+	// TODO:08-02で消去
 	/**----------------------------------------------------------------------------
 	 * \brief  GetSRVCPUDescriptorHandle SRVの指定番号のCPUディスクリプタ‐ハンドルを取得
 	 * \param  index インデックス
@@ -264,7 +264,7 @@ public:
 	 * \note
 	 */
 	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
-
+	// TODO:08-02で消去
 	/**----------------------------------------------------------------------------
 	 * \brief  GetSRVGPUDescriptorHandle SRVの指定番号のGPUディスクリプタ‐ハンドルを取得
 	 * \param  index インデックス

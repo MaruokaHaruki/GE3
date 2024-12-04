@@ -605,6 +605,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCore::CreateDescriptorHeap(D
 	return descriptorHeap;
 }
 
+// TODO:08-02で消去
 ///=============================================================================
 ///						SRVDescriptorHandleの取得を関数化
 ///--------------------------------------------------------------
