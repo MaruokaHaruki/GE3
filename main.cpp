@@ -34,6 +34,7 @@
 #include "Model.h"
 #include "ModelManager.h"
 #include "Camera.h"
+#include "SrvSetup.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -75,6 +76,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<DirectXCore> dxCore = std::make_unique<DirectXCore>();
 	//ダイレクトXの初期化
 	dxCore->InitializeDirectX(win.get());
+
+	///--------------------------------------------------------------
+	///						 SrvSetupクラス
+	
 
 	///--------------------------------------------------------------
 	///						 入力クラス

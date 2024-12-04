@@ -77,6 +77,9 @@ public:
 	 */
 	void SetGraphicsRootDescriptorTable(uint32_t rootParameterIndex, uint32_t srvIndex);
 
+	//========================================
+	// 最大SRV数
+	static const uint32_t kMaxSRVCount_ = 512;
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -86,8 +89,6 @@ private:
 	DirectXCore* dxCore_ = nullptr;
 
 	//========================================
-	// 最大SRV数
-	static const uint32_t kMaxSRVCount_ = 512;
 	//SRV用ディスクリプタサイズ
 	uint32_t descriptorSizeSRV_ = 0;
 	//SRVディスクリプタヒープ
