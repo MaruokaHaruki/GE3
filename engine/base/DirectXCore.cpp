@@ -28,8 +28,8 @@ void DirectXCore::PreDraw() {
 	RenderTargetPreference();
 
 	// ImGuiの描画用DescriptorHeap設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+	//ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
+	//commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 
 	// ViewPortとScissorRectの設定
 	commandList_->RSSetViewports(1, &viewport_);
@@ -306,17 +306,18 @@ void DirectXCore::CreateDepthBuffer() {
 ///						各種ディスクリプタヒープの生成
 void DirectXCore::CreateVariousDescriptorHeap() {
 	/// ===DescriptorHeapのサイズを取得=== ///
-	descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	descriptorSizeRTV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
 
 ///=============================================================================
 ///						SRVディスクリプタヒープ
+// TODO: 08-02にて消去検討
 void DirectXCore::CreateSRVDescriptorHeap() {
 	//rtvはDXM内
 	//SRV用のヒープでディスクリプタの数は512。SRVはShader内で触るものなのでShaderVisibleはTrue
-	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
+	//srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
 }
 
 
@@ -506,16 +507,16 @@ void DirectXCore::CheckResourceLeaks() {
 ///=============================================================================
 ///						ImGuiの初期化
 void DirectXCore::ImGuiInitialize() {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->GetWindowHandle());
-	ImGui_ImplDX12_Init(device_.Get(),
-		swapChainDesc_.BufferCount,
-		rtvDesc_.Format,
-		srvDescriptorHeap_.Get(),
-		srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
+	//IMGUI_CHECKVERSION();
+	//ImGui::CreateContext();
+	//ImGui::StyleColorsDark();
+	//ImGui_ImplWin32_Init(winApp_->GetWindowHandle());
+	//ImGui_ImplDX12_Init(device_.Get(),
+	//	swapChainDesc_.BufferCount,
+	//	rtvDesc_.Format,
+	//	srvDescriptorHeap_.Get(),
+	//	srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
+	//	srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
 }
 
 ///=============================================================================
@@ -610,15 +611,15 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCore::CreateDescriptorHeap(D
 ///						SRVDescriptorHandleの取得を関数化
 ///--------------------------------------------------------------
 ///						 CPU
-D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVCPUDescriptorHandle(uint32_t index) {
-	return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
-}
+//D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVCPUDescriptorHandle(uint32_t index) {
+//	return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
+//}
 
 ///--------------------------------------------------------------
 ///						 GPU
-D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVGPUDescriptorHandle(uint32_t index) {
-	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
-}
+//D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVGPUDescriptorHandle(uint32_t index) {
+//	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
+//}
 
 ///=============================================================================
 ///						シェーダーのコンパイル

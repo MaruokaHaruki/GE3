@@ -27,8 +27,10 @@ void Sprite::Initialize(SpriteSetup* SpriteSetup, std::string textureFilePath) {
 	//トランスフォーメーションマトリックスバッファの作成
 	CreateTransformationMatrixBuffer();
 
-	//単位行列の書き込み
-	textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath);
+	//ファイルパスの記録
+	textureFilePath_ = textureFilePath;
+	//textureIndex = TextureManager::GetInstance()->GetTextureIndex(textureFilePath);
+
 
 	//テクスチャのサイズを取得
 	AdjustTextureSize();
@@ -98,8 +100,8 @@ void Sprite::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(1, transfomationMatrixBuffer_->GetGPUVirtualAddress());
 
 	// テクスチャの設定
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex));
-
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
+	
 	// 描画コール
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
@@ -247,7 +249,7 @@ void Sprite::ReflectAnchorPointAndFlip() {
 ///--------------------------------------------------------------
 ///						 テクスチャ範囲の反映
 void Sprite::ReflectTextureRange() {
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureIndex);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureFilePath_);
 	//テクスチャの幅と高さを取得
 	float textureWidth = static_cast<float>( metadata.width );
 	float textureHeight = static_cast<float>( metadata.height );
@@ -269,7 +271,7 @@ void Sprite::ReflectTextureRange() {
 ///						 テクスチャサイズをイメージと統合
 void Sprite::AdjustTextureSize() {
 	// テクスチャのメタデータを取得
-	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureIndex);
+	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureFilePath_);
 
 	// テクスチャの幅と高さを取得
 	float textureWidth = static_cast<float>( metadata.width );
