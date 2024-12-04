@@ -8,6 +8,7 @@
  *********************************************************************/
 #include "Object3d.h"
 #include "Object3dSetup.h"
+#include "Camera.h"
  //---------------------------------------
  // ファイル読み込み関数
 #include <fstream>
@@ -15,10 +16,9 @@
 //---------------------------------------
 // 数学関数　
 #include <cmath>
-#include "Calc4x4.h"
-#include "AffineCalc.h"
+#include "MathFunc4x4.h"
+#include "AffineTransformations.h"
 #include "TextureManager.h"
-#include "RendPipeLine.h"
 
 
 ///=============================================================================
@@ -28,7 +28,7 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 	// 引数からSetupを受け取る
 	this->object3dSetup_ = object3dSetup;
 
-
+	//========================================
 	//トランスフォーメーションマトリックスバッファの作成
 	CreateTransformationMatrixBuffer();
 	//並行光源の作成
@@ -37,7 +37,10 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 	//========================================
 	// ワールド行列の初期化
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	cameraTransform_ = { {1.0f,1.0f,1.0f},{0.3f,0.0f,0.0f},{0.0f,4.0f,-10.0f} };
+
+	//========================================
+	// カメラの取得
+	camera_ = object3dSetup_->GetDefaultCamera();
 }
 
 ///=============================================================================
@@ -45,16 +48,21 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 void Object3d::Update() {
 	// TransformからWorld行列を作成
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
-	// cameraTransformからcameraMatrixを作成
-	Matrix4x4 cameraMatrix = MakeAffineMatrix(cameraTransform_.scale, cameraTransform_.rotate, cameraTransform_.translate);
-	// cameraTransformからviewMatrixを作成
-	Matrix4x4 viewMatrix = Inverse4x4(cameraMatrix);
-	//---------------------------------------
-	// 正射影行列の作成
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(object3dSetup_->GetDXManager()->GetWinApp().GetWindowWidth()) / float(object3dSetup_->GetDXManager()->GetWinApp().GetWindowHeight()), 0.1f, 100.0f);
-	//---------------------------------------
-	// ワールド・ビュー・プロジェクション行列を計算
-	Matrix4x4 worldViewProjectionMatrix = Multiply4x4(worldMatrix, Multiply4x4(viewMatrix, projectionMatrix));
+	Matrix4x4 worldViewProjectionMatrix;
+
+	//========================================
+	// カメラがセットされている場合はビュー行列を作成
+	if(camera_) {
+		// カメラのビュー行列を取得
+		const Matrix4x4& viewProjectionMatrix = camera_->GetViewProjectionMatrix();
+		// ワールドビュープロジェクション行列を計算
+		worldViewProjectionMatrix = Multiply4x4(worldMatrix, viewProjectionMatrix);
+	} else {
+		// カメラがセットされていない場合はワールド行列をそのまま使う
+		// NOTE:カメラがセットされてなくても描画できるようにするため
+		worldViewProjectionMatrix = worldMatrix;
+	}
+
 	transformationMatrixData_->WVP = worldViewProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
 }

@@ -11,7 +11,7 @@
 
 #pragma once
 class WinApp {
-private:
+public:
 	/// ===クライアントの領域サイズ=== ///
 	static constexpr  int32_t kWindowWidth_ = 1280;//横幅
 	static constexpr  int32_t kWindowHeight_ = 720;//縦幅

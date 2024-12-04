@@ -33,6 +33,7 @@
 #include "ModelSetup.h"
 #include "Model.h"
 #include "ModelManager.h"
+#include "Camera.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -53,11 +54,11 @@
 #include "ModelData.h"
 ///--------------------------------------------------------------
 ///						 自作数学
-#include "Calc4x4.h"			// 4x4行列演算
-#include "AffineCalc.h"			// 3次元アフィン演算
-#include "RendPipeLine.h"		// レンダリングパイプライン
-#include "WstringUtility.h"		// Wstring変換
-#include "Logger.h"				// ログ出力
+#include "MathFunc4x4.h"			// 4x4行列演算
+#include "AffineTransformations.h"	// 3次元アフィン演算
+#include "RenderingMatrices.h"		// レンダリングパイプライン
+#include "WstringUtility.h"			// Wstring変換
+#include "Logger.h"					// ログ出力
 
 ///=============================================================================
 ///						Windowsアプリでのエントリーポイント(main関数)
@@ -92,7 +93,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//========================================
 	// テクスチャマネージャ
-	TextureManager::GetInstance()->Initialize(dxCore.get(),"resources/texture/");
+	TextureManager::GetInstance()->Initialize(dxCore.get(), "resources/texture/");
 	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("monsterBall.png");
 
@@ -134,15 +135,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ModelManager::GetInstance()->LoadMedel("axisPlus.obj");
 
 	//========================================
-	// Model
-	//std::unique_ptr<Model> model = std::make_unique<Model>();
-	//model->Initialize();
-
-	//========================================
 	// 3Dオブジェクト共通部
 	std::unique_ptr<Object3dSetup> object3dSetup = std::make_unique<Object3dSetup>();
 	//3Dオブジェクト共通部の初期化
 	object3dSetup->Initialize(dxCore.get());
+
+	//========================================
+	// カメラ
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>();
+	//カメラの設定
+	object3dSetup->SetDefaultCamera(camera.get());
 
 	//========================================
 	// 3Dオブジェクトクラス
@@ -156,9 +158,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 メインループ用変数
 	//Transform変数を作る
-	Transform transform{ {0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
-	Transform cameraTransform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-10.0f} };
+	Transform cameraTransform = camera->GetTransform();
 	Transform uvTransform{
 		{1.0f,1.0f,1.0f},
 		{0.0f,0.0f,0.0f},
@@ -256,8 +258,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Separator();
 			ImGui::End();
 
+			//========================================
+			// カメラの設定
+			ImGui::Begin("camera");
+			// カメラのトランスフォーム設定
+			ImGui::Text("Camera Transform");
+			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
+			ImGui::DragFloat3("cameraRotate", &cameraTransform.rotate.x, 0.01f);
+			camera->SetTransform(cameraTransform);
+			camera->SetRotate(cameraTransform.rotate);
+			// 空白とセパレータ
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::Separator();
+
+			ImGui::End();
+
 			///--------------------------------------------------------------
 			///						更新処理
+			//========================================
+			// カメラの更新
+			camera->Update();
+
 
 			//========================================
 			// 2D更新

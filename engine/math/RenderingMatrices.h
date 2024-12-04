@@ -1,6 +1,7 @@
 #pragma once
 #include"Matrix4x4.h"
-#include"Calc4x4.h"
+#include"AffineTransformations.h"
+#include "MathFunc4x4.h"
 #include <cmath>
 
 /// <summary>

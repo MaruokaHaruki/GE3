@@ -8,8 +8,9 @@
  *********************************************************************/
 #include "Sprite.h"
 #include "SpriteSetup.h"	
-#include <AffineCalc.h>
-#include <RendPipeLine.h>
+#include "AffineTransformations.h"
+#include "TextureManager.h"
+#include "MathFunc4x4.h"
 
  ///=============================================================================
  ///								初期化

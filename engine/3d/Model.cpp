@@ -15,10 +15,9 @@
 //---------------------------------------
 // 数学関数　
 #include <cmath>
-#include "Calc4x4.h"
-#include "AffineCalc.h"
+#include "MathFunc4x4.h"
+#include "AffineTransformations.h"
 #include "TextureManager.h"
-#include "RendPipeLine.h"
 
 
 ///=============================================================================
