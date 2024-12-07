@@ -153,6 +153,9 @@
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="engine\base\SrvSetup.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\math\structure\Matrix4x4.h">
@@ -269,19 +272,11 @@
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="engine\base\SrvSetup.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <Filter>シェーダー ファイル</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Object3d.hlsli">
-      <Filter>シェーダー ファイル</Filter>
-    </None>
     <None Include=".editorconfig">
       <Filter>exetrnals</Filter>
     </None>

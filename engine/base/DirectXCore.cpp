@@ -27,10 +27,6 @@ void DirectXCore::PreDraw() {
 	// 描画ターゲットの設定とクリア
 	RenderTargetPreference();
 
-	// ImGuiの描画用DescriptorHeap設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
-
 	// ViewPortとScissorRectの設定
 	commandList_->RSSetViewports(1, &viewport_);
 	commandList_->RSSetScissorRects(1, &scissorRect_);
@@ -80,8 +76,6 @@ void DirectXCore::InitializeDirectX(WinApp* winApp) {
 	CreateDepthBuffer();
 	//様々なヒープサイズの取得
 	CreateVariousDescriptorHeap();
-	//SRVディスクリプタヒープの生成
-	CreateSRVDescriptorHeap();
 	//RTVディスクリプタヒープの生成
 	CreateRTVDescriptorHeap();
 	//スワップチェーンからリソースを取得
@@ -306,19 +300,10 @@ void DirectXCore::CreateDepthBuffer() {
 ///						各種ディスクリプタヒープの生成
 void DirectXCore::CreateVariousDescriptorHeap() {
 	/// ===DescriptorHeapのサイズを取得=== ///
-	descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	//descriptorSizeSRV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	descriptorSizeRTV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	descriptorSizeDSV = device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
-
-///=============================================================================
-///						SRVディスクリプタヒープ
-void DirectXCore::CreateSRVDescriptorHeap() {
-	//rtvはDXM内
-	//SRV用のヒープでディスクリプタの数は512。SRVはShader内で触るものなのでShaderVisibleはTrue
-	srvDescriptorHeap_ = CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount_, true);
-}
-
 
 ///=============================================================================
 ///						RTVディスクリプタヒープ
@@ -390,8 +375,6 @@ void DirectXCore::SettleCommandList() {
 ///=============================================================================
 ///						TransitionBarrierを張る
 void DirectXCore::SetupTransitionBarrier() {
-	//TransitionBarrierの設定
-
 	//ここでのバリアはTransition
 	barrier_.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	//Noneにしておく
@@ -412,8 +395,8 @@ void DirectXCore::SetupTransitionBarrier() {
 void DirectXCore::RenderTargetPreference() {
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex_], false, &dsvHandle_);
-	//指定した色で画面全体をクリアする
-	float clearColor[] = { 0.1f,0.25f,0.5f,1.0f }; // この色を変更することでウィンドウの色を変更できます
+	//指定した色で画面全体をクリアする	
+    float clearColor[] = { 0.298f, 0.424f, 0.702f, 1.0f }; // この色を変更することでウィンドウの色を#4c6cb3に変更できます
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex_], clearColor, 0, nullptr);
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0F, 0, 0, nullptr);
 }
@@ -506,16 +489,16 @@ void DirectXCore::CheckResourceLeaks() {
 ///=============================================================================
 ///						ImGuiの初期化
 void DirectXCore::ImGuiInitialize() {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(winApp_->GetWindowHandle());
-	ImGui_ImplDX12_Init(device_.Get(),
-		swapChainDesc_.BufferCount,
-		rtvDesc_.Format,
-		srvDescriptorHeap_.Get(),
-		srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
-		srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
+	//IMGUI_CHECKVERSION();
+	//ImGui::CreateContext();
+	//ImGui::StyleColorsDark();
+	//ImGui_ImplWin32_Init(winApp_->GetWindowHandle());
+	//ImGui_ImplDX12_Init(device_.Get(),
+	//	swapChainDesc_.BufferCount,
+	//	rtvDesc_.Format,
+	//	srvDescriptorHeap_.Get(),
+	//	srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart(),
+	//	srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart());
 }
 
 ///=============================================================================
@@ -606,20 +589,6 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCore::CreateDescriptorHeap(D
 }
 
 ///=============================================================================
-///						SRVDescriptorHandleの取得を関数化
-///--------------------------------------------------------------
-///						 CPU
-D3D12_CPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVCPUDescriptorHandle(uint32_t index) {
-	return GetCPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
-}
-
-///--------------------------------------------------------------
-///						 GPU
-D3D12_GPU_DESCRIPTOR_HANDLE DirectXCore::GetSRVGPUDescriptorHandle(uint32_t index) {
-	return GetGPUDescriptorHandle(srvDescriptorHeap_, descriptorSizeSRV, index);
-}
-
-///=============================================================================
 ///						シェーダーのコンパイル
 IDxcBlob* DirectXCore::CompileShader(const std::wstring& filePath, const wchar_t* profile) {
 
@@ -704,7 +673,6 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateBufferResource(size_t 
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
 
 	// リソースを作成
-	//TODO:一旦回避
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 	HRESULT hr = device_->CreateCommittedResource(
 		&uploadHeapProperties,

@@ -145,12 +145,6 @@ public:
 	void CreateVariousDescriptorHeap();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  CreateSRVDescriptorHeap SRVディスクリプタヒープ
-	 * \note   
-	 */
-	void CreateSRVDescriptorHeap();
-
-	/**----------------------------------------------------------------------------
 	 * \brief  CreateRTVDescriptorHeap RTVディスクリプタヒープ
 	 * \note   
 	 */
@@ -255,23 +249,6 @@ public:
 	 * \note
 	 */
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> CreateDescriptorHeap(D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
-
-
-	/**----------------------------------------------------------------------------
-	 * \brief  GetSRVCPUDescriptorHandle SRVの指定番号のCPUディスクリプタ‐ハンドルを取得
-	 * \param  index インデックス
-	 * \return
-	 * \note
-	 */
-	D3D12_CPU_DESCRIPTOR_HANDLE GetSRVCPUDescriptorHandle(uint32_t index);
-
-	/**----------------------------------------------------------------------------
-	 * \brief  GetSRVGPUDescriptorHandle SRVの指定番号のGPUディスクリプタ‐ハンドルを取得
-	 * \param  index インデックス
-	 * \return
-	 * \note
-	 */
-	D3D12_GPU_DESCRIPTOR_HANDLE GetSRVGPUDescriptorHandle(uint32_t index);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  CompileShader シェーダーのコンパイル
@@ -428,16 +405,6 @@ public:
 	 */
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetRtvDescriptorHeap() { return rtvDescriptorHeap_; }
 
-	/**----------------------------------------------------------------------------
-	 * \brief  GetSrvDescriptorHeap SRVディスクリプタヒープの取得
-	 * \return
-	 * \note
-	 */
-	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
-
-	///----------------GetDescriptorSizeSRV----------------///
-	uint32_t GetDescriptorSizeSRV() const { return descriptorSizeSRV; }
-
 	///--------------------------------------------------------------
 	///						 メンバ変数
 private:
@@ -500,13 +467,9 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_;
 
 //========================================
 // DescriptorHeapサイズ
-uint32_t descriptorSizeSRV = 0;  // SRV
+//uint32_t descriptorSizeSRV = 0;  // SRV
 uint32_t descriptorSizeRTV = 0;  // RTV
 uint32_t descriptorSizeDSV = 0;  // DSV
-
-//========================================
-// SRVディスクリプタヒープ
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_;
 
 //========================================
 // RTVディスクリプタヒープ
@@ -543,11 +506,5 @@ D3D12_VIEWPORT viewport_{};
 //========================================
 // シザー矩形
 D3D12_RECT scissorRect_{};
-
-//========================================
-// テクスチャマネージャ関係
-public:
-//最大SRV数(最大テクスチャ枚数)
-static const uint32_t kMaxSRVCount_ = 512;
 };
 

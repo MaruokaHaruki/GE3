@@ -34,6 +34,7 @@
 #include "Model.h"
 #include "ModelManager.h"
 #include "Camera.h"
+#include "SrvSetup.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -77,6 +78,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCore->InitializeDirectX(win.get());
 
 	///--------------------------------------------------------------
+	///						 SrvSetupクラス
+	std::unique_ptr<SrvSetup> srvSetup = std::make_unique<SrvSetup>();
+	//SrvSetupの初期化
+	srvSetup->Initialize(dxCore.get());
+
+	///--------------------------------------------------------------
 	///						 入力クラス
 	//ユニークポインタ
 	std::unique_ptr<Input> input = std::make_unique<Input>();
@@ -93,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//========================================
 	// テクスチャマネージャ
-	TextureManager::GetInstance()->Initialize(dxCore.get(), "resources/texture/");
+	TextureManager::GetInstance()->Initialize(dxCore.get(), "resources/texture/", srvSetup.get());
 	TextureManager::GetInstance()->LoadTexture("uvChecker.png");
 	TextureManager::GetInstance()->LoadTexture("monsterBall.png");
 
@@ -199,79 +206,79 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			///--------------------------------------------------------------
 			///						 開発用UIの処理
-			//========================================
-			//ImGuiのフレーム開始
-			ImGui_ImplDX12_NewFrame();
-			ImGui_ImplWin32_NewFrame();
-			ImGui::NewFrame();
+			////========================================
+			////ImGuiのフレーム開始
+			//ImGui_ImplDX12_NewFrame();
+			//ImGui_ImplWin32_NewFrame();
+			//ImGui::NewFrame();
 
-			//========================================
-			// 3Dオブジェクト設定
-			ImGui::Begin("3D Object");
-			// カメラのトランスフォーム設定
-			ImGui::Text("Camera Transform");
-			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
-			ImGui::DragFloat3("cameraRotate", &cameraTransform.rotate.x, 0.01f);
-			// 空白とセパレータ
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));
-			ImGui::Separator();
+			////========================================
+			//// 3Dオブジェクト設定
+			//ImGui::Begin("3D Object");
+			//// カメラのトランスフォーム設定
+			//ImGui::Text("Camera Transform");
+			//ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
+			//ImGui::DragFloat3("cameraRotate", &cameraTransform.rotate.x, 0.01f);
+			//// 空白とセパレータ
+			//ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			//ImGui::Separator();
 
-			// オブジェクトのトランスフォーム設定
-			ImGui::Text("3D Object Transform");
-			ImGui::DragFloat3("3D Rotate", &transform.rotate.x, 0.01f);
-			ImGui::DragFloat3("3D Translate", &transform.translate.x, 0.01f);
-			// 空白とセパレータ
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));
-			ImGui::Separator();
+			//// オブジェクトのトランスフォーム設定
+			//ImGui::Text("3D Object Transform");
+			//ImGui::DragFloat3("3D Rotate", &transform.rotate.x, 0.01f);
+			//ImGui::DragFloat3("3D Translate", &transform.translate.x, 0.01f);
+			//// 空白とセパレータ
+			//ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			//ImGui::Separator();
 
-			ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
-			ImGui::DragFloat2("UVTScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
-			ImGui::SliderAngle("UVTransform", &uvTransformSprite.translate.z);
+			//ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
+			//ImGui::DragFloat2("UVTScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
+			//ImGui::SliderAngle("UVTransform", &uvTransformSprite.translate.z);
 
-			ImGui::End();
+			//ImGui::End();
 
-			//========================================
-			// 2Dオブジェクト設定
-			ImGui::Begin("2D Object");
-			// カラーピッカーを表示
-			ImGui::Text("2D Material Settings");
-			ImGui::ColorPicker4("Color", reinterpret_cast<float*>( &materialSprite.x ), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
-			//スプライトに適用
-			sprite->SetColor(materialSprite);
-			// 空白とセパレータ
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));
-			ImGui::Separator();
-			//サイズ設定
-			ImGui::Text("2D Object Size");
-			ImGui::DragFloat2("2D Scale", &transformSprite.scale.x, 0.01f);
-			//回転設定
-			ImGui::Text("2D Object rotate");
-			ImGui::DragFloat("2D Rotate", &transformSprite.rotate.x, 0.01f);
-			// 座標設定
-			ImGui::Text("2D Object Translate");
-			ImGui::DragFloat3("2D Translate", &transformSprite.translate.x, 1.0f);
-			// 空白とセパレータ
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));
-			ImGui::Separator();
-			// 空白とセパレータ
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));
-			ImGui::Separator();
-			ImGui::End();
+			////========================================
+			//// 2Dオブジェクト設定
+			//ImGui::Begin("2D Object");
+			//// カラーピッカーを表示
+			//ImGui::Text("2D Material Settings");
+			//ImGui::ColorPicker4("Color", reinterpret_cast<float*>( &materialSprite.x ), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
+			////スプライトに適用
+			//sprite->SetColor(materialSprite);
+			//// 空白とセパレータ
+			//ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			//ImGui::Separator();
+			////サイズ設定
+			//ImGui::Text("2D Object Size");
+			//ImGui::DragFloat2("2D Scale", &transformSprite.scale.x, 0.01f);
+			////回転設定
+			//ImGui::Text("2D Object rotate");
+			//ImGui::DragFloat("2D Rotate", &transformSprite.rotate.x, 0.01f);
+			//// 座標設定
+			//ImGui::Text("2D Object Translate");
+			//ImGui::DragFloat3("2D Translate", &transformSprite.translate.x, 1.0f);
+			//// 空白とセパレータ
+			//ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			//ImGui::Separator();
+			//// 空白とセパレータ
+			//ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			//ImGui::Separator();
+			//ImGui::End();
 
-			//========================================
-			// カメラの設定
-			ImGui::Begin("camera");
-			// カメラのトランスフォーム設定
-			ImGui::Text("Camera Transform");
-			ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
-			ImGui::DragFloat3("cameraRotate", &cameraTransform.rotate.x, 0.01f);
-			camera->SetTransform(cameraTransform);
-			camera->SetRotate(cameraTransform.rotate);
-			// 空白とセパレータ
-			ImGui::Dummy(ImVec2(0.0f, 10.0f));
-			ImGui::Separator();
+			////========================================
+			//// カメラの設定
+			//ImGui::Begin("camera");
+			//// カメラのトランスフォーム設定
+			//ImGui::Text("Camera Transform");
+			//ImGui::DragFloat3("cameraTranslate", &cameraTransform.translate.x, 0.01f);
+			//ImGui::DragFloat3("cameraRotate", &cameraTransform.rotate.x, 0.01f);
+			//camera->SetTransform(cameraTransform);
+			//camera->SetRotate(cameraTransform.rotate);
+			//// 空白とセパレータ
+			//ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			//ImGui::Separator();
 
-			ImGui::End();
+			//ImGui::End();
 
 			///--------------------------------------------------------------
 			///						更新処理
@@ -318,14 +325,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
 			//ImGuiの内部コマンド生成
-			ImGui::Render();
+			//ImGui::Render();
 			///---------------------------------------
 			/// ループ前処理
 			dxCore->PreDraw();
-			//3Dオブジェクト共通描画設定
-			object3dSetup->CommonDrawSetup();
+			srvSetup->PreDraw();
 
 			//========================================
+			//3Dオブジェクト共通描画設定
+			object3dSetup->CommonDrawSetup();
 			// 3D描画
 			object3d->Draw();
 
@@ -343,7 +351,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//========================================
 			// ImGui描画
-			ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCore->GetCommandList().Get());
+			//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCore->GetCommandList().Get());
 
 			///---------------------------------------
 			///ループ後処理
@@ -356,9 +364,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///						開放処理
 	//========================================
 	// ImGuiの終了処理
-	ImGui_ImplDX12_Shutdown();  // ImGuiのDirectX12サポート終了
-	ImGui_ImplWin32_Shutdown();  // ImGuiのWin32サポート終了
-	ImGui::DestroyContext();  // ImGuiコンテキストの破棄
+	//ImGui_ImplDX12_Shutdown();  // ImGuiのDirectX12サポート終了
+	//ImGui_ImplWin32_Shutdown();  // ImGuiのWin32サポート終了
+	//ImGui::DestroyContext();  // ImGuiコンテキストの破棄
 
 	//========================================
 	// テクスチャマネージャの終了処理

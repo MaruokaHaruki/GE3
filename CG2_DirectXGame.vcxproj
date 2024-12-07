@@ -105,6 +105,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\base\SrvSetup.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
     <ClCompile Include="engine\base\DirectXCore.cpp" />
     <ClCompile Include="engine\utils\WstringUtility.cpp" />
@@ -129,6 +130,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\ModelManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\base\SrvSetup.h" />
     <ClInclude Include="engine\camera\Camera.h" />
     <ClInclude Include="engine\base\DirectXCore.h" />
     <ClInclude Include="engine\utils\WstringUtility.h" />
@@ -169,24 +171,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\ModelManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="externals\imgui\imgui.vcxproj" />
     <None Include="externals\imgui\imgui.vcxproj.filters" />
-    <None Include="Object3d.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="engine\externals\imgui\LICENSE.txt" />
