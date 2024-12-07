@@ -78,7 +78,7 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	//テクスチャリソースの作成
 	textureData.resource = dxCore_->CreateTextureResource(textureData.metadata);
 	//テクスチャデータの要素数番号をSRVのインデックスとする
-	uint32_t srvIndex = srvSetup_->Allocate();
+	//uint32_t srvIndex = srvSetup_->Allocate();
 	//中間リソース
 	textureData.interMediateResource = dxCore_->UploadTextureData(textureData.resource, mipImages);
 	//SRVの確保

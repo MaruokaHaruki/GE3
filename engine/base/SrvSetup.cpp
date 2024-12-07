@@ -75,7 +75,7 @@ void SrvSetup::CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pRes
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Buffer.StructureByteStride = structureByteStride;
 	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements = pResource->GetDesc().Width / structureByteStride;
+	srvDesc.Buffer.NumElements = static_cast<UINT>(pResource->GetDesc().Width / structureByteStride);
 	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	dxCore_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
 }
