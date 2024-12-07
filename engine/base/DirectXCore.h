@@ -405,16 +405,6 @@ public:
 	 */
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetRtvDescriptorHeap() { return rtvDescriptorHeap_; }
 
-	/**----------------------------------------------------------------------------
-	 * \brief  GetSrvDescriptorHeap SRVディスクリプタヒープの取得
-	 * \return
-	 * \note
-	 */
-	//Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
-
-	///----------------GetDescriptorSizeSRV----------------///
-	//uint32_t GetDescriptorSizeSRV() const { return descriptorSizeSRV; }
-
 	///--------------------------------------------------------------
 	///						 メンバ変数
 private:

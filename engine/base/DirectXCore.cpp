@@ -673,7 +673,6 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCore::CreateBufferResource(size_t 
 	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
 
 	// リソースを作成
-	//TODO:一旦回避
 	Microsoft::WRL::ComPtr <ID3D12Resource> resource = nullptr;
 	HRESULT hr = device_->CreateCommittedResource(
 		&uploadHeapProperties,
