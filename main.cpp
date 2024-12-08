@@ -35,6 +35,7 @@
 #include "ModelManager.h"
 #include "Camera.h"
 #include "SrvSetup.h"
+#include "ParticleManager.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -160,6 +161,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3d->Initialize(object3dSetup.get());
 	object3d->SetModel("axisPlus.obj");
 
+	///--------------------------------------------------------------
+	///						 パーティクル
+	ParticleManager::GetInstance()->Initialize(dxCore.get(), "resources/texture/", srvSetup.get());
+	//パーティクルグループの作成
+	ParticleManager::GetInstance()->CreatePathcleGroup("particle", "resources/texture/uvChecker.png");
+	ParticleManager::GetInstance()->Emit("particle", { 0.0f,0.0f,0.0f }, 10);
 
 
 	///--------------------------------------------------------------
@@ -321,6 +328,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//更新
 			object3d->Update();
 
+			//========================================
+			// パーティクル
+			ParticleManager::GetInstance()->Update(*camera);
 
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
@@ -330,6 +340,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// ループ前処理
 			dxCore->PreDraw();
 			srvSetup->PreDraw();
+
+			//========================================
+			//パーティクル
+			ParticleManager::GetInstance()->Draw();
 
 			//========================================
 			//3Dオブジェクト共通描画設定
@@ -348,6 +362,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				// スプライトを描画
 				spriteSet->Draw();
 			}
+
 
 			//========================================
 			// ImGui描画
@@ -375,6 +390,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//========================================
 	// モデルマネージャの終了処理
 	ModelManager::GetInstance()->Finalize();	//終了処理
+
+	//========================================
+	// パーティクルマネージャの終了処理
+	ParticleManager::GetInstance()->Finalize();	//終了処理
 
 	//========================================
 	// ダイレクトX

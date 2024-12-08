@@ -1,15 +1,16 @@
 /*********************************************************************
  * \file   ParticleManager.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   December 2024
- * \note   
+ * \note
  *********************************************************************/
 #pragma once
 #include <random>
 #include "DirectXCore.h"
 #include "SrvSetup.h"
+#include "Camera.h"
 //---------------------------------------
 // データ構造体
 #include "VertexData.h"
@@ -27,7 +28,7 @@ struct Particle {
 	float currentTime;
 };
 
-struct ParticleForGPU{
+struct ParticleForGPU {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 	Vector4 color;
@@ -40,7 +41,7 @@ struct ParticleGroup {
 	// パーティクルのリスト (std::list<Particle>型)
 	std::list<Particle> particleList;
 	// インスタンシングデータ用SRVインデックス
-	int instancingSrvIndex;
+	int instancingSrvIndex = -1; // 初期化
 	// インスタンシングリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// インスタンス数
@@ -56,7 +57,7 @@ class ParticleManager {
 	///							メンバ関数
 public:
 	/**----------------------------------------------------------------------------
-	* \brief Getinstance 
+	* \brief Getinstance
 	* \return インスタンス
 	*/
 	static ParticleManager* GetInstance();
@@ -64,17 +65,32 @@ public:
 	/// \brief 初期化
 	void Initialize(DirectXCore* dxCore, const std::string& textureDirectoryPath, SrvSetup* srvSetup);
 
+	void Finalize();
+
 	/// \brief 更新
-	void Update();
+	void Update(Camera camera);
 
 	/// \brief 描画 
 	void Draw();
 
+	/**----------------------------------------------------------------------------
+	 * \brief  Emit nameで指定したパーティクルグループにパーティクルを発生させる
+	 * \param  groupName
+	 * \param  position
+	 * \param  count
+	 */
+	void Emit(const std::string& groupName, const Vector3& position, uint32_t count);
+
+	/**----------------------------------------------------------------------------
+	 * \brief  CreatePathcleGroup 
+	 * \param  groupName
+	 * \param  textureFilePath
+	 */
+	void CreatePathcleGroup(const std::string& groupName, const std::string& textureFilePath);
+
 	///--------------------------------------------------------------
 	///							静的メンバ関数
 private:
-
-	void CreatePathcleGroup(const std::string& groupName, const std::string& textureFilePath);
 
 
 	/**----------------------------------------------------------------------------
@@ -93,9 +109,14 @@ private:
 	void CreateVertexData();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  VertexBufferView 頂点バッファビューの作成
-	 */
+  * \brief  VertexBufferView 頂点バッファビューの作成
+  */
 	void CreateVertexBufferView();
+
+	/**----------------------------------------------------------------------------
+  * \brief  CreateMaterialBuffer マテリアルバッファの作成
+  */
+	void CreateMaterialBuffer();
 
 	///--------------------------------------------------------------
 	///							入出力関数
@@ -110,12 +131,15 @@ private:
 	static ParticleManager* instance_;
 
 	//========================================
-	// 設定
+private:
 	ParticleManager() = default;
 	~ParticleManager() = default;
-	ParticleManager(ParticleManager&) = default;
-	ParticleManager& operator = (ParticleManager&) = default;
+	ParticleManager(ParticleManager&) = delete;
+	ParticleManager& operator=(ParticleManager&) = delete;
 
+
+
+	///Setup
 	//========================================
 	// ダイレクトXマネージャー
 	DirectXCore* dxCore_ = nullptr;
@@ -130,6 +154,12 @@ private:
 	// グラフィックスパイプライン
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 
+
+
+
+
+
+	///メイン
 	//---------------------------------------
 	// パーティクルグループのコンテナ
 	std::unordered_map<std::string, ParticleGroup> particleGroups_;
@@ -154,7 +184,7 @@ private:
 	///---------------------------------------
 	/// バッファリソースの使い道を指すポインタ
 	//頂点
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 
 
 	//========================================
@@ -163,4 +193,3 @@ private:
 	//とりあえず60fps固定してあるが、実時間を計測して可変fpsで動かせるようにしておくとなおよい
 	const float kDeltaTime_ = 1.0f / 60.0f;
 };
-
