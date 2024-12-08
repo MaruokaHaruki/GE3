@@ -69,7 +69,7 @@ void ParticleManager::Update(Camera camera) {
 	Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, camera.GetRotate(), camera.GetTranslate());
 
 	Matrix4x4 viewMatrix = Inverse4x4(cameraMatrix);
-	Matrix4x4 projectionMatrix =  MakePerspectiveFovMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
 	Matrix4x4 viewProjectionMatrix = Multiply4x4(viewMatrix, projectionMatrix);
 
 	//=====常にカメラ目線======//
@@ -123,26 +123,26 @@ void ParticleManager::Draw() {
 
 	commandList->SetPipelineState(graphicsPipelineState_.Get());
 
-	// プリミティブトポロジ（描画形状）を設定
+	// プリミティブトポロジを設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// VBV (Vertex Buffer View)を設定
+	// VBVを設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
 
-	// 全てのパーティクルグループについて処理を行う
-	for (auto& group : particleGroups_) {
-		if (group.second.instanceCount == 0) continue; // インスタンスが無い場合はスキップ
+	// 全てのパーティクルグループを描画
+	for(auto& group : particleGroups_) {
+		if(group.second.instanceCount == 0) continue;
 
-		//マテリアルCBufferの場所を設定
+		// マテリアルCBufferの設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
 
-		// テクスチャのSRVのDescriptorTableを設定
-		commandList->SetGraphicsRootDescriptorTable(2, srvSetup_->GetSRVGPUDescriptorHandle(group.second.instancingSrvIndex));
-
-		// インスタンシングデータのSRVのDescriptorTableを設定
+		// インスタンシングデータのSRVを設定
 		commandList->SetGraphicsRootDescriptorTable(1, srvSetup_->GetSRVGPUDescriptorHandle(group.second.instancingSrvIndex));
 
-		// Draw Call (インスタンシング描画)
+		// テクスチャのSRVを設定
+		commandList->SetGraphicsRootDescriptorTable(2, srvSetup_->GetSRVGPUDescriptorHandle(group.second.textureSrvIndex));
+
+		// インスタンシング描画
 		commandList->DrawInstanced(6, group.second.instanceCount, 0, 0);
 
 		// インスタンスカウントをリセット
@@ -179,49 +179,59 @@ void ParticleManager::Emit(const std::string& groupName, const Vector3& position
 ///--------------------------------------------------------------
 ///						  パーティクルグループの作成
 void ParticleManager::CreatePathcleGroup(const std::string& groupName, const std::string& textureFilePath) {
-	// 登録済みの名前からチェックしてassert
+	// パーティクルグループが存在しない場合のみ作成
 	assert(particleGroups_.find(groupName) == particleGroups_.end());
 
-	// 新たな空のパーティクルグループを作成して、コンテナに登録
+	// 新しいパーティクルグループを作成
 	ParticleGroup newGroup;
 	particleGroups_[groupName] = newGroup;
 
-	// 新たなパーティクルグループの初期化
 	// マテリアルデータにテクスチャファイルパスを設定
 	particleGroups_[groupName].materialFilePath = textureFilePath;
 
-	// テクスチャを読み込む(事前の読み込みも可能)
+	// テクスチャを読み込む
 	DirectX::ScratchImage image = DirectXCore::LoadTexture(textureFilePath);
-	Microsoft::WRL::ComPtr<ID3D12Resource> texture = dxCore_->CreateTextureResource(image.GetMetadata());
+	texture = dxCore_->CreateTextureResource(image.GetMetadata());
+	//　TODO:テクスチャの名前を設定
+	texture->SetName(L"ParticleTexture = Guilty");
+
 	dxCore_->UploadTextureData(texture, image);
 
-	// マテリアルデータにテクスチャのSRVインデックスを記録
-	particleGroups_[groupName].instancingSrvIndex = srvSetup_->Allocate();
-	srvSetup_->CreateSRVforTexture2D(particleGroups_[groupName].instancingSrvIndex, texture.Get(), image.GetMetadata().format, image.GetMetadata().mipLevels);
+	// テクスチャのSRVを作成し、インデックスを記録
+	particleGroups_[groupName].textureSrvIndex = srvSetup_->Allocate();
+	srvSetup_->CreateSRVforTexture2D(
+		particleGroups_[groupName].textureSrvIndex,
+		texture.Get(),
+		image.GetMetadata().format,
+		image.GetMetadata().mipLevels
+	);
+
+	interMediateResource = dxCore_->UploadTextureData(texture, image);
+	// TODO:名前を設定
+	interMediateResource->SetName(L"ParticleInterMediateResource = Guilty");
 
 	// インスタンシング用のリソースを生成
 	particleGroups_[groupName].instancingResource = dxCore_->CreateBufferResource(sizeof(ParticleForGPU) * kNumMaxInstance_);
+	// TODO:名前を設定
+	particleGroups_[groupName].instancingResource->SetName(L"ParticleInstancingResource = Guilty");
 
-	// インスタンシング用のSRVを確保してSRVインデックスを記録
+	// インスタンシングデータのSRVを作成し、インデックスを記録
 	particleGroups_[groupName].instancingSrvIndex = srvSetup_->Allocate();
-	srvSetup_->CreateSRVStructuredBuffer(particleGroups_[groupName].instancingSrvIndex, particleGroups_[groupName].instancingResource.Get(), DXGI_FORMAT_UNKNOWN, sizeof(ParticleForGPU));
+	srvSetup_->CreateSRVStructuredBuffer(
+		particleGroups_[groupName].instancingSrvIndex,
+		particleGroups_[groupName].instancingResource.Get(),
+		DXGI_FORMAT_UNKNOWN,
+		sizeof(ParticleForGPU)
+	);
 
-	// SRV生成(StructureBuffer用)
-	particleGroups_[groupName].instancingDataPtr = nullptr;
+	// インスタンシングデータへのポインタを取得
 	particleGroups_[groupName].instancingResource->Map(0, nullptr, reinterpret_cast<void**>( &particleGroups_[groupName].instancingDataPtr ));
-
-	// マテリアルデータの設定
-	// マテリアルデータ用のバッファリソースを作成
-	materialBuffer_ = dxCore_->CreateBufferResource(sizeof(Material));
-	//書き込むためのアドレス取得
-	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &materialData_ ));
-	//マテリアルデータ書き込み用変数(赤色を書き込み)
-	Material materialSprite = { {1.0f, 1.0f, 1.0f, 1.0f},false };
-	//UVトランスフォーム用の単位行列の書き込み
-	materialSprite.uvTransform = Identity4x4();
-	//マテリアルデータの書き込み
-	*materialData_ = materialSprite;
+	
+	// マテリアルバッファを作成（必要に応じて）
+	CreateMaterialBuffer();
 }
+
+
 
 ///--------------------------------------------------------------
 ///						 ルートシグネチャーの作成
@@ -305,6 +315,8 @@ void ParticleManager::CreateRootSignature() {
 	/// ===バイナリを元に生成=== ///
 	hr = dxCore_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
+	// TODO:名前を設定
+	rootSignature_->SetName(L"ParticleManagerRootSignature = Guilty");
 	if(FAILED(hr)) {
 		throw std::runtime_error("ENGINE MESSAGE: Object2d Failed to create root signature");
 	}
@@ -386,6 +398,8 @@ void ParticleManager::CreateGraphicsPipeline() {
 	//実際に生成
 	HRESULT hr = dxCore_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState_));
+	// TODO:名前を設定
+	graphicsPipelineState_->SetName(L"ParticleGraphicsPipelineState = Guilty");
 	if(FAILED(hr)) {
 		throw std::runtime_error("ENGINE MESSAGE: Sprite Failed to create graphics pipeline state :(");
 	}
@@ -411,6 +425,8 @@ void ParticleManager::CreateVertexBufferView() {
 	//========================================
 	// 頂点リソースを作る
 	vertexBuffer_ = dxCore_->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
+	// TODO:名前を設定
+	vertexBuffer_->SetName(L"ParticleVertexBuffer = Guilty");
 	//========================================
 	// 頂点バッファビューを作成する
 	vertexBufferView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress();				//リソースの先頭アドレスから使う
@@ -428,6 +444,8 @@ void ParticleManager::CreateVertexBufferView() {
 void ParticleManager::CreateMaterialBuffer() {
 	// マテリアルデータ用のバッファリソースを作成
 	materialBuffer_ = dxCore_->CreateBufferResource(sizeof(Material));
+	// TODO:名前を設定
+	materialBuffer_->SetName(L"ParticleMaterialBuffer = Guilty");
 	//書き込むためのアドレス取得
 	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &materialData_ ));
 	//マテリアルデータ書き込み用変数(赤色を書き込み)

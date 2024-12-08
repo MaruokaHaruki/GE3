@@ -35,7 +35,8 @@
 #include "ModelManager.h"
 #include "Camera.h"
 #include "SrvSetup.h"
-#include "ParticleManager.h"
+#include "ParticleSetup.h"
+#include "Particle.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -163,10 +164,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	///--------------------------------------------------------------
 	///						 パーティクル
-	ParticleManager::GetInstance()->Initialize(dxCore.get(), "resources/texture/", srvSetup.get());
-	//パーティクルグループの作成
-	ParticleManager::GetInstance()->CreatePathcleGroup("particle", "resources/texture/uvChecker.png");
-	ParticleManager::GetInstance()->Emit("particle", { 0.0f,0.0f,0.0f }, 10);
+	//パーティクルSetupの初期化
+    std::unique_ptr<ParticleSetup> particleSetup = std::make_unique<ParticleSetup>();
+	//パーティクルSetupの初期化
+	particleSetup->Initialize(dxCore.get());
+	particleSetup->SetDefaultCamera(camera.get());
+	//パーティクルの作成
+	std::unique_ptr<Particle> particle = std::make_unique<Particle>();
+	//パーティクルの初期化
+	particle->Initialize(particleSetup.get());
+	particle->SetModel("axisPlus.obj");
 
 
 	///--------------------------------------------------------------
@@ -330,7 +337,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//========================================
 			// パーティクル
-			ParticleManager::GetInstance()->Update(*camera);
+			//パーティクルの更新
+			particle->Update();
 
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
@@ -343,26 +351,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//========================================
 			//パーティクル
-			ParticleManager::GetInstance()->Draw();
+			
 
 			//========================================
-			//3Dオブジェクト共通描画設定
-			object3dSetup->CommonDrawSetup();
-			// 3D描画
-			object3d->Draw();
+			////3Dオブジェクト共通描画設定
+			//object3dSetup->CommonDrawSetup();
+			//// 3D描画
+			//object3d->Draw();
 
 			//========================================
-			// 2Dオブジェクト共通描画設定
-			spriteSetup->CommonDrawSetup();
+			//// 2Dオブジェクト共通描画設定
+			//spriteSetup->CommonDrawSetup();
 
-			//Spriteクラス
-			sprite->Draw();
-			//複数枚描画
-			for(const auto& spriteSet : sprites) {
-				// スプライトを描画
-				spriteSet->Draw();
-			}
+			////Spriteクラス
+			//sprite->Draw();
+			////複数枚描画
+			//for(const auto& spriteSet : sprites) {
+			//	// スプライトを描画
+			//	spriteSet->Draw();
+			//}
 
+			particleSetup->CommonDrawSetup();
+			//パーティクルの描画
+			particle->Draw();
 
 			//========================================
 			// ImGui描画
@@ -393,7 +404,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//========================================
 	// パーティクルマネージャの終了処理
-	ParticleManager::GetInstance()->Finalize();	//終了処理
 
 	//========================================
 	// ダイレクトX

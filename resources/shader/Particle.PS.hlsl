@@ -14,7 +14,7 @@ struct DirectionalLight{
     float intensity;
 };
 
-ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
+//ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
 Texture2D<float4> gTexture : register(t0); //SRVのRegister
 SamplerState gSampler : register(s0); //SamplerのRegister
@@ -28,17 +28,6 @@ PixelShaderOutput main(VertexShaderOutput input){
     //TextureのSampling
     float4 transformedUV = mul(float4(input.texcoord,0.0f, 1.0f), gMaterial.uvTransform);
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-    
- 
-    ////ランバート反射モデルの計算
-    //if (gMaterial.enableLighting != 0){//Lightngを使用する場合
-    //    float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
-    //    float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
-    //    output.color = gMaterial.color * textureColor * gDirectionalLight.color * cos * gDirectionalLight.intensity;
-    //}
-    //else{//Lightngを使用しない場合
-    //    output.color = gMaterial.color * textureColor;
-    //}
     
     //Textureのα値が0のときにPixelを棄却
     output.color = gMaterial.color * textureColor;

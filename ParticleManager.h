@@ -34,19 +34,21 @@ struct ParticleForGPU {
 	Vector4 color;
 };
 
-// パーティクルグループ構造体
+// ParticleGroup構造体
 struct ParticleGroup {
 	// マテリアルデータ (テクスチャファイルパスとテクスチャ用SRVインデックス)
 	std::string materialFilePath;
-	// パーティクルのリスト (std::list<Particle>型)
-	std::list<Particle> particleList;
+	// テクスチャのSRVインデックス
+	int textureSrvIndex = -1;
 	// インスタンシングデータ用SRVインデックス
-	int instancingSrvIndex = -1; // 初期化
+	int instancingSrvIndex = -1;
+	// パーティクルのリスト
+	std::list<Particle> particleList;
 	// インスタンシングリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// インスタンス数
 	UINT instanceCount = 0;
-	// インスタンシングデータを書き込むためのポインタ
+	// インスタンシングデータへのポインタ
 	ParticleForGPU* instancingDataPtr = nullptr;
 };
 
@@ -154,11 +156,6 @@ private:
 	// グラフィックスパイプライン
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 
-
-
-
-
-
 	///メイン
 	//---------------------------------------
 	// パーティクルグループのコンテナ
@@ -167,6 +164,10 @@ private:
 	//---------------------------------------
 	// モデルデータ
 	ModelData modelData_;
+	//テクスチャ
+	Microsoft::WRL::ComPtr<ID3D12Resource> texture;
+	//
+	Microsoft::WRL::ComPtr <ID3D12Resource> interMediateResource;
 
 	//---------------------------------------
 	// 頂点データ
