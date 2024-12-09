@@ -65,7 +65,7 @@ public:
 	static ParticleManager* GetInstance();
 
 	/// \brief 初期化
-	void Initialize(DirectXCore* dxCore, const std::string& textureDirectoryPath, SrvSetup* srvSetup);
+	void Initialize(DirectXCore* dxCore, SrvSetup* srvSetup);
 
 	void Finalize();
 
