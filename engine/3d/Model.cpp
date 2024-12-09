@@ -1,10 +1,10 @@
 /*********************************************************************
  * \file   Model.cpp
  * \brief  モデルクラス
- * 
+ *
  * \author Harukichimaru
  * \date   November 2024
- * \note   
+ * \note
  *********************************************************************/
 #include "Model.h"
 #include "ModelSetup.h"
@@ -47,7 +47,7 @@ void Model::Update() {
 ///						描画
 void Model::Draw() {
 
-	if(!vertexBuffer_ || !materialBuffer_ ) {
+	if(!vertexBuffer_ || !materialBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
 	}
 	// コマンドリスト取得

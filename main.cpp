@@ -37,6 +37,7 @@
 #include "SrvSetup.h"
 #include "ParticleSetup.h"
 #include "Particle.h"
+#include "Emit.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -62,6 +63,9 @@
 #include "RenderingMatrices.h"		// レンダリングパイプライン
 #include "WstringUtility.h"			// Wstring変換
 #include "Logger.h"					// ログ出力
+//ランダム用
+#include <random>
+#include <stdlib.h>
 
 ///=============================================================================
 ///						Windowsアプリでのエントリーポイント(main関数)
@@ -142,6 +146,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ModelManager::GetInstance()->Initialize(dxCore.get());
 	//モデルの読み込み
 	ModelManager::GetInstance()->LoadMedel("axisPlus.obj");
+	ModelManager::GetInstance()->LoadMedel("Particle.obj");
 
 	//========================================
 	// 3Dオブジェクト共通部
@@ -169,24 +174,39 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//パーティクルSetupの初期化
 	particleSetup->Initialize(dxCore.get());
 	particleSetup->SetDefaultCamera(camera.get());
+
+	//エミッターの作成
+	std::unique_ptr<Emit> emit = std::make_unique<Emit>();
+	//エミッターの初期化
+	emit->Initialize(particleSetup.get());
+	//エミッターの位置
+	emit->SetPosition({ 0.0f,0.0f,0.0f });
+
+	//エミッターの作成
+	std::unique_ptr<Emit> emit2 = std::make_unique<Emit>();
+	//エミッターの初期化
+	emit2->Initialize(particleSetup.get());
+	//エミッターの位置
+	emit2->SetPosition({ 5.0f,4.0f,3.0f });
+	
+
 	//パーティクルの作成
 	std::unique_ptr<Particle> particle = std::make_unique<Particle>();
 	//パーティクルの初期化
 	particle->Initialize(particleSetup.get());
-	particle->SetModel("axisPlus.obj");
-
+	particle->SetModel("Particle.obj");
 
 	///--------------------------------------------------------------
 	///						 メインループ用変数
 	//Transform変数を作る
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
-	Transform cameraTransform = camera->GetTransform();
-	Transform uvTransform{
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f},
-	};
+	//Transform cameraTransform = camera->GetTransform();
+	//Transform uvTransform{
+	//	{1.0f,1.0f,1.0f},
+	//	{0.0f,0.0f,0.0f},
+	//	{0.0f,0.0f,0.0f},
+	//};
 
 	//========================================
 	// 2Dオブジェクト用
@@ -298,6 +318,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///						更新処理
 			//========================================
 			// カメラの更新
+			camera->SetRotate({ 0.0f,0.0f,0.0f });
+			camera->SetTranslate({0.0f,0.0f,-30.0f});
 			camera->Update();
 
 
@@ -340,6 +362,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//パーティクルの更新
 			particle->Update();
 
+			//エミッターの更新
+			emit->Update();	
+			emit2->Update();
+
+
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
 			//ImGuiの内部コマンド生成
@@ -374,6 +401,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			particleSetup->CommonDrawSetup();
 			//パーティクルの描画
 			particle->Draw();
+			//複数枚描画
+			emit->Draw();
+			emit2->Draw();
+
 
 			//========================================
 			// ImGui描画

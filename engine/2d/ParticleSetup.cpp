@@ -145,13 +145,13 @@ void ParticleSetup::CreateGraphicsPipeline() {
 
 	//========================================
 	// Shaderをcompileする
-	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3D.VS.hlsl", L"vs_6_0");
 	if(!vertexShaderBlob) {
 		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to compile vertex shader :(");
 	}
 	Log("ENGINE MESSAGE: Object3d Vertex shader created successfully :)\n");
 
-	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3D.PS.hlsl", L"ps_6_0");
 	if(!pixelShaderBlob) {
 		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to compile pixel shader :(");
 	}
