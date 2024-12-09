@@ -8,15 +8,8 @@ struct Material{
 
 ConstantBuffer<Material> gMaterial : register(b0);
 
-struct DirectionalLight{
-    float4 color;
-    float3 direction;
-    float intensity;
-};
-
-//ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
-
 Texture2D<float4> gTexture : register(t0); //SRVのRegister
+
 SamplerState gSampler : register(s0); //SamplerのRegister
 
 struct PixelShaderOutput{
@@ -27,10 +20,11 @@ PixelShaderOutput main(VertexShaderOutput input){
     PixelShaderOutput output;
     //TextureのSampling
     float4 transformedUV = mul(float4(input.texcoord,0.0f, 1.0f), gMaterial.uvTransform);
+    //Textureの色を取得
     float4 textureColor = gTexture.Sample(gSampler, transformedUV.xy);
-    
     //Textureのα値が0のときにPixelを棄却
     output.color = gMaterial.color * textureColor;
+    //Alphaが0の場合は描画しない
     if (output.color.a == 0.0)
     {
         discard;

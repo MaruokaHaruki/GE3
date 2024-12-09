@@ -38,6 +38,10 @@ public:
 	/// \brief 描画 
 	void Draw();
 
+	// TODO: この関数はどこで使われているのか？
+	/// @brief インスタンス描画
+	void InstancingDraw(uint32_t instanceCount);
+
 	///--------------------------------------------------------------
 	///							静的メンバ関数
 private:

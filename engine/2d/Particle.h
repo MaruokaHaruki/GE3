@@ -132,11 +132,10 @@ private:
 	// モデルデータ
 	Model* model_ = nullptr;
 
+	// TODO: ここにメンバ変数を追加していく
 	//---------------------------------------
 	//トランスフォーメーションマトリックス
-	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
-	//並行光源
-	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightBuffer_;
+	Microsoft::WRL::ComPtr <ID3D12Resource> instancingTransfomationMatrixBuffer_;
 
 	//---------------------------------------
 	// バッファリソース内のデータを指すポインタ
@@ -152,5 +151,9 @@ private:
 	//--------------------------------------
 	// カメラ
 	Camera* camera_ = nullptr;
+
+	//--------------------------------------
+	// パーティクルセットアップ
+	int kNumInstances = 1;
 };
 

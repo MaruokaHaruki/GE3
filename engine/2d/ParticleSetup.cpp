@@ -32,6 +32,7 @@ void ParticleSetup::CommonDrawSetup() {
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
+// TODO:変更中
 ///=============================================================================
 ///						ルートシグネチャーの作成
 void ParticleSetup::CreateRootSignature() {
@@ -41,11 +42,11 @@ void ParticleSetup::CreateRootSignature() {
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	/// ===DescriptorRangeの設定=== ///
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-	descriptorRange[0].BaseShaderRegister = 0; // から始まる
-	descriptorRange[0].NumDescriptors = 1; //
-	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
+	descriptorRangeForInstancing[0].BaseShaderRegister = 0; // から始まる
+	descriptorRangeForInstancing[0].NumDescriptors = 1; //
+	descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	/// ===RootParameter作成=== ///
 	D3D12_ROOT_PARAMETER rootParameters[4] = {};
@@ -60,13 +61,13 @@ void ParticleSetup::CreateRootSignature() {
 	/// ===DescropterTable=== ///
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange;
-	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
+	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
 
 	/// ====DirectionalLight=== ///
-	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	   //CBV
-	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;    //PixelShader
-	rootParameters[3].Descriptor.ShaderRegister = 1; // b1
+	//rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	   //CBV
+	//rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;    //PixelShader
+	//rootParameters[3].Descriptor.ShaderRegister = 1; // b1
 
 	descriptionRootSignature.pParameters = rootParameters;                //ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters);    //配列の長さ

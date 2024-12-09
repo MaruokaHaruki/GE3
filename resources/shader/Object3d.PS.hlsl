@@ -17,7 +17,6 @@ ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 
 Texture2D<float4> gTexture : register(t0); //SRVのRegister
-//Texture2D<float4> gTexture1 : register(t4); //SRVのRegister
 
 SamplerState gSampler : register(s0); //SamplerのRegister
 

@@ -65,6 +65,25 @@ void Model::Draw() {
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
 }
 
+// TODO: この関数はどこで使われているのか？
+///=============================================================================
+///						インスタンシング描画
+void Model::InstancingDraw(uint32_t instanceCount) {
+	if(!vertexBuffer_ || !materialBuffer_) {
+		throw std::runtime_error("One or more buffers are not initialized.");
+	}
+	// コマンドリスト取得
+	auto commandList = modelSetup_->GetDXManager()->GetCommandList();
+	//VertexBufferViewの設定
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	//マテリアルバッファの設定
+	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの設定
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureFilePath));
+	//描画(DrawCall)
+	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount, 0, 0);
+}
+
 ///=============================================================================
 ///						ローカルメンバ関数
 ///--------------------------------------------------------------
