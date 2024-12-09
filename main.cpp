@@ -147,6 +147,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//モデルの読み込み
 	ModelManager::GetInstance()->LoadMedel("axisPlus.obj");
 	ModelManager::GetInstance()->LoadMedel("Particle.obj");
+	ModelManager::GetInstance()->LoadMedel("monsterBall.obj");
 
 	//========================================
 	// 3Dオブジェクト共通部
@@ -165,7 +166,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Object3d> object3d = std::make_unique<Object3d>();
 	//3Dオブジェクトの初期化
 	object3d->Initialize(object3dSetup.get());
-	object3d->SetModel("axisPlus.obj");
+	object3d->SetModel("monsterBall.obj");
 
 	///--------------------------------------------------------------
 	///						 パーティクル
@@ -199,7 +200,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 メインループ用変数
 	//Transform変数を作る
-	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform{ {3.0f,3.0f,3.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
 	//Transform cameraTransform = camera->GetTransform();
 	//Transform uvTransform{
@@ -318,8 +319,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///						更新処理
 			//========================================
 			// カメラの更新
-			camera->SetRotate({ 0.0f,0.0f,0.0f });
-			camera->SetTranslate({0.0f,0.0f,-30.0f});
 			camera->Update();
 
 
@@ -351,6 +350,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//大きさのセット
 			object3d->SetScale(Vector3{ transform.scale.x,transform.scale.y,transform.scale.z });
 			//回転のセット
+			//回転をし続ける
+			transform.rotate.y += 0.01f;
 			object3d->SetRotation(Vector3{ transform.rotate.x,transform.rotate.y,transform.rotate.z });
 			//座標のセット
 			object3d->SetPosition(Vector3{ transform.translate.x,transform.translate.y,transform.translate.z });
@@ -360,11 +361,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//========================================
 			// パーティクル
 			//パーティクルの更新
-			particle->Update();
+			//particle->Update();
 
-			//エミッターの更新
-			emit->Update();	
-			emit2->Update();
+			////エミッターの更新
+			//emit->Update();	
+			//emit2->Update();
 
 
 			///--------------------------------------------------------------
@@ -381,10 +382,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			
 
 			//========================================
-			////3Dオブジェクト共通描画設定
-			//object3dSetup->CommonDrawSetup();
-			//// 3D描画
-			//object3d->Draw();
+			//3Dオブジェクト共通描画設定
+			object3dSetup->CommonDrawSetup();
+			// 3D描画
+			object3d->Draw();
 
 			//========================================
 			//// 2Dオブジェクト共通描画設定
@@ -398,12 +399,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//	spriteSet->Draw();
 			//}
 
-			particleSetup->CommonDrawSetup();
-			//パーティクルの描画
-			particle->Draw();
-			//複数枚描画
-			emit->Draw();
-			emit2->Draw();
+			//particleSetup->CommonDrawSetup();
+			////パーティクルの描画
+			//particle->Draw();
+			////複数枚描画
+			//emit->Draw();
+			//emit2->Draw();
 
 
 			//========================================
