@@ -35,6 +35,9 @@
 #include "ModelManager.h"
 #include "Camera.h"
 #include "SrvSetup.h"
+#include "ParticleSetup.h"
+#include "Particle.h"
+#include "Emit.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -60,6 +63,9 @@
 #include "RenderingMatrices.h"		// レンダリングパイプライン
 #include "WstringUtility.h"			// Wstring変換
 #include "Logger.h"					// ログ出力
+//ランダム用
+#include <random>
+#include <stdlib.h>
 
 ///=============================================================================
 ///						Windowsアプリでのエントリーポイント(main関数)
@@ -140,6 +146,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ModelManager::GetInstance()->Initialize(dxCore.get());
 	//モデルの読み込み
 	ModelManager::GetInstance()->LoadMedel("axisPlus.obj");
+	ModelManager::GetInstance()->LoadMedel("Particle.obj");
 
 	//========================================
 	// 3Dオブジェクト共通部
@@ -160,19 +167,46 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3d->Initialize(object3dSetup.get());
 	object3d->SetModel("axisPlus.obj");
 
+	///--------------------------------------------------------------
+	///						 パーティクル
+	//パーティクルSetupの初期化
+    std::unique_ptr<ParticleSetup> particleSetup = std::make_unique<ParticleSetup>();
+	//パーティクルSetupの初期化
+	particleSetup->Initialize(dxCore.get());
+	particleSetup->SetDefaultCamera(camera.get());
 
+	//エミッターの作成
+	std::unique_ptr<Emit> emit = std::make_unique<Emit>();
+	//エミッターの初期化
+	emit->Initialize(particleSetup.get());
+	//エミッターの位置
+	emit->SetPosition({ 0.0f,0.0f,0.0f });
+
+	//エミッターの作成
+	std::unique_ptr<Emit> emit2 = std::make_unique<Emit>();
+	//エミッターの初期化
+	emit2->Initialize(particleSetup.get());
+	//エミッターの位置
+	emit2->SetPosition({ 5.0f,4.0f,3.0f });
+	
+
+	//パーティクルの作成
+	std::unique_ptr<Particle> particle = std::make_unique<Particle>();
+	//パーティクルの初期化
+	particle->Initialize(particleSetup.get());
+	particle->SetModel("Particle.obj");
 
 	///--------------------------------------------------------------
 	///						 メインループ用変数
 	//Transform変数を作る
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//カメラの作成
-	Transform cameraTransform = camera->GetTransform();
-	Transform uvTransform{
-		{1.0f,1.0f,1.0f},
-		{0.0f,0.0f,0.0f},
-		{0.0f,0.0f,0.0f},
-	};
+	//Transform cameraTransform = camera->GetTransform();
+	//Transform uvTransform{
+	//	{1.0f,1.0f,1.0f},
+	//	{0.0f,0.0f,0.0f},
+	//	{0.0f,0.0f,0.0f},
+	//};
 
 	//========================================
 	// 2Dオブジェクト用
@@ -284,6 +318,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///						更新処理
 			//========================================
 			// カメラの更新
+			camera->SetRotate({ 0.0f,0.0f,0.0f });
+			camera->SetTranslate({0.0f,0.0f,-30.0f});
 			camera->Update();
 
 
@@ -321,6 +357,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//更新
 			object3d->Update();
 
+			//========================================
+			// パーティクル
+			//パーティクルの更新
+			particle->Update();
+
+			//エミッターの更新
+			emit->Update();	
+			emit2->Update();
+
 
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
@@ -332,22 +377,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			srvSetup->PreDraw();
 
 			//========================================
-			//3Dオブジェクト共通描画設定
-			object3dSetup->CommonDrawSetup();
-			// 3D描画
-			object3d->Draw();
+			//パーティクル
+			
 
 			//========================================
-			// 2Dオブジェクト共通描画設定
-			spriteSetup->CommonDrawSetup();
+			////3Dオブジェクト共通描画設定
+			//object3dSetup->CommonDrawSetup();
+			//// 3D描画
+			//object3d->Draw();
 
-			//Spriteクラス
-			sprite->Draw();
+			//========================================
+			//// 2Dオブジェクト共通描画設定
+			//spriteSetup->CommonDrawSetup();
+
+			////Spriteクラス
+			//sprite->Draw();
+			////複数枚描画
+			//for(const auto& spriteSet : sprites) {
+			//	// スプライトを描画
+			//	spriteSet->Draw();
+			//}
+
+			particleSetup->CommonDrawSetup();
+			//パーティクルの描画
+			particle->Draw();
 			//複数枚描画
-			for(const auto& spriteSet : sprites) {
-				// スプライトを描画
-				spriteSet->Draw();
-			}
+			emit->Draw();
+			emit2->Draw();
+
 
 			//========================================
 			// ImGui描画
@@ -375,6 +432,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//========================================
 	// モデルマネージャの終了処理
 	ModelManager::GetInstance()->Finalize();	//終了処理
+
+	//========================================
+	// パーティクルマネージャの終了処理
 
 	//========================================
 	// ダイレクトX
