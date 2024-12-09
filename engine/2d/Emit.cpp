@@ -29,7 +29,7 @@ void Emit::Update() {
         // 中心からランダムにゆっくりと広がるようにパーティクルの位置を設定
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> distAngle(0.0f, 2 * M_PI);
+        std::uniform_real_distribution<float> distAngle(0.0f, 2 * static_cast<float>(M_PI));
         std::uniform_real_distribution<float> distRadius(0.0f, 0.5f); // 半径の範囲を小さくしてゆっくり広がるようにする
     
         float radiusStep = 0.05f; // ステップを小さくしてゆっくり広がるようにする

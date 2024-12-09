@@ -28,7 +28,7 @@ ParticleManager* ParticleManager::GetInstance() {
 
 ///=============================================================================
 ///						初期化
-void ParticleManager::Initialize(DirectXCore* dxCore, const std::string& textureDirectoryPath, SrvSetup* srvSetup) {
+void ParticleManager::Initialize(DirectXCore* dxCore, SrvSetup* srvSetup) {
 	///--------------------------------------------------------------
 	///						 Setup
 	//---------------------------------------
@@ -203,7 +203,7 @@ void ParticleManager::CreatePathcleGroup(const std::string& groupName, const std
 		particleGroups_[groupName].textureSrvIndex,
 		texture.Get(),
 		image.GetMetadata().format,
-		image.GetMetadata().mipLevels
+		static_cast<UINT>(image.GetMetadata().mipLevels)
 	);
 
 	interMediateResource = dxCore_->UploadTextureData(texture, image);
