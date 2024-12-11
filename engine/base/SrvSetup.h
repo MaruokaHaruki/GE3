@@ -1,10 +1,10 @@
 /*********************************************************************
  * \file   SrvSetup.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   December 2024
- * \note   
+ * \note
  *********************************************************************/
 #pragma once
 #include "DirectXCore.h"
@@ -22,10 +22,10 @@ public:
 	 * \brief  PreDraw ループ前処理
 	 */
 	void PreDraw();
-	
+
 	/**----------------------------------------------------------------------------
 	 * \brief  Allocate メモリ確保
-	 * \return 
+	 * \return
 	 */
 	uint32_t Allocate();
 
@@ -44,10 +44,10 @@ public:
 	 * \brief  CreateSRVStructuredBuffer SRV生成(構造化バッファ用)
 	 * \param  srvIndex インデックス
 	 * \param  pResource リソース
-	 * \param  format フォーマット
+	 * \param  enelemtQuantity 要素数
 	 * \param  structureByteStride 構造体のバイトサイズ
 	 */
-	void CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT format, UINT structureByteStride);
+	void CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT enelemtQuantity, UINT structureByteStride);
 
 
 	///--------------------------------------------------------------
@@ -74,7 +74,7 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  SetGraphicsRootDescriptorTable グラフィックスルートディスクリプタテーブルの設定
-	 * \param  rootParameterIndex 
+	 * \param  rootParameterIndex
 	 * \param  srvIndex
 	 */
 	void SetGraphicsRootDescriptorTable(uint32_t rootParameterIndex, uint32_t srvIndex);

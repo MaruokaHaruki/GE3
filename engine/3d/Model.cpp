@@ -81,7 +81,7 @@ void Model::InstancingDraw(uint32_t instanceCount) {
 	//SRVのDescriptorTableの設定
 	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureFilePath));
 	//描画(DrawCall)
-	commandList->DrawInstanced(UINT(modelData_.vertices.size()), instanceCount, 0, 0);
+	commandList->DrawInstanced(6, instanceCount, 0, 0);
 }
 
 ///=============================================================================

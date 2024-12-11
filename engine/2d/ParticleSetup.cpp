@@ -10,9 +10,13 @@
 
 ///=============================================================================
 ///						初期化
-void ParticleSetup::Initialize(DirectXCore* dxCore) {
+void ParticleSetup::Initialize(DirectXCore* dxCore, SrvSetup* srvSetup) {
 	/// ===引数でdxManagerを受取=== ///
 	dxCore_ = dxCore;
+
+	//========================================
+	// SrvSetupの取得
+	srvSetup_ = srvSetup;
 
 	/// ===グラフィックスパイプラインの生成=== ///
 	CreateGraphicsPipeline();
@@ -49,20 +53,22 @@ void ParticleSetup::CreateRootSignature() {
 	descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	/// ===RootParameter作成=== ///
-	D3D12_ROOT_PARAMETER rootParameters[4] = {};
+	D3D12_ROOT_PARAMETER rootParameters[3] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[0].Descriptor.ShaderRegister = 0; // b0
 
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters[1].Descriptor.ShaderRegister = 0; // b0
+	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
+	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
 
 	/// ===DescropterTable=== ///
 	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
 	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
+
 
 	/// ====DirectionalLight=== ///
 	//rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	   //CBV
@@ -98,9 +104,9 @@ void ParticleSetup::CreateRootSignature() {
 	hr = dxCore_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	if(FAILED(hr)) {
-		throw std::runtime_error("ENGINE MESSAGE: Failed to create root signature");
+		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to create root signature");
 	}
-	Log("ENGINE MESSAGE: Object3d Root signature created successfully :)\n");
+	Log("ENGINE MESSAGE: Particle Root signature created successfully :)\n");
 }
 
 ///=============================================================================
@@ -146,17 +152,17 @@ void ParticleSetup::CreateGraphicsPipeline() {
 
 	//========================================
 	// Shaderをcompileする
-	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3D.VS.hlsl", L"vs_6_0");
+	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.VS.hlsl", L"vs_6_0");
 	if(!vertexShaderBlob) {
-		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to compile vertex shader :(");
+		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to compile vertex shader :(");
 	}
-	Log("ENGINE MESSAGE: Object3d Vertex shader created successfully :)\n");
+	Log("ENGINE MESSAGE: Particle Vertex shader created successfully :)\n");
 
-	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3D.PS.hlsl", L"ps_6_0");
+	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.PS.hlsl", L"ps_6_0");
 	if(!pixelShaderBlob) {
-		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to compile pixel shader :(");
+		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to compile pixel shader :(");
 	}
-	Log("ENGINE MESSAGE: Object3d Pixel shader state created successfully :)\n");
+	Log("ENGINE MESSAGE: Particle Pixel shader state created successfully :)\n");
 
 	//========================================
 	// PSOを生成する

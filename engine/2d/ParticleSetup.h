@@ -9,6 +9,7 @@
 #pragma once
 #include "DirectXCore.h"
 #include "Camera.h"
+#include "SrvSetup.h"
 
 class ParticleSetup {
 	///--------------------------------------------------------------
@@ -19,7 +20,7 @@ public:
 	* \param  dxManager ダイレクトXマネージャー
 	* \note
 	*/
-	void Initialize(DirectXCore* dxCore);
+	void Initialize(DirectXCore* dxCore, SrvSetup* srvSetup);
 
 	/**----------------------------------------------------------------------------
 	* \brief  CommonDrawSetup 共通描画設定
@@ -55,6 +56,12 @@ public:
 	DirectXCore* GetDXManager() const { return dxCore_; }
 
 	/**----------------------------------------------------------------------------
+	 * \brief  GetSrvSetup SrvSetup取得
+	 * \return 
+	 */
+	SrvSetup* GetSrvSetup() const { return srvSetup_; }
+
+	/**----------------------------------------------------------------------------
 	* \brief  SetCamera デフォルトカメラの設定
 	* \param  camera
 	*/
@@ -72,6 +79,8 @@ private:
 	//========================================
 	// DirectXCoreポインタ
 	DirectXCore* dxCore_ = nullptr;
+	//SrvSetupポインタ
+	SrvSetup* srvSetup_ = nullptr;
 
 	//========================================
 	// RootSignature

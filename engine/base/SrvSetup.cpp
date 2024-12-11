@@ -62,22 +62,22 @@ void SrvSetup::CreateSRVforTexture2D(uint32_t srvIndex, ID3D12Resource* pResourc
 
 ///=============================================================================
 ///						SRV生成(構造化バッファ用)
-void SrvSetup::CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, DXGI_FORMAT format, UINT structureByteStride) {
+void SrvSetup::CreateSRVStructuredBuffer(uint32_t srvIndex, ID3D12Resource* pResource, UINT enelemtQuantity, UINT structureByteStride) {
 	//========================================
 	// ディスクリプタハンドルの取得
-	D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	handleCPU.ptr += ( descriptorSizeSRV_ * srvIndex );
+	//D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	//handleCPU.ptr += ( descriptorSizeSRV_ * srvIndex );
 	//========================================
 	// 構造化バッファ用のSRVを生成
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = format;
+	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Buffer.StructureByteStride = structureByteStride;
 	srvDesc.Buffer.FirstElement = 0;
-	srvDesc.Buffer.NumElements = static_cast<UINT>(pResource->GetDesc().Width / structureByteStride);
+	srvDesc.Buffer.NumElements = enelemtQuantity;
 	srvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	dxCore_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, handleCPU);
+	dxCore_->GetDevice()->CreateShaderResourceView(pResource, &srvDesc, GetSRVCPUDescriptorHandle(srvIndex));
 }
 
 ///=============================================================================
