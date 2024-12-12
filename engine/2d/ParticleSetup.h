@@ -18,13 +18,11 @@ public:
 	/**----------------------------------------------------------------------------
 	* \brief  Initialize 初期化
 	* \param  dxManager ダイレクトXマネージャー
-	* \note
 	*/
 	void Initialize(DirectXCore* dxCore, SrvSetup* srvSetup);
 
 	/**----------------------------------------------------------------------------
 	* \brief  CommonDrawSetup 共通描画設定
-	* \note
 	*/
 	void CommonDrawSetup();
 
@@ -35,13 +33,11 @@ private:
 
 	/**----------------------------------------------------------------------------
 	* \brief  CreateRootSignature ルートシグネチャーの作成
-	* \note
 	*/
 	void CreateRootSignature();
 
 	/**----------------------------------------------------------------------------
 	* \brief  CreateGraphicsPipeline グラフィックスパイプラインの作成
-	* \note
 	*/
 	void CreateGraphicsPipeline();
 
@@ -51,7 +47,6 @@ public:
 	/**----------------------------------------------------------------------------
 	* \brief  GetDXManager DirectXCore取得
 	* \return
-	* \note
 	*/
 	DirectXCore* GetDXManager() const { return dxCore_; }
 
