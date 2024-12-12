@@ -178,12 +178,13 @@ private:
 		float min;
 		float max;
 	};
-
+	// パーティクルの設定
 	RangeForRandom translateRange_ = { 0.0f, 0.0f };
 	RangeForRandom colorRange_ = { 1.0f, 1.0f };
 	RangeForRandom lifetimeRange_ = { 1.0f, 3.0f };
 	RangeForRandom velocityRange_ = { -1.1f, 1.1f };
 
-	Vector2 customTextureSize = { 10.0f, 10.0f };
+	// TODO:設定しているテクスチャサイズを使うかどうかを変更できるようにする
+	Vector2 customTextureSize = { 100.0f, 100.0f };
 };
 

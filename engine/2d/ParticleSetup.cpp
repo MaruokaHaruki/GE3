@@ -36,7 +36,6 @@ void ParticleSetup::CommonDrawSetup() {
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-// TODO:変更中
 ///=============================================================================
 ///						ルートシグネチャーの作成
 void ParticleSetup::CreateRootSignature() {

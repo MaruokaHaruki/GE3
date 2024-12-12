@@ -16,21 +16,18 @@
 
 
 ///=============================================================================
-///						
+///						初期化処理
 void Particle::Initialize(ParticleSetup* particleSetup) {
 	//========================================
 	// 引数からSetupを受け取る
 	this->particleSetup_ = particleSetup;
-
 	//RandomEngineの初期化
 	randomEngine_.seed(std::random_device()( ));
-
 	//========================================
 	// 頂点データの作成
 	CreateVertexData();
 	// 頂点バッファビューの作成
 	CreateVertexBufferView();
-
 	//========================================
 	// 書き込むためのアドレスを取得
 	vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &vertexData_ ));
@@ -38,16 +35,26 @@ void Particle::Initialize(ParticleSetup* particleSetup) {
 	std::memcpy(vertexData_, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
+///=============================================================================
+///						更新処理
 void Particle::Update() {
-	// カメラ情報を取得
+	//========================================
+	// カメラの取得
 	Camera* camera = particleSetup_->GetDefaultCamera();
-	Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f }, camera->GetRotate(), camera->GetTranslate());
+	// カメラ行列の取得
+	Matrix4x4 cameraMatrix = MakeAffineMatrix({ 1.0f,1.0f,1.0f },
+		camera->GetRotate(), camera->GetTranslate());
+	// ビュー行列の取得
 	Matrix4x4 viewMatrix = Inverse4x4(cameraMatrix);
-	// TODO:後にWindowサイズは変数にする
-	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(1280) / float(720), 0.1f, 100.0f);
+	// プロジェクション行列の取得
+	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f,
+		float(particleSetup_->GetDXManager()->GetWinApp().kWindowWidth_) / float(particleSetup_->GetDXManager()->GetWinApp().kWindowHeight_),
+		0.1f, 100.0f);
+	// ビュープロジェクション行列の取得
 	Matrix4x4 viewProjectionMatrix = Multiply4x4(viewMatrix, projectionMatrix);
 
-	// カメラ目線の設定
+	//========================================
+	// ビルボード行列の取得
 	Matrix4x4 backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
 	Matrix4x4 billboardMatrix{};
 	if(isUsedBillboard) {
@@ -63,61 +70,58 @@ void Particle::Update() {
 	// スケール調整用の倍率を設定
 	constexpr float scaleMultiplier = 0.01f; // 必要に応じて調整
 
+	//========================================
+	// パーティクルの更新
 	for(auto& group : particleGroups) {
+		// テクスチャサイズの取得
 		Vector2 textureSize = group.second.textureSize;
-
+		// インスタンス数の初期化
 		for(auto it = group.second.particleList.begin(); it != group.second.particleList.end();) {
+			// パーティクルの参照
 			ParticleStr& particle = *it;
-
 			// パーティクルの寿命が尽きた場合は削除
 			if(particle.lifeTime <= particle.currentTime) {
 				it = group.second.particleList.erase(it);
 				continue;
 			}
-
 			// スケールをテクスチャサイズに基づいて調整
 			particle.transform.scale.x = textureSize.x * scaleMultiplier;
 			particle.transform.scale.y = textureSize.y * scaleMultiplier;
-
 			// 位置の更新
 			particle.transform.translate = AddVec3(particle.transform.translate, MultiplyVec3(kDeltaTime, particle.velocity));
-
 			// 経過時間を更新
 			particle.currentTime += kDeltaTime;
-
 			// ワールド行列の計算
 			Matrix4x4 worldMatrix = Multiply4x4(
 				billboardMatrix,
 				MakeAffineMatrix(particle.transform.scale, particle.transform.rotate, particle.transform.translate));
-
 			// ビュー・プロジェクションを掛け合わせて最終行列を計算
 			Matrix4x4 worldviewProjectionMatrix = Multiply4x4(worldMatrix, viewProjectionMatrix);
-
+			//---------------------------------------
 			// インスタンシングデータの設定
 			if(group.second.instanceCount < kNumMaxInstance) {
 				group.second.instancingDataPtr[group.second.instanceCount].WVP = worldviewProjectionMatrix;
 				group.second.instancingDataPtr[group.second.instanceCount].World = worldMatrix;
-
 				// カラーを設定し、アルファ値を減衰
 				group.second.instancingDataPtr[group.second.instanceCount].color = particle.color;
 				group.second.instancingDataPtr[group.second.instanceCount].color.w = 1.0f - ( particle.currentTime / particle.lifeTime );
 				if(group.second.instancingDataPtr[group.second.instanceCount].color.w < 0.0f) {
 					group.second.instancingDataPtr[group.second.instanceCount].color.w = 0.0f;
 				}
-
+				// インスタンス数を増やす
 				++group.second.instanceCount;
 			}
-
+			// 次のパーティクルへ
 			++it;
 		}
 	}
 }
 
-// TODO: ここにメンバ関数を追加していく
 ///=============================================================================
 ///						描画
 void Particle::Draw() {
 	ID3D12GraphicsCommandList* commandList = particleSetup_->GetDXManager()->GetCommandList().Get();
+	// TODO: パイプラインステートオブジェクトの設定を行う
 	// ルートシグネチャを設定
 	//commandList->SetGraphicsRootSignature(rootSignature_.Get());
 	//キャッシュ内に指定されたブレンドモードのPSOが存在するか確認
@@ -165,6 +169,7 @@ void Particle::Draw() {
 
 		// Draw Call (インスタンシング描画)
 		commandList->DrawInstanced(6, group.second.instanceCount, 0, 0);
+
 
 		// インスタンスカウントをリセット
 		group.second.instanceCount = 0;
@@ -218,7 +223,8 @@ void Particle::CreateParticleGroup(const std::string& name, const std::string& t
 
 	// テクスチャのSRVインデックスを取得して設定
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-
+	
+	// テクスチャのSRVインデックスを取得して設定
 	newGroup.srvIndex = TextureManager::GetInstance()->GetTextureIndex(textureFilePath);
 
 	// テクスチャサイズを取得
@@ -269,7 +275,7 @@ void Particle::CreateParticleGroup(const std::string& name, const std::string& t
 	// マテリアルデータの初期化
 	CreateMaterialData();
 
-	// 新しいブレンドモードを設定
+	// TODO:新しいブレンドモードを設定
 	//blendMode_ = blendMode;
 	//GraphicsPipelineState(blendMode);  // 再生成
 }

@@ -130,7 +130,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\ModelSetup.cpp" />
     <ClCompile Include="engine\3d\ModelManager.cpp" />
     <ClCompile Include="engine\2d\Particle.cpp" />
-    <ClCompile Include="engine\2d\ParticleManager.cpp" />
     <ClCompile Include="engine\2d\ParticleSetup.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,7 +174,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\ModelSetup.h" />
     <ClInclude Include="engine\3d\ModelManager.h" />
     <ClInclude Include="engine\2d\Particle.h" />
-    <ClInclude Include="engine\2d\ParticleManager.h" />
     <ClInclude Include="engine\2d\ParticleSetup.h" />
   </ItemGroup>
   <ItemGroup>
