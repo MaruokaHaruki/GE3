@@ -1,34 +1,70 @@
 /*********************************************************************
  * \file   Particl.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   December 2024
- * \note   
+ * \note
  *********************************************************************/
 #pragma once
-#include "TransformationMatrix.h"
-#include "DirectionalLight.h"
-#include "Transform.h"
-#include "Model.h"
-#include "ModelManager.h"
 #include "ParticleSetup.h"
+#include "ModelData.h"
+#include "VertexData.h"
+#include "Material.h"
 
- //========================================
- // DX12include
+//========================================
+// 標準ライブラリ
+#include <random>
+
+//========================================
+// DX12include
 #include<d3d12.h>
 #include<dxgi1_6.h>
 #include <wrl/client.h>
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
- //========================================
- // DXC
+//========================================
+// DXC
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
 
+//Particle構造体
+struct ParticleStr {
+	Transform transform;
+	Vector3 velocity;
+	Vector4 color;
+	float lifeTime;
+	float currentTime;
+};
+
+struct ParticleForGPU {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 color;
+};
+
+// パーティクルグループ構造体の定義
+struct ParticleGroup {
+	// マテリアルデータ
+	std::string materialFilePath;
+	int srvIndex;
+	// パーティクルのリスト (std::list<ParticleStr>型)
+	std::list<ParticleStr> particleList;
+	// インスタンシングデータ用SRVインデックス
+	int instancingSrvIndex;
+	// インスタンシングリソース
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
+	// インスタンス数
+	UINT instanceCount = 0;
+	// インスタンシングデータを書き込むためのポインタ
+	ParticleForGPU* instancingDataPtr = nullptr;
+
+	Vector2 textureLeftTop = { 0.0f, 0.0f }; // テクスチャ左上座標
+	Vector2 textureSize = { 0.0f, 0.0f }; // テクスチャサイズを追加
+};
+
 class Object3dSetup;
 class Camera;
-
 class Particle {
 	///--------------------------------------------------------------
 	///							メンバ関数
@@ -43,82 +79,52 @@ public:
 	/// \brief 描画 
 	void Draw();
 
+	/**----------------------------------------------------------------------------
+	 * \brief  Emit
+	 * \param  name
+	 * \param  position
+	 * \param  count
+	 */
+	void Emit(const std::string name, const Vector3& position, uint32_t count);
+
+	/**----------------------------------------------------------------------------
+	 * \brief  CreateParticleGroup
+	 * \param  name
+	 * \param  materialFilePath
+	 * \param  maxInstanceCount
+	 */
+	void CreateParticleGroup(const std::string& name, const std::string& textureFilePath, uint32_t maxInstanceCount);
+
+
 	///--------------------------------------------------------------
 	///						 静的メンバ関数
 private:
 	/**----------------------------------------------------------------------------
-	* \brief  トランスフォーメーションマトリックスバッファの作成
-	* \note
-	*/
-	void CreateTransformationMatrixBuffer();
+	 * \brief  CreateVertexData 頂点データの作成
+	 */
+	void CreateVertexData();
 
 	/**----------------------------------------------------------------------------
-	* \brief  並行光源の作成
-	* \note
-	*/
-	void CreateDirectionalLight();
+	 * \brief  CreateVertexBufferView 頂点バッファビューの作成
+	 */
+	void CreateVertexBufferView();
+
+	/**----------------------------------------------------------------------------
+	 * \brief  CreateMaterialData マテリアルデータの作成
+	 */
+	void CreateMaterialData();
+
+	/**----------------------------------------------------------------------------
+	 * \brief  CreateNewParticle 新しいパーティクルを生成
+	 * \param  randomEngine 乱数生成器
+	 * \param  position 生成位置
+	 */
+	ParticleStr CreateNewParticle(std::mt19937& randomEngine, const Vector3& position);
 
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
-	/**----------------------------------------------------------------------------
-	* \brief  SetModel モデルの設定
-	* \param  filePath ファイルパス
-	* \note
-	*/
-	void SetModel(const std::string& filePath) {model_ = ModelManager::GetInstance()->FindModel(filePath);}
 
-	/**----------------------------------------------------------------------------
-	* \brief  SetTransform トランスフォーメーションの設定
-	* \param  transform トランスフォーメーション
-	* \note
-	*/
-	void SetTransform(const Transform& transform) { transform_ = transform; }
-
-	/**----------------------------------------------------------------------------
-	* \brief  SetModel モデルの設定
-	* \param  model モデル
-	* \note
-	*/
-	void SetScale(const Vector3& scale) { transform_.scale = scale; }
-	/**----------------------------------------------------------------------------
-	* \brief  GetScale スケールの取得
-	* \return Vector3 スケール
-	* \note
-	*/
-	const Vector3& GetScale() const { return transform_.scale; }
-
-	/**----------------------------------------------------------------------------
-	* \brief  SetRotate 回転の設定
-	* \param  rotate 回転
-	* \note
-	*/
-	void SetRotation(const Vector3& rotate) { transform_.rotate = rotate; }
-	/**----------------------------------------------------------------------------
-	* \brief  GetRotate 回転の取得
-	* \return Vector3 回転
-	* \note
-	*/
-	const Vector3& GetRotation() const { return transform_.rotate; }
-
-	/**----------------------------------------------------------------------------
-	* \brief  SetTranslate 移動の設定
-	* \param  translate 移動
-	* \note
-	*/
-	void SetPosition(const Vector3& translate) { transform_.translate = translate; } 
-	/**----------------------------------------------------------------------------
-	* \brief  GetTranslate 移動の取得
-	* \return Vector3 移動
-	* \note
-	*/
-	const Vector3& GetPosition() const { return transform_.translate; }
-
-	/**----------------------------------------------------------------------------
-	* \brief  SetCamera カメラの設定
-	* \param  camera
-	*/
-	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -129,28 +135,56 @@ private:
 	ParticleSetup* particleSetup_ = nullptr;
 
 	//---------------------------------------
+	// パーティクルグループ
+	std::unordered_map<std::string, ParticleGroup> particleGroups;
+
+	//---------------------------------------
 	// モデルデータ
-	Model* model_ = nullptr;
+	ModelData modelData_;
 
 	//---------------------------------------
-	//トランスフォーメーションマトリックス
-	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
-	//並行光源
-	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightBuffer_;
-
-	//---------------------------------------
+	// 頂点データ
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_;
+	// バッファリソースの使い道を指すポインタ
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 	// バッファリソース内のデータを指すポインタ
-	//トランスフォーメーションマトリックス
-	TransformationMatrix* transformationMatrixData_ = nullptr;
-	//並行光源
-	DirectionalLight* directionalLightData_ = nullptr;
+	VertexData* vertexData_ = nullptr;
 
-	//--------------------------------------
-	// Transform
-	Transform transform_ = {};
+	//---------------------------------------
+	// マテリアルデータ
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialBuffer_;
+	// バッファリソース内のデータを指すポインタ
+	Material* materialData_ = nullptr;
 
-	//--------------------------------------
-	// カメラ
-	Camera* camera_ = nullptr;
+	//---------------------------------------
+	// インスタンシングバッファ
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuffer_;
+
+	//---------------------------------------
+	// 乱数生成器の初期化
+	std::random_device seedGenerator_;
+	std::mt19937 randomEngine_;
+
+	//---------------------------------------
+	// その他
+	// カメラ目線を使用するかどうか
+	bool isUsedBillboard = true;
+	//最大インスタンス数
+	static const uint32_t kNumMaxInstance = 128;
+	//
+	const float kDeltaTime = 1.0f / 60.0f;
+	// 乱数範囲の調整用
+	struct RangeForRandom {
+		float min;
+		float max;
+	};
+	// パーティクルの設定
+	RangeForRandom translateRange_ = { 0.0f, 0.0f };
+	RangeForRandom colorRange_ = { 1.0f, 1.0f };
+	RangeForRandom lifetimeRange_ = { 1.0f, 3.0f };
+	RangeForRandom velocityRange_ = { -1.1f, 1.1f };
+
+	// TODO:設定しているテクスチャサイズを使うかどうかを変更できるようにする
+	Vector2 customTextureSize = { 100.0f, 100.0f };
 };
 

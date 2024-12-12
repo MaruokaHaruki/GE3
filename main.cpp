@@ -37,7 +37,7 @@
 #include "SrvSetup.h"
 #include "ParticleSetup.h"
 #include "Particle.h"
-#include "Emit.h"
+#include "ParticleEmitter.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -119,26 +119,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//サイズ
 	sprite->SetSize({ 256.0f,256.0f });
 
-	// 複数枚描画用
-	std::vector<std::unique_ptr<Sprite>> sprites;
-	// 設定
-	for(uint32_t row = 0; row < 5; ++row) {
-		for(uint32_t col = 0; col < 5; ++col) {
-			std::unique_ptr<Sprite> spriteSet = std::make_unique<Sprite>();
-			if(col % 2 == 0) {
-				spriteSet->Initialize(spriteSetup.get(), "monsterBall.png");
-				//サイズ
-				spriteSet->SetSize({ 256.0f,256.0f });
-			} else {
-				spriteSet->Initialize(spriteSetup.get(), "uvChecker.png");
-				//サイズ
-				spriteSet->SetSize({ 256.0f,256.0f });
-			}
-			sprites.push_back(std::move(spriteSet));
-		}
-	}
-
-	//TODO:06_03にて実装
 	///--------------------------------------------------------------
 	///						 3D系クラス
 	//========================================
@@ -168,45 +148,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	object3d->SetModel("axisPlus.obj");
 
 	///--------------------------------------------------------------
-	///						 パーティクル
-	//パーティクルSetupの初期化
-    std::unique_ptr<ParticleSetup> particleSetup = std::make_unique<ParticleSetup>();
-	//パーティクルSetupの初期化
-	particleSetup->Initialize(dxCore.get());
+	///						 パーティクル系
+	// ========================================
+	// パーティクルセットアップ
+	std::unique_ptr<ParticleSetup> particleSetup = std::make_unique<ParticleSetup>();
+	//パーティクルセットアップの初期化
+	particleSetup->Initialize(dxCore.get(), srvSetup.get());
+	//カメラの設定
 	particleSetup->SetDefaultCamera(camera.get());
 
-	//エミッターの作成
-	std::unique_ptr<Emit> emit = std::make_unique<Emit>();
-	//エミッターの初期化
-	emit->Initialize(particleSetup.get());
-	//エミッターの位置
-	emit->SetPosition({ 0.0f,0.0f,0.0f });
-
-	//エミッターの作成
-	std::unique_ptr<Emit> emit2 = std::make_unique<Emit>();
-	//エミッターの初期化
-	emit2->Initialize(particleSetup.get());
-	//エミッターの位置
-	emit2->SetPosition({ 5.0f,4.0f,3.0f });
-	
-
-	//パーティクルの作成
+	//========================================
+	// パーティクルクラス
 	std::unique_ptr<Particle> particle = std::make_unique<Particle>();
 	//パーティクルの初期化
 	particle->Initialize(particleSetup.get());
-	particle->SetModel("Particle.obj");
+	//パーティクルグループの作成
+	particle->CreateParticleGroup("Particle", "monsterBall.png", 1);
+
+	//========================================
+	// パーティクルエミッター
+	std::unique_ptr<ParticleEmitter> particleEmitter = 
+		std::make_unique<ParticleEmitter>(particle.get(), "Particle", Transform{ {0.2f,0.2f,0.2f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} }, 100, 0.1f, true);
+
 
 	///--------------------------------------------------------------
 	///						 メインループ用変数
+	//========================================
+	// 3Dオブジェクト用
 	//Transform変数を作る
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	//カメラの作成
-	//Transform cameraTransform = camera->GetTransform();
-	//Transform uvTransform{
-	//	{1.0f,1.0f,1.0f},
-	//	{0.0f,0.0f,0.0f},
-	//	{0.0f,0.0f,0.0f},
-	//};
 
 	//========================================
 	// 2Dオブジェクト用
@@ -318,10 +288,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			///						更新処理
 			//========================================
 			// カメラの更新
-			camera->SetRotate({ 0.0f,0.0f,0.0f });
-			camera->SetTranslate({0.0f,0.0f,-30.0f});
+			//camera->SetTransform(Transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,-100.0f} });
 			camera->Update();
-
 
 			//========================================
 			// 2D更新
@@ -333,18 +301,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			sprite->SetPosition(Vector2{ transformSprite.translate.x, transformSprite.translate.y });
 			//単体
 			sprite->Update();
-			//複数枚処理
-			//NOTE:中身の分だけfor文を回す
-			float offset = 100.0f;//ずらす距離
-			int index = 0;
-			for(const auto& spriteSet : sprites) {
-				// スプライトを更新 (operator-> でアクセス)
-				spriteSet->Update();
-				spriteSet->SetSize(Vector2{ 128.0f,128.0f });
-				spriteSet->SetRotation(spriteSet->GetRotation() + spritesRotate);
-				spriteSet->SetPosition(Vector2{ index * offset, 1.0f });
-				index++;
-			}
 
 			//========================================
 			// 3D更新 
@@ -358,13 +314,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			object3d->Update();
 
 			//========================================
-			// パーティクル
+			// パーティクル系
 			//パーティクルの更新
 			particle->Update();
+			//パーティクルエミッターの更新
+			particleEmitter->Update();
 
-			//エミッターの更新
-			emit->Update();	
-			emit2->Update();
 
 
 			///--------------------------------------------------------------
@@ -381,29 +336,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			
 
 			//========================================
-			////3Dオブジェクト共通描画設定
-			//object3dSetup->CommonDrawSetup();
-			//// 3D描画
+			//3Dオブジェクト共通描画設定
+			object3dSetup->CommonDrawSetup();
+			// 3D描画
 			//object3d->Draw();
 
 			//========================================
-			//// 2Dオブジェクト共通描画設定
-			//spriteSetup->CommonDrawSetup();
+			// 2Dオブジェクト共通描画設定
+			spriteSetup->CommonDrawSetup();
 
-			////Spriteクラス
+			//Spriteクラス
 			//sprite->Draw();
-			////複数枚描画
-			//for(const auto& spriteSet : sprites) {
-			//	// スプライトを描画
-			//	spriteSet->Draw();
-			//}
 
+			//========================================
+			//パーティクル共通描画設定
 			particleSetup->CommonDrawSetup();
-			//パーティクルの描画
+			//パーティクル描画
 			particle->Draw();
-			//複数枚描画
-			emit->Draw();
-			emit2->Draw();
 
 
 			//========================================
