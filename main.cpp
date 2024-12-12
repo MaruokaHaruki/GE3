@@ -163,7 +163,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//パーティクルの初期化
 	particle->Initialize(particleSetup.get());
 	//パーティクルグループの作成
-	particle->CreateParticleGroup("Particle", "monsterBall.png", 1);
+	particle->CreateParticleGroup("Particle", "monsterBall.png"/*, 1*/);
 
 	//========================================
 	// パーティクルエミッター
@@ -184,8 +184,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//マテリアル
 	Vector4 materialSprite = sprite->GetColor();
-	//複数枚回転
-	float spritesRotate = 0.01f;
 
 	Transform uvTransformSprite{
 		{1.0f,1.0f,1.0f},

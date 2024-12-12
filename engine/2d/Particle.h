@@ -47,11 +47,11 @@ struct ParticleForGPU {
 struct ParticleGroup {
 	// マテリアルデータ
 	std::string materialFilePath;
-	int srvIndex;
+	int srvIndex = 0;
 	// パーティクルのリスト (std::list<ParticleStr>型)
-	std::list<ParticleStr> particleList;
+	std::list<ParticleStr> particleList = {};
 	// インスタンシングデータ用SRVインデックス
-	int instancingSrvIndex;
+	int instancingSrvIndex = 0;
 	// インスタンシングリソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource = nullptr;
 	// インスタンス数
@@ -93,7 +93,7 @@ public:
 	 * \param  materialFilePath
 	 * \param  maxInstanceCount
 	 */
-	void CreateParticleGroup(const std::string& name, const std::string& textureFilePath, uint32_t maxInstanceCount);
+	void CreateParticleGroup(const std::string& name, const std::string& textureFilePath/*, uint32_t maxInstanceCount*/);
 
 
 	///--------------------------------------------------------------

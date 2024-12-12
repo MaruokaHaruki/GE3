@@ -148,15 +148,16 @@ void Particle::Draw() {
 		Vector2 textureLeftTop = group.second.textureLeftTop;
 		Vector2 textureSize = group.second.textureSize;
 
-		for(auto& particle : group.second.particleList) {
+		// TODO: マテリアルデータの設定を行う後に修正
+		//for(auto& particle : group.second.particleList) {
 			// UV座標の計算
-			float uStart = textureLeftTop.x / textureSize.x;
-			float uEnd = ( textureLeftTop.x + textureSize.x ) / textureSize.x;
-			float vStart = textureLeftTop.y / textureSize.y;
-			float vEnd = ( textureLeftTop.y + textureSize.y ) / textureSize.y;
+			//float uStart = textureLeftTop.x / textureSize.x;
+			//float uEnd = ( textureLeftTop.x + textureSize.x ) / textureSize.x;
+			//float vStart = textureLeftTop.y / textureSize.y;
+			//float vEnd = ( textureLeftTop.y + textureSize.y ) / textureSize.y;
 
 			// 必要であればUV座標を設定する処理を追加
-		}
+		//}
 
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
@@ -204,7 +205,7 @@ void Particle::Emit(const std::string name, const Vector3& position, uint32_t co
 
 ///=============================================================================
 ///						パーティクルグループ
-void Particle::CreateParticleGroup(const std::string& name, const std::string& textureFilePath, uint32_t maxInstanceCount) {
+void Particle::CreateParticleGroup(const std::string& name, const std::string& textureFilePath/*, uint32_t maxInstanceCount*/) {
 	// 登録済みの名前かチェックして assert
 	bool nameExists = false;
 	for(auto it = particleGroups.begin(); it != particleGroups.end(); ++it) {
@@ -336,7 +337,7 @@ ParticleStr Particle::CreateNewParticle(std::mt19937& randomEngine, const Vector
 	std::uniform_real_distribution<float> distSpeed(velocityRange_.min, velocityRange_.max);
 
 	// 新たなパーティクルの生成
-	ParticleStr particle;
+	ParticleStr particle = {};
 
 	particle.transform.scale = { 1.0f, 1.0f, 1.0f };
 	particle.transform.rotate = { 0.0f, 0.0f, 0.0f };
