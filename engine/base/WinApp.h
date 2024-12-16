@@ -1,8 +1,11 @@
-///===============================================================///
-/// 
-///ウィンドウズアプリケーションクラス
-/// 
-///===============================================================///
+/*********************************************************************
+ * \file   WinApp.h
+ * \brief　ウィンドウズアプリケーションクラス
+ * 
+ * \author Harukichimaru
+ * \date   December 2024
+ * \note   
+ *********************************************************************/
 //NOTE:ウィンドウズAPIを管理する
 
 #include <cstdint>
@@ -18,22 +21,22 @@ public:
 
 public:
 
-	/// <summary>
-	/// ウィンドウプロシージャ
-	/// </summary>
-	/// <param name="hwnd"></param>
-	/// <param name="msg"></param>
-	/// <param name="wparam"></param>
-	/// <param name="lparam"></param>
-	/// <returns></returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  WindowProc	ウィンドウプロシージャ
+	 * \param  hwnd			ウィンドウハンドル
+	 * \param  msg			メッセージ
+	 * \param  wparam		メッセージ固有の追加情報
+	 * \param  lparam		メッセージ固有の追加情報
+	 * \return 
+	 */
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	/// <summary>
-	/// ウィンドウの生成
-	/// </summary>
-	/// <param name="title">ウィンドウタイトル</param>
-	/// <param name="clientWidth">ウィンドウ横幅</param>
-	/// <param name="clientHeight">ウィンドウ縦幅</param>
+	/**----------------------------------------------------------------------------
+	 * \brief  CreateGameWindow ゲームウィンドウの生成
+	 * \param  title			ウィンドウタイトル
+	 * \param  clientWidth		クライアントの横幅
+	 * \param  clientHeight		クライアントの縦幅
+	 */
 	void CreateGameWindow(const wchar_t* title = L"DirectXGame", int32_t clientWidth = kWindowWidth_, int32_t clientHeight = kWindowHeight_);
 
 	/// <summary>

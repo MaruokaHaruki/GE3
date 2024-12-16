@@ -112,6 +112,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\utils\WstringUtility.cpp" />
     <ClCompile Include="engine\utils\Logger.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
+    <ClCompile Include="ImguiSetup.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\base\WinApp.cpp" />
     <ClCompile Include="engine\2d\SpriteSetup.cpp" />
@@ -160,6 +161,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\ModelManager.h" />
     <ClInclude Include="engine\2d\Particle.h" />
     <ClInclude Include="engine\2d\ParticleSetup.h" />
+    <ClInclude Include="ImguiSetup.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />

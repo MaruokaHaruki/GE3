@@ -395,8 +395,8 @@ void DirectXCore::SetupTransitionBarrier() {
 void DirectXCore::RenderTargetPreference() {
 	//描画先のRTVを設定する
 	commandList_->OMSetRenderTargets(1, &rtvHandles_[backBufferIndex_], false, &dsvHandle_);
-	//指定した色で画面全体をクリアする	
-    float clearColor[] = { 0.298f, 0.424f, 0.702f, 1.0f }; // この色を変更することでウィンドウの色を#4c6cb3に変更できます
+	//指定した色で画面全体をクリアする	背景色！
+    float clearColor[] = { 0.01f, 0.01f, 0.01f, 1.0f }; // この色を変更することでウィンドウの色を黒に変更できます
 	commandList_->ClearRenderTargetView(rtvHandles_[backBufferIndex_], clearColor, 0, nullptr);
 	commandList_->ClearDepthStencilView(dsvHandle_, D3D12_CLEAR_FLAG_DEPTH, 1.0F, 0, 0, nullptr);
 }
