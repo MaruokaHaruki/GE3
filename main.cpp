@@ -163,11 +163,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//パーティクルの初期化
 	particle->Initialize(particleSetup.get());
 	//パーティクルグループの作成
-	particle->CreateParticleGroup("Particle", "monsterBall.png"/*, 1*/);
+	particle->CreateParticleGroup("Particle", "monsterBall.png");
 
 	//========================================
 	// パーティクルエミッター
-	std::unique_ptr<ParticleEmitter> particleEmitter = 
+	std::unique_ptr<ParticleEmitter> particleEmitter =
 		std::make_unique<ParticleEmitter>(particle.get(), "Particle", Transform{ {0.2f,0.2f,0.2f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} }, 100, 0.1f, true);
 
 
@@ -331,7 +331,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//========================================
 			//パーティクル
-			
+
 
 			//========================================
 			//3Dオブジェクト共通描画設定
