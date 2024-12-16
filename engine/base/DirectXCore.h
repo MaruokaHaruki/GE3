@@ -299,7 +299,6 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetWinApp WindowsAPI取得
-	 * \return
 	 */
 	WinApp GetWinApp() { return *winApp_; }
 
@@ -311,7 +310,6 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetHr HRESULT型の変数を取得するゲッター関数。
-	 * \return
 	 */
 	HRESULT GetHr() const { return hr_; }
 
@@ -323,7 +321,6 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetDevice デバイスの取得
-	 * \return
 	 */
 	Microsoft::WRL::ComPtr <ID3D12Device> GetDevice() { return device_; }
 
@@ -341,27 +338,27 @@ public:
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetSwapChainDesc スワップチェーンの設定の取得
-	 * \return
 	 */
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() const { return swapChainDesc_; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRtvDesc RTVディスクリプタの取得
-	 * \return
 	 */
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() const { return rtvDesc_; }
 
 	/**----------------------------------------------------------------------------
 	 * \brief  GetRtvDescriptorHeap RTVディスクリプタヒープの取得
-	 * \return
 	 */
 	Microsoft::WRL::ComPtr <ID3D12DescriptorHeap> GetRtvDescriptorHeap() { return rtvDescriptorHeap_; }
+
+
+
 
 	///--------------------------------------------------------------
 	///						 メンバ変数
 private:
-//========================================
-// 記録時間(FPS固定用)
+	//========================================
+	// 記録時間(FPS固定用)
 	std::chrono::steady_clock::time_point reference_;
 
 	//========================================
@@ -426,18 +423,16 @@ private:
 	//========================================
 	// RTVディスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_;
+	//RTVの数
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc_{};
-
+	//RTVの設定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc_{};
-
 	//ディスクリプタの先頭を取得する
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvStarHandle_{};
 	//RTVを2つ作るのでディスクリプタを2つ用意
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles_[2]{};
-
 	//これから書き込むバックバッファのインデックスを取得
 	UINT backBufferIndex_ = 0;
-
 	//TransitionBarrierの設定
 	D3D12_RESOURCE_BARRIER barrier_{};
 
@@ -447,8 +442,10 @@ private:
 
 	//========================================
 	// DXCコンパイラ
-	IDxcUtils* dxcUtils_ = nullptr;
 	IDxcCompiler3* dxcCompiler_ = nullptr;
+	// DXCユーティリティ
+	IDxcUtils* dxcUtils_ = nullptr;
+	// DXCライブラリ
 	IDxcIncludeHandler* includeHandler_ = nullptr;
 
 	//========================================
@@ -458,5 +455,6 @@ private:
 	//========================================
 	// シザー矩形
 	D3D12_RECT scissorRect_{};
+
 };
 

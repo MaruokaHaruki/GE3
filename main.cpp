@@ -6,38 +6,49 @@
  * \date   November 2024
  * \note
  *********************************************************************/
-#include <Windows.h>
  ///--------------------------------------------------------------
  ///						 標準ライブラリ
+#include <Windows.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <cmath>
-///--------------------------------------------------------------
-///						 コムポインタ
+//---------------------------------------
+// コムポインタ
 #include <wrl.h>
 #include <memory> // std::unique_ptr
-///--------------------------------------------------------------
-///						 ファイル読み込み用
+//---------------------------------------
+// ファイル読み込み用
 #include <fstream>
 #include <sstream>
 ///--------------------------------------------------------------
 ///						 自作クラス
+//---------------------------------------
+// base
 #include "WinApp.h"
+#include "ImguiSetup.h"
 #include "DirectXCore.h"
+#include "SrvSetup.h"
+//---------------------------------------
+// io
 #include "Input.h"
+//---------------------------------------
+// 2D
 #include "spriteSetup.h"
 #include "Sprite.h"
 #include "TextureManager.h"
+#include "ParticleSetup.h"
+#include "Particle.h"
+#include "ParticleEmitter.h"
+//---------------------------------------
+// 3D
 #include "Object3dSetup.h"
 #include "Object3d.h"
 #include "ModelSetup.h"
 #include "Model.h"
 #include "ModelManager.h"
+//---------------------------------------
+// camera
 #include "Camera.h"
-#include "SrvSetup.h"
-#include "ParticleSetup.h"
-#include "Particle.h"
-#include "ParticleEmitter.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -83,6 +94,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ダイレクトXの初期化
 	dxCore->InitializeDirectX(win.get());
 
+	///--------------------------------------------------------------
+	///						 ImGuiのセットアップ
+	std::unique_ptr<ImguiSetup> imguiSetup = std::make_unique<ImguiSetup>();
+	//ImGuiの初期化
+	imguiSetup->Initialize(win.get(), dxCore.get(), Style::CYBER);
 	///--------------------------------------------------------------
 	///						 SrvSetupクラス
 	std::unique_ptr<SrvSetup> srvSetup = std::make_unique<SrvSetup>();
@@ -318,7 +334,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//パーティクルエミッターの更新
 			particleEmitter->Update();
 
+			//========================================
+			// ImGuiの更新
+			imguiSetup->Begin();
+			//↓この間に書け!!!
+			//DEMOウィンドウの表示
+			ImGui::ShowDemoWindow();
 
+			ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiCond_Once);
+			ImGui::Begin("2D Object");
+			// カラーピッカーを表示
+			ImGui::Text("2D Material Settings");
+			ImGui::ColorPicker4("Color", reinterpret_cast<float*>( &materialSprite.x ), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
+			//空白と罫線
+			ImGui::Dummy(ImVec2(0.0f, 10.0f));
+			ImGui::Separator();
+			//SpriteのSRT設定
+			ImGui::Text("2D Object");
+			ImGui::DragFloat2("Scale", &transformSprite.scale.x, 0.01f);
+			ImGui::DragFloat("Rotate", &transformSprite.rotate.x, 0.01f);
+			ImGui::DragFloat3("Translate", &transformSprite.translate.x, 1.0f);
+
+			ImGui::End();
+
+			//↑
+			imguiSetup->End();
+			//========================================
 
 			///--------------------------------------------------------------
 			///						 描画(コマンドを積む)
@@ -344,18 +385,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			spriteSetup->CommonDrawSetup();
 
 			//Spriteクラス
-			//sprite->Draw();
+			sprite->Draw();
 
 			//========================================
 			//パーティクル共通描画設定
 			particleSetup->CommonDrawSetup();
 			//パーティクル描画
-			particle->Draw();
+			//particle->Draw();
 
 
 			//========================================
 			// ImGui描画
 			//ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), dxCore->GetCommandList().Get());
+			imguiSetup->Draw();
 
 			///---------------------------------------
 			///ループ後処理
@@ -371,6 +413,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//ImGui_ImplDX12_Shutdown();  // ImGuiのDirectX12サポート終了
 	//ImGui_ImplWin32_Shutdown();  // ImGuiのWin32サポート終了
 	//ImGui::DestroyContext();  // ImGuiコンテキストの破棄
+	imguiSetup->Finalize();
 
 	//========================================
 	// テクスチャマネージャの終了処理
