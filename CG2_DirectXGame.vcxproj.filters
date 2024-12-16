@@ -85,31 +85,16 @@
     <Filter Include="ヘッダー ファイル\engine\math\structure\drawData">
       <UniqueIdentifier>{1abdb743-43a8-4574-84ba-98df6e516ff1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\camera">
+      <UniqueIdentifier>{2362028f-8409-4a07-a20e-94c6ddb32e25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\camera">
+      <UniqueIdentifier>{2d7f20ff-184b-4f2a-bc4d-2e26ba02a233}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui.cpp">
-      <Filter>exetrnals\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_demo.cpp">
-      <Filter>exetrnals\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_draw.cpp">
-      <Filter>exetrnals\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp">
-      <Filter>exetrnals\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp">
-      <Filter>exetrnals\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_tables.cpp">
-      <Filter>exetrnals\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
-      <Filter>exetrnals\imgui</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\DirectXCore.cpp">
       <Filter>ソース ファイル\engine\base</Filter>
@@ -150,20 +135,20 @@
     <ClCompile Include="engine\utils\WstringUtility.cpp">
       <Filter>ソース ファイル\engine\utils</Filter>
     </ClCompile>
-    <ClCompile Include="engine\camera\Camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\SrvSetup.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="engine\2d\ParticleSetup.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="engine\2d\Particle.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="engine\2d\ParticleEmitter.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\SrvSetup.cpp">
+      <Filter>ソース ファイル\engine\base</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\camera\Camera.cpp">
+      <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,30 +163,6 @@
     </ClInclude>
     <ClInclude Include="engine\math\structure\Vector3.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imconfig.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui_impl_dx12.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui_impl_win32.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imgui_internal.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imstb_rectpack.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imstb_textedit.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="externals\imgui\imstb_truetype.h">
-      <Filter>exetrnals\imgui</Filter>
     </ClInclude>
     <ClInclude Include="engine\2d\TextureManager.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
@@ -278,20 +239,20 @@
     <ClInclude Include="engine\externals\imgui\imconfig.h">
       <Filter>exetrnals\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="engine\camera\Camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\SrvSetup.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="engine\2d\ParticleSetup.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="engine\2d\Particle.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="engine\2d\ParticleEmitter.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\engine\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\SrvSetup.h">
+      <Filter>ヘッダー ファイル\engine\base</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\camera\Camera.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -306,11 +267,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="externals\imgui\LICENSE.txt">
-      <Filter>exetrnals\imgui</Filter>
-    </Text>
     <Text Include="engine\externals\imgui\LICENSE.txt">
       <Filter>exetrnals</Filter>
     </Text>
+    <Text Include="externals\imgui\LICENSE.txt" />
   </ItemGroup>
 </Project>
