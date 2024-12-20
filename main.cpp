@@ -378,7 +378,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//3Dオブジェクト共通描画設定
 			object3dSetup->CommonDrawSetup();
 			// 3D描画
-			//object3d->Draw();
+			object3d->Draw();
 
 			//========================================
 			// 2Dオブジェクト共通描画設定
@@ -391,7 +391,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//パーティクル共通描画設定
 			particleSetup->CommonDrawSetup();
 			//パーティクル描画
-			//particle->Draw();
+			particle->Draw();
 
 
 			//========================================

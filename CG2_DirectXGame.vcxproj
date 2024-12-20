@@ -106,6 +106,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\2d\ParticleEmitter.cpp" />
+    <ClCompile Include="engine\audio\MagAudio.cpp" />
     <ClCompile Include="engine\base\SrvSetup.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
     <ClCompile Include="engine\base\DirectXCore.cpp" />
@@ -128,6 +129,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\ParticleEmitter.h" />
+    <ClInclude Include="engine\audio\MagAudio.h" />
     <ClInclude Include="engine\base\SrvSetup.h" />
     <ClInclude Include="engine\camera\Camera.h" />
     <ClInclude Include="engine\base\DirectXCore.h" />
