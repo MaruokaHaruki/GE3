@@ -126,6 +126,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\ModelManager.cpp" />
     <ClCompile Include="engine\2d\Particle.cpp" />
     <ClCompile Include="engine\2d\ParticleSetup.cpp" />
+    <ClCompile Include="MaruRhythm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\2d\ParticleEmitter.h" />
@@ -164,6 +165,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\Particle.h" />
     <ClInclude Include="engine\2d\ParticleSetup.h" />
     <ClInclude Include="engine\base\ImguiSetup.h" />
+    <ClInclude Include="MaruRhythm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
