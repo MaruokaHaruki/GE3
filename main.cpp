@@ -118,13 +118,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///--------------------------------------------------------------
 	///						 音声クラス
 	// 初期化
-	MAudioG::GetInstance()->Initialize();
+	MAudioG::GetInstance()->Initialize("resources/sound/");
 	// ポインタの取得
 	MAudioG *audio = MAudioG::GetInstance();
 	// サウンドセット
-	SoundSet testSound;
+	//SoundSet testSound;
 	// 音声の読み込み
-	testSound.dataHandle = audio->LoadWav("sound/Duke_Ellington.wav");
+	audio->LoadWav("Duke_Ellington.wav");
 
 
 	///--------------------------------------------------------------
@@ -351,11 +351,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//========================================
 			// 音声の再生
-			if(audio->IsWavPlaying(testSound.voiceHandle) == false) {
+			/*if(audio->IsWavPlaying(testSound.voiceHandle) == false) {
 				testSound.voiceHandle = audio->PlayWav(testSound.dataHandle, 1.0f, 1.0f, 1.0f);
 
+			}*/
+			if(audio->IsWavPlaying("Duke_Ellington.wav") == false) {
+				audio->PlayWav("Duke_Ellington.wav", true, 1.0f, 1.0f);
 			}
-
 
 			//========================================
 			// ImGuiの更新
@@ -368,7 +370,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			ImGui::Begin("2D Object");
 			// カラーピッカーを表示
 			ImGui::Text("2D Material Settings");
-			ImGui::ColorPicker4("Color", reinterpret_cast<float*>( &materialSprite.x ), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
+			ImGui::ColorPicker4("Color", reinterpret_cast<float *>( &materialSprite.x ), ImGuiColorEditFlags_Float | ImGuiColorEditFlags_PickerHueWheel);
 			//空白と罫線
 			ImGui::Dummy(ImVec2(0.0f, 10.0f));
 			ImGui::Separator();

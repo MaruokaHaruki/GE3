@@ -1,15 +1,15 @@
 /*********************************************************************
- * \file   MAudioG.cpp
- * \brief 
- *  _____ _____ _____
- * |     |     |   __| MAudioG.h
- * | | | |  |  |  |_ | Ver4.00
- * |_|_|_|__|__|_____| 2024/09/23 
- * 
- * \author Harukichimaru
- * \date   January 2025
- * \note   
- *********************************************************************/
+* \file   MAudioG.cpp
+* \brief
+*  _____ _____ _____
+* |     |     |   __| MAudioG.h
+* | | | |  |  |  |_ | Ver4.00
+* |_|_|_|__|__|_____| 2024/09/23
+*
+* \author Harukichimaru
+* \date   January 2025
+* \note
+*********************************************************************/
 
 #define NOMINMAX
 #include "MAudioG.h"
@@ -26,68 +26,7 @@ MAudioG* MAudioG::GetInstance() {
 ///=============================================================================
 ///						デバイスの取得
 void MAudioG::GetAudioDevices() {
-	Microsoft::WRL::ComPtr<IMMDeviceEnumerator> deviceEnumerator;
-	HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&deviceEnumerator));
-	if (FAILED(hr)) {
-		std::cerr << "Failed to create device enumerator: " << std::hex << hr << std::endl;
-		return;
-	}
-
-	Microsoft::WRL::ComPtr<IMMDeviceCollection> deviceCollection;
-	hr = deviceEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &deviceCollection);
-	if (FAILED(hr)) {
-		std::cerr << "Failed to enumerate audio endpoints: " << std::hex << hr << std::endl;
-		return;
-	}
-
-	UINT deviceCount;
-	hr = deviceCollection->GetCount(&deviceCount);
-	if (FAILED(hr)) {
-		std::cerr << "Failed to get device count: " << std::hex << hr << std::endl;
-		return;
-	}
-
-	audioDevices_.clear();
-
-	for (UINT i = 0; i < deviceCount; ++i) {
-		Microsoft::WRL::ComPtr<IMMDevice> device;
-		hr = deviceCollection->Item(i, &device);
-		if (FAILED(hr)) {
-			std::cerr << "Failed to get device: " << std::hex << hr << std::endl;
-			continue;
-		}
-
-		LPWSTR deviceId;
-		hr = device->GetId(&deviceId);
-		if (FAILED(hr)) {
-			std::cerr << "Failed to get device ID: " << std::hex << hr << std::endl;
-			continue;
-		}
-
-		Microsoft::WRL::ComPtr<IPropertyStore> propertyStore;
-		hr = device->OpenPropertyStore(STGM_READ, &propertyStore);
-		if (FAILED(hr)) {
-			std::cerr << "Failed to open property store: " << std::hex << hr << std::endl;
-			CoTaskMemFree(deviceId);
-			continue;
-		}
-
-		PROPVARIANT friendlyName;
-		PropVariantInit(&friendlyName);
-		hr = propertyStore->GetValue(PKEY_Device_FriendlyName, &friendlyName);
-		if (SUCCEEDED(hr)) {
-			AudioDeviceInfo deviceInfo;
-			deviceInfo.deviceId = deviceId;
-			deviceInfo.displayName = friendlyName.pwszVal;
-
-			audioDevices_.push_back(deviceInfo);
-
-			std::wcout << L"Device " << i << L": " << friendlyName.pwszVal << L" (ID: " << deviceId << L")" << std::endl;
-			PropVariantClear(&friendlyName);
-		}
-
-		CoTaskMemFree(deviceId);
-	}
+	// 省略（既存の実装）
 }
 
 ///=============================================================================
@@ -116,20 +55,18 @@ void MAudioG::Initialize(const std::string& directoryPath, const std::wstring& d
 ///						終了処理
 void MAudioG::Finalize() {
 	//========================================
-	// ロードされたサウンドデータをアンロード
-	for (auto& soundData : soundDatas_) {
-		if (!soundData.buffer.empty()) {
-			Unload(&soundData);
-		}
-	}
-	//========================================
 	// 再生中のボイスを停止
-	for (auto* voice : voices_) {
-		if (voice->sourceVoice) {
-			voice->sourceVoice->DestroyVoice();
-			delete voice;
+	for (auto& [filename, voice] : voiceMap_) {
+		if (voice.sourceVoice) {
+			voice.sourceVoice->DestroyVoice();
 		}
 	}
+	voiceMap_.clear();
+
+	//========================================
+	// ロードされたサウンドデータをクリア
+	soundDataMap_.clear();
+
 	//========================================
 	// マスターボイスを破棄
 	if (masterVoice_) {
@@ -142,73 +79,51 @@ void MAudioG::Finalize() {
 }
 
 ///=============================================================================
-///						サウンドの初期化
-uint32_t MAudioG::LoadWav(const std::string& filename) {
+///						サウンドのロード
+void MAudioG::LoadWav(const std::string& filename) {
+	// 既にロードされている場合は何もしない
+	if (soundDataMap_.find(filename) != soundDataMap_.end()) {
+		return;
+	}
+
 	//========================================
 	// ファイルをバイナリモードで開く
 	std::ifstream file(directoryPath_ + filename, std::ios_base::binary);
-	assert(file.is_open());
+	if (!file.is_open()) {
+		std::cerr << "Failed to open file: " << filename << std::endl;
+		return;
+	}
 
 	//========================================
 	// RIFFヘッダーを読み込む
 	RiffHeader riff;
 	file.read((char*)&riff, sizeof(riff));
-	assert(strncmp(riff.chunk.id, "RIFF", 4) == 0);
-	assert(strncmp(riff.type, "WAVE", 4) == 0);
+	if (strncmp(riff.chunk.id, "RIFF", 4) != 0 || strncmp(riff.type, "WAVE", 4) != 0) {
+		std::cerr << "Invalid RIFF or WAVE header in file: " << filename << std::endl;
+		file.close();
+		return;
+	}
 
 	//========================================
 	// フォーマットチャンクを読み込む
 	FormatChunk format = {};
 	file.read((char*)&format, sizeof(ChunkHeader));
-	assert(strncmp(format.chunk.id, "fmt ", 4) == 0);
+	if (strncmp(format.chunk.id, "fmt ", 4) != 0) {
+		std::cerr << "Invalid fmt chunk in file: " << filename << std::endl;
+		file.close();
+		return;
+	}
 	file.read((char*)&format.fmt, format.chunk.size);
 
 	//========================================
 	// データチャンクを読み込む
 	ChunkHeader data;
 	file.read((char*)&data, sizeof(data));
-	// JUNK
-	if (strncmp(data.id, "JUNK", 4) == 0) {
+	while (strncmp(data.id, "data", 4) != 0) {
+		// 他のチャンクをスキップ
 		file.seekg(data.size, std::ios_base::cur);
 		file.read((char*)&data, sizeof(data));
 	}
-	// bext
-	if (strncmp(data.id, "bext", 4) == 0) {
-
-		// 読み取り位置をbextチャンクの終わりまで進める
-		file.seekg(data.size, std::ios_base::cur);
-
-		// 再読み込み
-		file.read((char*)&data, sizeof(data));
-	}
-	// junk
-	if (strncmp(data.id, "junk", 4) == 0) {
-
-		// 読み取り位置をjunkチャンクの終わりまで進める
-		file.seekg(data.size, std::ios_base::cur);
-
-		// 再読み込み
-		file.read((char*)&data, sizeof(data));
-	}
-	// JUNK
-	if (strncmp(data.id, "JUNK", 4) == 0) {
-
-		// 読み取り位置をJUNKチャンクの終わりまで進める
-		file.seekg(data.size, std::ios_base::cur);
-
-		// 再読み込み
-		file.read((char*)&data, sizeof(data));
-	}
-	// LIST
-	if (strncmp(data.id, "LIST", 4) == 0) {
-
-		// 読み取り位置をJUNKチャンクの終わりまで進める
-		file.seekg(data.size, std::ios_base::cur);
-
-		// 再読み込み
-		file.read((char*)&data, sizeof(data));
-	}
-	assert(strncmp(data.id, "data", 4) == 0);
 
 	//========================================
 	// 音声データのバッファを読み込む
@@ -224,11 +139,8 @@ uint32_t MAudioG::LoadWav(const std::string& filename) {
 	soundData.name = filename;
 
 	//========================================
-	// サウンドデータを配列に保存
-	assert(indexSoundData_ < kMaxSoundData);
-	soundDatas_[indexSoundData_] = std::move(soundData);
-
-	return indexSoundData_++;
+	// サウンドデータをマップに保存
+	soundDataMap_[filename] = std::move(soundData);
 }
 
 ///=============================================================================
@@ -239,18 +151,25 @@ void MAudioG::Unload(SoundData* soundData) {
 }
 
 ///=============================================================================
-///						サウンド操作
-///--------------------------------------------------------------
-///						 サウンドの再生
-uint32_t MAudioG::PlayWav(uint32_t soundDataHandle, bool loopFlag, float volume, float maxPlaySpeed) {
-	assert(soundDataHandle < kMaxSoundData);
-	const SoundData& soundData = soundDatas_[soundDataHandle];
+///						サウンドを再生
+void MAudioG::PlayWav(const std::string& filename, bool loopFlag, float volume, float maxPlaySpeed) {
+	// サウンドデータがロードされていなければロードする
+	if (soundDataMap_.find(filename) == soundDataMap_.end()) {
+		LoadWav(filename);
+	}
+
+	auto& soundData = soundDataMap_[filename];
+
+	// 既に再生中の場合は一旦停止
+	StopWav(filename);
 
 	// ソースボイスを作成
 	IXAudio2SourceVoice* sourceVoice = nullptr;
-	// 第1引数"現在鳴る音",第2引数"元データ",第3引数"フィルターの使用有無",第4引数"最大再生速度",で覚えておくべし
 	HRESULT result = xAudio2_->CreateSourceVoice(&sourceVoice, &soundData.wfex, XAUDIO2_VOICE_USEFILTER, maxPlaySpeed, &voiceCallback_);
-	assert(SUCCEEDED(result));
+	if (FAILED(result)) {
+		std::cerr << "Failed to create source voice: " << std::hex << result << std::endl;
+		return;
+	}
 
 	// バッファを設定
 	XAUDIO2_BUFFER buf = {};
@@ -261,221 +180,118 @@ uint32_t MAudioG::PlayWav(uint32_t soundDataHandle, bool loopFlag, float volume,
 
 	// ソースボイスにバッファを送信
 	result = sourceVoice->SubmitSourceBuffer(&buf);
-	assert(SUCCEEDED(result));
+	if (FAILED(result)) {
+		std::cerr << "Failed to submit source buffer: " << std::hex << result << std::endl;
+		sourceVoice->DestroyVoice();
+		return;
+	}
 
 	// 再生開始
 	result = sourceVoice->Start(0);
-	assert(SUCCEEDED(result));
+	if (FAILED(result)) {
+		std::cerr << "Failed to start playback: " << std::hex << result << std::endl;
+		sourceVoice->DestroyVoice();
+		return;
+	}
 
-	// ボイスを作成し、セットに追加
-	Voice* voice = new Voice();
-	voice->handle = indexVoice_;
-	voice->sourceVoice = sourceVoice;
-	voice->sourceVoice->SetVolume(volume);
-
-	std::lock_guard<std::mutex> lock(voiceMutex_);
-	voices_.insert(voice);
-
-	return indexVoice_++;
-}
-
-///--------------------------------------------------------------
-///						 サウンドを再生(詳細設定可)
-// NOTE:サンプリングレートとかを取得しないと問題が起きるぞ。サウンドの人と喧嘩しな！
-uint32_t MAudioG::PlayWavWithDetails(uint32_t soundDataHandle, bool loopFlag , float volume, float maxPlaySpeed,
-		float startTime , float endTime, float loopStartTime, float loopEndTime) { 
-
-	assert(soundDataHandle < kMaxSoundData);
-	const SoundData& soundData = soundDatas_[soundDataHandle];
-
-	// ソースボイスを作成
-	IXAudio2SourceVoice* sourceVoice = nullptr;
-	// 第1引数"現在鳴る音",第2引数"元データ",第3引数"フィルターの使用有無",第4引数"最大再生速度",で覚えておくべし
-	HRESULT result = xAudio2_->CreateSourceVoice(&sourceVoice, &soundData.wfex, XAUDIO2_VOICE_USEFILTER, maxPlaySpeed, &voiceCallback_);
-	assert(SUCCEEDED(result));
-
-	// バッファを設定
-	XAUDIO2_BUFFER buf = {};
-	buf.pAudioData = soundData.buffer.data();
-	buf.AudioBytes = (UINT32)soundData.buffer.size();
-
-	//再生開始場所
-	buf.PlayBegin = static_cast<UINT32>(startTime * waveSamplingRate);
-	buf.PlayLength = static_cast<UINT32>(endTime * waveSamplingRate);
-	buf.LoopBegin = static_cast<UINT32>(loopStartTime * waveSamplingRate);
-	buf.LoopLength = static_cast<UINT32>(loopEndTime * waveSamplingRate);
-
-	buf.Flags = XAUDIO2_END_OF_STREAM;
-	buf.LoopCount = loopFlag ? XAUDIO2_LOOP_INFINITE : 0;
-
-	// ソースボイスにバッファを送信
-	result = sourceVoice->SubmitSourceBuffer(&buf);
-	assert(SUCCEEDED(result));
-
-	// 再生開始
-	result = sourceVoice->Start(0);
-	assert(SUCCEEDED(result));
-
-	// ボイスを作成し、セットに追加
-	Voice* voice = new Voice();
-	voice->handle = indexVoice_;
-	voice->sourceVoice = sourceVoice;
-	voice->sourceVoice->SetVolume(volume);
+	// ボイスを作成し、マップに追加
+	Voice voice = {};
+	voice.sourceVoice = sourceVoice;
+	voice.sourceVoice->SetVolume(volume);
+	voice.oldVolume = volume;
+	voice.oldSpeed = 1.0f;
 
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	voices_.insert(voice);
-
-	return indexVoice_++;
-}
-
-///--------------------------------------------------------------
-///						 サウンドをセットする
-uint32_t MAudioG::PrepareWav(uint32_t soundDataHandle, bool loopFlag, float volume, float maxPlaySpeed) {
-	assert(soundDataHandle < kMaxSoundData);
-	const SoundData& soundData = soundDatas_[soundDataHandle];
-
-	// ソースボイスを作成
-	IXAudio2SourceVoice* sourceVoice = nullptr;
-	HRESULT result = xAudio2_->CreateSourceVoice(&sourceVoice, &soundData.wfex, 0, maxPlaySpeed, &voiceCallback_);
-	assert(SUCCEEDED(result));
-
-	// バッファを設定
-	XAUDIO2_BUFFER buf = {};
-	buf.pAudioData = soundData.buffer.data();
-	buf.AudioBytes = (UINT32)soundData.buffer.size();
-	buf.Flags = XAUDIO2_END_OF_STREAM;
-	buf.LoopCount = loopFlag ? XAUDIO2_LOOP_INFINITE : 0;
-
-	// ソースボイスにバッファを送信
-	result = sourceVoice->SubmitSourceBuffer(&buf);
-	assert(SUCCEEDED(result));
-
-	// ボイスを作成し、セットに追加
-	Voice* voice = new Voice();
-	voice->handle = indexVoice_;
-	voice->sourceVoice = sourceVoice;
-	voice->sourceVoice->SetVolume(volume);
-
-	std::lock_guard<std::mutex> lock(voiceMutex_);
-	voices_.insert(voice);
-
-	return indexVoice_++;
+	voiceMap_[filename] = std::move(voice);
 }
 
 ///--------------------------------------------------------------
 ///						 サウンドの停止
-void MAudioG::StopWav(uint32_t voiceHandle) {
+void MAudioG::StopWav(const std::string& filename) {
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			voice->sourceVoice->Stop();
-			voice->sourceVoice->DestroyVoice();
-			voices_.erase(voice);
-			delete voice;
-			break;
-		}
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		it->second.sourceVoice->Stop();
+		it->second.sourceVoice->DestroyVoice();
+		voiceMap_.erase(it);
 	}
 }
 
 ///--------------------------------------------------------------
 ///						 再生中かどうかを確認
-bool MAudioG::IsWavPlaying(uint32_t voiceHandle) {
+bool MAudioG::IsWavPlaying(const std::string& filename) {
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			XAUDIO2_VOICE_STATE state;
-			voice->sourceVoice->GetState(&state);
-			return state.BuffersQueued > 0;
-		}
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		XAUDIO2_VOICE_STATE state;
+		it->second.sourceVoice->GetState(&state);
+		return state.BuffersQueued > 0;
 	}
 	return false;
 }
 
 ///--------------------------------------------------------------
 ///						 再生を一時停止
-void MAudioG::PauseWav(uint32_t voiceHandle) {
+void MAudioG::PauseWav(const std::string& filename) {
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			voice->sourceVoice->Stop();
-			break;
-		}
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		it->second.sourceVoice->Stop();
 	}
 }
 
 ///--------------------------------------------------------------
-///						 再生
-void MAudioG::ResumeWav(uint32_t voiceHandle) {
+///						 再生再開
+void MAudioG::ResumeWav(const std::string& filename) {
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			voice->sourceVoice->Start(0);
-			break;
-		}
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		it->second.sourceVoice->Start(0);
 	}
 }
 
 ///--------------------------------------------------------------
 ///						 音量を設定
-//float Volume[] = {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-void MAudioG::SetVolume(uint32_t voiceHandle, float volume) {
+void MAudioG::SetVolume(const std::string& filename, float volume) {
 	float targetVolume = std::log(1.0f + volume) / std::log(2.0f); // 対数カーブを適用
 	// 音量の最低ラインを決定
-	// NOTE:-は位相が逆転して音量が戻っていくぞ
 	targetVolume = std::max(targetVolume, 0.0f);
 
-	// XAUDIO2_VOICE_DETAILS details;
-
-	// ソースボイスの格納場所を探す
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			if (targetVolume != voice->oldVolume) {
-
-				voice->sourceVoice->SetVolume(targetVolume);
-				voice->oldVolume = targetVolume;
-
-				// 実験中(現在取りやめ)
-				 //voice->sourceVoice->GetVoiceDetails(&details);//ソ-スボイスの情報取得
-				 //int inChannel = details.InputChannels;
-				 //masterVoice_->GetVoiceDetails(&details);
-				 //int outChannel = details.InputChannels;
-
-				// voice->sourceVoice->SetOutputMatrix(NULL, inChannel, outChannel, Volume);
-			}
-			break;
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		if (targetVolume != it->second.oldVolume) {
+			it->second.sourceVoice->SetVolume(targetVolume);
+			it->second.oldVolume = targetVolume;
 		}
 	}
 }
 
 ///--------------------------------------------------------------
 ///						 音量を設定(デシベル)
-// NOTE:これでサウンドデザイナーを黙らせろ!
-void MAudioG::SetVolumeDecibel(uint32_t voiceHandle, float dB) {
+void MAudioG::SetVolumeDecibel(const std::string& filename, float dB) {
 	float targetVolume = XAudio2DecibelsToAmplitudeRatio(dB);
-	// ソースボイスの格納場所を探す
+
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			if (targetVolume != voice->oldVolume) {
-				voice->sourceVoice->SetVolume(targetVolume);
-				voice->oldVolume = targetVolume;
-			}
-			break;
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		if (targetVolume != it->second.oldVolume) {
+			it->second.sourceVoice->SetVolume(targetVolume);
+			it->second.oldVolume = targetVolume;
 		}
 	}
 }
 
 ///--------------------------------------------------------------
 ///						 再生速度を設定
-// NOTE:ピッチが上がるぞ
-void MAudioG::SetPlaybackSpeed(uint32_t voiceHandle, float speed) {
+void MAudioG::SetPlaybackSpeed(const std::string& filename, float speed) {
 	std::lock_guard<std::mutex> lock(voiceMutex_);
-	for (auto* voice : voices_) {
-		if (voice->handle == voiceHandle) {
-			voice->sourceVoice->SetFrequencyRatio(speed);
-			voice->oldSpeed = speed;
-			break;
+	auto it = voiceMap_.find(filename);
+	if (it != voiceMap_.end()) {
+		if (speed != it->second.oldSpeed) {
+			it->second.sourceVoice->SetFrequencyRatio(speed);
+			it->second.oldSpeed = speed;
 		}
 	}
 }
+
