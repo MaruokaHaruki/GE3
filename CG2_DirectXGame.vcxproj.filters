@@ -150,10 +150,10 @@
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="ImguiSetup.cpp">
+    <ClCompile Include="engine\base\ImguiSetup.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\audio\MagAudio.cpp">
+    <ClCompile Include="engine\audio\MAudioG.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -260,10 +260,10 @@
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="ImguiSetup.h">
+    <ClInclude Include="engine\base\ImguiSetup.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="engine\audio\MagAudio.h">
+    <ClInclude Include="engine\audio\MAudioG.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

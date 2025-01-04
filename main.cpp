@@ -49,6 +49,9 @@
 //---------------------------------------
 // camera
 #include "Camera.h"
+//---------------------------------------
+// Audio
+#include"MAudioG.h"
 ///--------------------------------------------------------------
 ///						 自作構造体
 //========================================
@@ -111,6 +114,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	std::unique_ptr<Input> input = std::make_unique<Input>();
 	//入力の初期化
 	input->Initialize(win->GetWindowClass().hInstance, win->GetWindowHandle());
+
+	///--------------------------------------------------------------
+	///						 音声クラス
+	// 初期化
+	MAudioG::GetInstance()->Initialize();
+	// ポインタの取得
+	MAudioG *audio = MAudioG::GetInstance();
+	// サウンドセット
+	SoundSet testSound;
+	// 音声の読み込み
+	testSound.dataHandle = audio->LoadWav("sound/Duke_Ellington.wav");
+
 
 	///--------------------------------------------------------------
 	///						 2D系クラス
@@ -335,6 +350,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			particleEmitter->Update();
 
 			//========================================
+			// 音声の再生
+			if(audio->IsWavPlaying(testSound.voiceHandle) == false) {
+				testSound.voiceHandle = audio->PlayWav(testSound.dataHandle, 1.0f, 1.0f, 1.0f);
+
+			}
+
+
+			//========================================
 			// ImGuiの更新
 			imguiSetup->Begin();
 			//↓この間に書け!!!
@@ -410,10 +433,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	///						開放処理
 	//========================================
 	// ImGuiの終了処理
-	//ImGui_ImplDX12_Shutdown();  // ImGuiのDirectX12サポート終了
-	//ImGui_ImplWin32_Shutdown();  // ImGuiのWin32サポート終了
-	//ImGui::DestroyContext();  // ImGuiコンテキストの破棄
 	imguiSetup->Finalize();
+
+	//========================================
+	// audioの終了処理
+	audio->Finalize();
 
 	//========================================
 	// テクスチャマネージャの終了処理
