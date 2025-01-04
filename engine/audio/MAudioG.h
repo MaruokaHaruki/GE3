@@ -1,15 +1,15 @@
 /*********************************************************************
- * \file   MAudioG.h
- * \brief
- *  _____ _____ _____
- * |     |     |   __| MA.h
- * | | | |  |  |  |_ | Ver4.10
- * |_|_|_|__|__|_____| 2024/09/23
- *
- * \author Harukichimaru
- * \date   January 2025
- * \note
- *********************************************************************/
+* \file   MAudioG.h
+* \brief
+*  _____ _____ _____
+* |     |     |   __| MA.h
+* | | | |  |  |  |_ | Ver4.10
+* |_|_|_|__|__|_____| 2024/09/23
+*
+* \author Harukichimaru
+* \date   January 2025
+* \note
+*********************************************************************/
 
 #pragma once
 #define XAUDIO2_HELPER_FUNCTIONS
@@ -26,15 +26,6 @@
 #include <unordered_map>
 #include <vector>
 #include <wrl.h>
-
-///=============================================================================
-///						サウンドセット
-struct SoundSet final {
-	//std::string fileName;
-	int dataHandle = 0;
-	uint32_t voiceHandle = 0;
-	float volume = 0.0f;
-};
 
 ///=============================================================================
 ///						クラス
@@ -64,10 +55,9 @@ public:
 	//========================================
 	// 再生データを表す構造体
 	struct Voice {
-		uint32_t handle = 0u;                       // ハンドル（識別子）
-		IXAudio2SourceVoice *sourceVoice = nullptr; // XAudio2のソースボイス
-		float oldVolume;                            // 最後に設定したボリューム
-		float oldSpeed;                             // 最後に設定したボリューム
+		IXAudio2SourceVoice* sourceVoice = nullptr; // XAudio2のソースボイス
+		float oldVolume = 1.0f;                     // 最後に設定したボリューム
+		float oldSpeed = 1.0f;                      // 最後に設定した再生速度
 	};
 
 	//========================================
@@ -95,159 +85,122 @@ public:
 	// オーディオコールバックを表すクラス
 	class XAudio2VoiceCallback : public IXAudio2VoiceCallback {
 	public:
-		STDMETHOD_(void, OnVoiceProcessingPassStart)( UINT32 BytesRequired ) override { UNREFERENCED_PARAMETER(BytesRequired); }
-		STDMETHOD_(void, OnVoiceProcessingPassEnd)( ) override {}
-		STDMETHOD_(void, OnStreamEnd)( ) override {}
-		STDMETHOD_(void, OnBufferStart)( void *pBufferContext ) override { UNREFERENCED_PARAMETER(pBufferContext); }
-		STDMETHOD_(void, OnBufferEnd)( void *pBufferContext ) override { UNREFERENCED_PARAMETER(pBufferContext); }
-		STDMETHOD_(void, OnLoopEnd)( void *pBufferContext ) override { UNREFERENCED_PARAMETER(pBufferContext); }
-		STDMETHOD_(void, OnVoiceError)( void *pBufferContext, HRESULT Error ) override {
+		STDMETHOD_(void, OnVoiceProcessingPassStart)(UINT32 BytesRequired) override { UNREFERENCED_PARAMETER(BytesRequired); }
+		STDMETHOD_(void, OnVoiceProcessingPassEnd)() override {}
+		STDMETHOD_(void, OnStreamEnd)() override {}
+		STDMETHOD_(void, OnBufferStart)(void* pBufferContext) override { UNREFERENCED_PARAMETER(pBufferContext); }
+		STDMETHOD_(void, OnBufferEnd)(void* pBufferContext) override { UNREFERENCED_PARAMETER(pBufferContext); }
+		STDMETHOD_(void, OnLoopEnd)(void* pBufferContext) override { UNREFERENCED_PARAMETER(pBufferContext); }
+		STDMETHOD_(void, OnVoiceError)(void* pBufferContext, HRESULT Error) override {
 			UNREFERENCED_PARAMETER(pBufferContext);
 			std::cerr << "Voice error: " << std::hex << Error << std::endl;
 		}
 	};
 
 	//========================================
-	// エンジンコールバックを表すクラス
+	// コンストラクタとデストラクタ
 	MAudioG() = default;
 	~MAudioG() { Finalize(); }
-	MAudioG(const MAudioG &) = delete;
-	const MAudioG &operator=(const MAudioG &) = delete;
+	MAudioG(const MAudioG&) = delete;
+	MAudioG& operator=(const MAudioG&) = delete;
 
 	///--------------------------------------------------------------
 	///						 メンバ関数
 public:
 	/**----------------------------------------------------------------------------
-	 * \brief  GetInstance		シングルトンインスタンス
-	 * \return
-	 */
-	static MAudioG *GetInstance();
+	* \brief  GetInstance		シングルトンインスタンス
+	* \return
+	*/
+	static MAudioG* GetInstance();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  GetAudioDevices	接続デバイスの検知
-	 */
+	* \brief  GetAudioDevices	接続デバイスの検知
+	*/
 	void GetAudioDevices();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  Initialize		初期化
-	 * \param  directoryPath	ディレクトリパス
-	 * \param  deviceId			デバイスID
-	 */
-	void Initialize(const std::string &directoryPath = "Resources/", const std::wstring &deviceId = L"");
+	* \brief  Initialize		初期化
+	* \param  directoryPath	ディレクトリパス
+	* \param  deviceId			デバイスID
+	*/
+	void Initialize(const std::string& directoryPath = "Resources/", const std::wstring& deviceId = L"");
 
 	/**----------------------------------------------------------------------------
-	 * \brief  Finalize		終了処理
-	 */
+	* \brief  Finalize		終了処理
+	*/
 	void Finalize();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  LoadSound	サウンドのロード
-	 * \param  filename		ファイル名
-	 * \return
-	 */
-	uint32_t LoadWav(const std::string &filename);
+	* \brief  LoadWav	サウンドのロード
+	* \param  filename		ファイル名
+	* \return
+	*/
+	void LoadWav(const std::string& filename);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  Unload		サウンドのアンロード
-	 * \param  soundData	サウンドデータ
-	 */
-	void Unload(SoundData *soundData);
+	* \brief  Unload		サウンドのアンロード
+	* \param  soundData	サウンドデータ
+	*/
+	void Unload(SoundData* soundData);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  PlayingSound		WAVファイルを再生
-	 * \param  soundDataHandl	格納場所の番号
-	 * \param  loopFlag			ループするかどうか
-	 * \param  volume			ボリューム
-	 * \param  maxPlaySpeed		最大再生速度
-	 * \return					ボイスハンドル
-	 */
-	uint32_t PlayWav(uint32_t soundDataHandle,
+	* \brief  PlayWav		ファイル名でWAVファイルを再生
+	* \param  filename		ファイル名
+	* \param  loopFlag		ループするかどうか
+	* \param  volume		ボリューム
+	* \param  maxPlaySpeed	最大再生速度
+	*/
+	void PlayWav(const std::string& filename,
 		bool loopFlag = false,
 		float volume = 1.0f,
 		float maxPlaySpeed = 2.0f);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  PlaySoundDetail	WAVファイルを再生(詳細設定可)
-	 * \param  soundDataHandle	格納場所の番号
-	 * \param  loopFlag			ループするかどうか
-	 * \param  volume			ボリューム
-	 * \param  maxPlaySpeed		最大再生速度
-	 * \param  startTime		再生開始場所
-	 * \param  endTime			再生終了場所
-	 * \param  loopStartTime	ループ開始場所
-	 * \param  loopEndTime		ループ終了場所
-	 * \return
-	 */
-	uint32_t PlayWavWithDetails(
-		uint32_t soundDataHandle,
-		bool loopFlag = false,
-		float volume = 1.0f,
-		float maxPlaySpeed = 2.0f,
-		float startTime = 0.0f,
-		float endTime = 0.0f,
-		float loopStartTime = 0.0f,
-		float loopEndTime = 0.0f);
+	* \brief  StopWav		ファイル名で再生を停止
+	* \param  filename		ファイル名
+	*/
+	void StopWav(const std::string& filename);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  PrepareWav		WAVファイルをセットする
-	 * \param  soundDataHandle	格納場所の番号
-	 * \param  loopFlag			ループするかどうか
-	 * \param  volume			ボリューム
-	 * \param  maxPlaySpeed		最大再生速度
-	 * \return ボイスハンドル
-	 */
-	uint32_t PrepareWav(
-		uint32_t soundDataHandle,
-		bool loopFlag = false,
-		float volume = 1.0f,
-		float maxPlaySpeed = 2.0f);
+	* \brief  IsWavPlaying		ファイル名で再生中かどうかを確認
+	* \param  filename		ファイル名
+	* \return
+	*/
+	bool IsWavPlaying(const std::string& filename);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  StopSound 再生を停止
-	 * \param  voiceHandle ボイスハンドル
-	 */
-	void StopWav(uint32_t voiceHandle);
+	* \brief  PauseWav		ファイル名で再生一時停止
+	* \param  filename		ファイル名
+	*/
+	void PauseWav(const std::string& filename);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  IsPlaying 再生中かどうかを確認
-	 * \param  voiceHandle ボイスハンドル
-	 * \return
-	 */
-	bool IsWavPlaying(uint32_t voiceHandle);
+	* \brief  ResumeWav		ファイル名で再生再開
+	* \param  filename		ファイル名
+	*/
+	void ResumeWav(const std::string& filename);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  PauseSound 再生一時停止
-	 * \param  voiceHandle ボイスハンドル
-	 */
-	void PauseWav(uint32_t voiceHandle);
+	* \brief  SetVolume	ファイル名で音量を設定
+	* \brief  NOTE: 0が無音,1が元の音源そのまま,0.3fくらいから判断
+	* \param  filename		ファイル名
+	* \param  volume		音量
+	*/
+	void SetVolume(const std::string& filename, float volume);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  ResumeSound 再生再開
-	 * \param  voiceHandle　ボイスハンドル
-	 */
-	void ResumeWav(uint32_t voiceHandle);
+	* \brief  SetVolumeDecibel ファイル名で音量を設定(デシベル)
+	* \param  filename		ファイル名
+	* \param  dB			デシベル
+	*/
+	void SetVolumeDecibel(const std::string& filename, float dB);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  SetVolume	音量を設定
-	 * \brief  NOTE: 0が無音,1が元の音源そのまま,0.3fくらいから判断
-	 * \param  voiceHandle	格納場所の番号
-	 * \param  volume		音量
-	 */
-	void SetVolume(uint32_t voiceHandle, float volume);
-
-	/**----------------------------------------------------------------------------
-	 * \brief  SetVolumeDecibel 音量を設定(デシベル)
-	 * \param  voiceHandle ボイスハンドル
-	 * \param  dB デシベル
-	 */
-	void SetVolumeDecibel(uint32_t voiceHandle, float dB);
-
-	/**----------------------------------------------------------------------------
-	 * \brief  SetPlaybackSpeed 再生速度を設定
-	 * \param  voiceHandle		ボイスハンドル
-	 * \param  speed			再生速度
-	 */
-	void SetPlaybackSpeed(uint32_t voiceHandle, float speed);
+	* \brief  SetPlaybackSpeed ファイル名で再生速度を設定
+	* \param  filename		ファイル名
+	* \param  speed		再生速度
+	*/
+	void SetPlaybackSpeed(const std::string& filename, float speed);
 
 	///--------------------------------------------------------------
 	///						 メンバ変数
@@ -255,33 +208,35 @@ private:
 	//========================================
 	// 出力オーディオ
 	std::vector<AudioDeviceInfo> audioDevices_;
-	//========================================
-	// 再生中のボイスのセット
-	//std::unordered_map<uint32_t, std::unique_ptr<Voice>> voices_;
+
 	//========================================
 	// XAudio2インターフェース
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
+
 	//========================================
 	// マスターボイス
-	IXAudio2MasteringVoice *masterVoice_ = nullptr;
+	IXAudio2MasteringVoice* masterVoice_ = nullptr;
+
 	//========================================
-	// サウンドデータの配列
-	std::array<SoundData, kMaxSoundData> soundDatas_;
-	// 再生中のボイスのセット
-	std::set<Voice *> voices_;
+	// サウンドデータのマップ（ファイル名で管理）
+	std::unordered_map<std::string, SoundData> soundDataMap_;
+
+	//========================================
+	// 再生中のボイスのマップ（ファイル名で管理）
+	std::unordered_map<std::string, Voice> voiceMap_;
+
+	//========================================
 	// 音声ファイルのディレクトリパス
 	std::string directoryPath_;
 
 	//========================================
-	// サウンドデータのインデックス
-	uint32_t indexSoundData_ = 0u;
-	// ボイスのインデックス
-	uint32_t indexVoice_ = 0u;
-	//========================================
 	// オーディオコールバック
 	XAudio2VoiceCallback voiceCallback_;
+
 	// ボイス操作のためのミューテックス
 	std::mutex voiceMutex_;
+
 	// サンプリングレート
 	float waveSamplingRate;
 };
+
