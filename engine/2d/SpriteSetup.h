@@ -61,13 +61,16 @@ public:
 private:
 	
 
-	///====================DirectXCoreポインタ====================///
+	//========================================
+	// DirectXCoreポインタ
 	DirectXCore* dxCore_ = nullptr;
 
-	///====================RootSignature====================///
+	//========================================
+	// RootSignature
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_;
 
-	///====================グラフィックスパイプライン====================///
+	//========================================
+	// グラフィックスパイプライン
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_;
 };
 

@@ -45,13 +45,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)externals\imgui;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <IntDir>$(SolutionDir)..\generated\obj\$(ProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)..\generated\outputs\$(Configuration)\</OutDir>
@@ -66,7 +66,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,7 +90,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,20 +105,23 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="scene\ClearScene.cpp" />
+    <ClCompile Include="scene\DebugScene.cpp" />
+    <ClCompile Include="engine\camera\CameraManager.cpp" />
+    <ClCompile Include="engine\2d\ParticleEmitter.cpp" />
+    <ClCompile Include="engine\audio\MAudioG.cpp" />
+    <ClCompile Include="engine\base\core\SrvSetup.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
-    <ClCompile Include="engine\base\DirectXCore.cpp" />
+    <ClCompile Include="engine\base\core\DirectXCore.cpp" />
     <ClCompile Include="engine\utils\WstringUtility.cpp" />
     <ClCompile Include="engine\utils\Logger.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
-    <ClCompile Include="externals\imgui\imgui.cpp" />
-    <ClCompile Include="externals\imgui\imgui_demo.cpp" />
-    <ClCompile Include="externals\imgui\imgui_draw.cpp" />
-    <ClCompile Include="externals\imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="externals\imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="externals\imgui\imgui_tables.cpp" />
-    <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="engine\base\imGui\ImguiSetup.cpp" />
+    <ClCompile Include="scene\SceneManager.cpp" />
+    <ClCompile Include="scene\BaseScene.cpp" />
+    <ClCompile Include="scene\GamePlayScene.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="engine\base\WinApp.cpp" />
+    <ClCompile Include="engine\base\core\WinApp.cpp" />
     <ClCompile Include="engine\2d\SpriteSetup.cpp" />
     <ClCompile Include="engine\2d\Sprite.cpp" />
     <ClCompile Include="engine\2d\TextureManager.cpp" />
@@ -127,22 +130,25 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\3d\Model.cpp" />
     <ClCompile Include="engine\3d\ModelSetup.cpp" />
     <ClCompile Include="engine\3d\ModelManager.cpp" />
+    <ClCompile Include="engine\2d\Particle.cpp" />
+    <ClCompile Include="engine\2d\ParticleSetup.cpp" />
+    <ClCompile Include="engine\base\framework\MaruRhythm.cpp" />
+    <ClCompile Include="engine\base\framework\MRFramework.cpp" />
+    <ClCompile Include="scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="scene\ClearScene.h" />
+    <ClInclude Include="scene\DebugScene.h" />
+    <ClInclude Include="engine\camera\CameraManager.h" />
+    <ClInclude Include="engine\2d\ParticleEmitter.h" />
+    <ClInclude Include="engine\audio\MAudioG.h" />
+    <ClInclude Include="engine\base\core\SrvSetup.h" />
     <ClInclude Include="engine\camera\Camera.h" />
-    <ClInclude Include="engine\base\DirectXCore.h" />
+    <ClInclude Include="engine\base\core\DirectXCore.h" />
     <ClInclude Include="engine\utils\WstringUtility.h" />
     <ClInclude Include="engine\utils\Logger.h" />
     <ClInclude Include="engine\externals\imgui\imconfig.h" />
     <ClInclude Include="engine\input\Input.h" />
-    <ClInclude Include="externals\imgui\imconfig.h" />
-    <ClInclude Include="externals\imgui\imgui.h" />
-    <ClInclude Include="externals\imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="externals\imgui\imgui_impl_win32.h" />
-    <ClInclude Include="externals\imgui\imgui_internal.h" />
-    <ClInclude Include="externals\imgui\imstb_rectpack.h" />
-    <ClInclude Include="externals\imgui\imstb_textedit.h" />
-    <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="engine\math\MathFunc4x4.h" />
     <ClInclude Include="engine\math\structure\drawData\DirectionalLight.h" />
     <ClInclude Include="engine\math\structure\drawData\Material.h" />
@@ -157,7 +163,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\AffineTransformations.h" />
     <ClInclude Include="engine\math\RenderingMatrices.h" />
     <ClInclude Include="engine\math\structure\Matrix3x3.h" />
-    <ClInclude Include="engine\base\WinApp.h" />
+    <ClInclude Include="engine\base\core\WinApp.h" />
     <ClInclude Include="engine\2d\SpriteSetup.h" />
     <ClInclude Include="engine\2d\Sprite.h" />
     <ClInclude Include="engine\math\structure\Vector2.h" />
@@ -167,26 +173,20 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\3d\Model.h" />
     <ClInclude Include="engine\3d\ModelSetup.h" />
     <ClInclude Include="engine\3d\ModelManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Object3d.VS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Object3d.PS.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
+    <ClInclude Include="engine\2d\Particle.h" />
+    <ClInclude Include="engine\2d\ParticleSetup.h" />
+    <ClInclude Include="engine\base\imGui\ImguiSetup.h" />
+    <ClInclude Include="engine\base\framework\MaruRhythm.h" />
+    <ClInclude Include="engine\base\framework\MRFramework.h" />
+    <ClInclude Include="scene\SceneManager.h" />
+    <ClInclude Include="scene\BaseScene.h" />
+    <ClInclude Include="scene\GamePlayScene.h" />
+    <ClInclude Include="scene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="externals\imgui\imgui.vcxproj" />
     <None Include="externals\imgui\imgui.vcxproj.filters" />
-    <None Include="Object3d.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="engine\externals\imgui\LICENSE.txt" />
@@ -195,6 +195,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
       <Project>{371b9fa9-4c90-4ac6-a123-aced756d6c77}</Project>
+    </ProjectReference>
+    <ProjectReference Include="externals\imgui\imgui.vcxproj">
+      <Project>{52140c89-8a1e-4b13-ac4b-c6c98a61c00f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

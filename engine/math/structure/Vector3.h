@@ -60,3 +60,11 @@ inline Vector3 Normalize(const Vector3& v) {
 	// ゼロベクトルの場合はそのまま返す
 	return v;
 }
+
+inline Vector3 AddVec3(const Vector3& v1, const Vector3& v2) {
+	return { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+}
+
+inline Vector3 MultiplyVec3(float scalar, const Vector3& v) {
+	return { scalar * v.x, scalar * v.y, scalar * v.z };
+}

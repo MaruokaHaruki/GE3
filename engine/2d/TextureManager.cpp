@@ -23,16 +23,19 @@ TextureManager* TextureManager::GetInstance() {
 
 ///=============================================================================
 ///								初期化
-void TextureManager::Initialize(DirectXCore* dxCore, const std::string& textureDirectoryPath) {
+void TextureManager::Initialize(DirectXCore* dxCore, const std::string& textureDirectoryPath, SrvSetup* srvSetup) {
 	//---------------------------------------
 	// SRVの数と同期
-	textureDatas_.reserve(DirectXCore::kMaxSRVCount_);
+	textureDatas_.reserve(SrvSetup::kMaxSRVCount_);
 	//---------------------------------------
 	// 引数でdxManagerを受取
 	dxCore_ = dxCore;
 	//---------------------------------------
 	// ディレクトリパスの設定
 	kTextureDirectoryPath = textureDirectoryPath;
+	//---------------------------------------
+	// SrvSetupの設定
+	srvSetup_ = srvSetup;
 }
 
 ///=============================================================================
@@ -43,16 +46,13 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 
 	//---------------------------------------
 	// 読み込み済みテクスチャを検索
-	auto it = std::find_if(
-		textureDatas_.begin(),
-		textureDatas_.end(),
-		[&](TextureData& textureData) {return textureData.filePath == fullPath;
-		}
-	);
-	// 早期リターン
-	if (it != textureDatas_.end()) {
+	if(textureDatas_.contains(fullPath)) {
 		return;
 	}
+
+	//---------------------------------------
+	// SRVの空きがあるかチェック
+	assert(srvSetup_->IsFull() == false);
 
 	//---------------------------------------
 	// テクスチャファイルを読んでプログラムを扱えるようにする
@@ -68,26 +68,24 @@ void TextureManager::LoadTexture(const std::string& filePath) {
 	assert(SUCCEEDED(hr));
 
 	//---------------------------------------
-	// テクスチャデータ追加
-	textureDatas_.resize(textureDatas_.size() + 1);
 	//追加したテクスチャデータの参照を取得する
-	TextureData& textureData = textureDatas_.back();
+	TextureData& textureData = textureDatas_[fullPath];
 
 	//---------------------------------------
-	// テクスチャデータの書き込み
-	//ファイルパス
-	textureData.filePath = fullPath;
+	// テクスチャデータの書き込
 	//テクスチャメタデータの取得
 	textureData.metadata = mipImages.GetMetadata();
 	//テクスチャリソースの作成
 	textureData.resource = dxCore_->CreateTextureResource(textureData.metadata);
 	//テクスチャデータの要素数番号をSRVのインデックスとする
-	uint32_t srvIndex = static_cast<uint32_t>( textureDatas_.size() - 1 + kSRVIndexTop );
+	//uint32_t srvIndex = srvSetup_->Allocate();
 	//中間リソース
 	textureData.interMediateResource = dxCore_->UploadTextureData(textureData.resource, mipImages);
+	//SRVの確保
+	textureData.srvIndex = srvSetup_->Allocate();
 	//各ハンドルを取得
-	textureData.srvHandleCPU = dxCore_->GetSRVCPUDescriptorHandle(srvIndex); //CPU
-	textureData.srvHandleGPU = dxCore_->GetSRVGPUDescriptorHandle(srvIndex); //GPU
+	textureData.srvHandleCPU = srvSetup_->GetSRVCPUDescriptorHandle(textureData.srvIndex);
+	textureData.srvHandleGPU = srvSetup_->GetSRVGPUDescriptorHandle(textureData.srvIndex);
 
 	//---------------------------------------
 	// SRVの生成
@@ -111,24 +109,15 @@ void TextureManager::Finalize() {
 
 ///=============================================================================
 ///					SRVテクスチャインデックスの開始番号
-uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) {
+uint32_t TextureManager::GetTextureIndex(const std::string& filePath) {
 	//ディレクトリパスを追加
 	std::string fullPath = kTextureDirectoryPath + filePath;
 
-	//---------------------------------------
-	// 読み込み済みテクスチャデータを検索
-	auto it = std::find_if(
-		textureDatas_.begin(),
-		textureDatas_.end(),
-		[&](TextureData& textureData) {return textureData.filePath == fullPath; }
-	);
-	//---------------------------------------
-	// データの判別
-	if (it != textureDatas_.end()) {
+	if(textureDatas_.contains(fullPath)) {
 		//読み込み済みなら要素番号を返す
+		auto it = textureDatas_.find(fullPath);
 		uint32_t textureIndex = static_cast<uint32_t>( std::distance(textureDatas_.begin(), it) );
 		return textureIndex;
-
 	}
 	//---------------------------------------
 	// 検索化ヒットしない場合は停止
@@ -138,20 +127,24 @@ uint32_t TextureManager::GetTextureIndexByFilePath(const std::string& filePath) 
 
 ///=============================================================================
 ///						GPUハンドルの取得
-D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(uint32_t textureIndex) {
+D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetSrvHandleGPU(const std::string& filePath) {
+	// ディレクトリパスを追加
+	std::string fullPath = kTextureDirectoryPath + filePath;
 	// 範囲外指定チェック
-	assert(textureIndex < textureDatas_.size());
+	assert(textureDatas_.contains(fullPath));
 	// テクスチャデータの参照を取得
-	TextureData& textureData = textureDatas_[textureIndex];
+	TextureData& textureData = textureDatas_[fullPath];
 	return textureData.srvHandleGPU;
 }
 
 ///=============================================================================
 ///						メタデータの取得
-const DirectX::TexMetadata& TextureManager::GetMetadata(uint32_t textureIndex) {
+const DirectX::TexMetadata& TextureManager::GetMetadata(const std::string& filePath) {
+	// ディレクトリパスを追加
+	std::string fullPath = kTextureDirectoryPath + filePath;
 	// 範囲外指定チェック
-	assert(textureIndex < textureDatas_.size());
+	assert(textureDatas_.contains(fullPath));
 	// テクスチャデータの参照を取得
-	TextureData& textureData = textureDatas_[textureIndex];
+	TextureData& textureData = textureDatas_[fullPath];
 	return textureData.metadata;
 }

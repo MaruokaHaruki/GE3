@@ -38,12 +38,6 @@ public:
 	/// \brief 初期化
 	void Initialize(DirectXCore* dxCore);
 
-	/// \brief 更新
-	void Update();
-
-	/// \brief 描画 
-	void Draw();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  LoadMedel モデルの読み込み
 	 * \param  filePath ファイルパス
@@ -91,6 +85,5 @@ private:
 	// モデルデータコンテナ
 	// NOTE:vectorだと検索が遅いのでmapを使う
 	std::map<std::string, std::unique_ptr<Model>> models_;
-
 };
 

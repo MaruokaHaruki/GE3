@@ -1,10 +1,10 @@
 /*********************************************************************
  * \file   Model.cpp
  * \brief  モデルクラス
- * 
+ *
  * \author Harukichimaru
  * \date   November 2024
- * \note   
+ * \note
  *********************************************************************/
 #include "Model.h"
 #include "ModelSetup.h"
@@ -34,7 +34,7 @@ void Model::Initialize(ModelSetup* modelSetup, const std::string& directorypath,
 	//テクスチャの読み込み
 	TextureManager::GetInstance()->LoadTexture(modelData_.material.textureFilePath);
 	//テクスチャ番号を取得して、メンバ変数に格納
-	textureIndex_ = TextureManager::GetInstance()->GetTextureIndexByFilePath(modelData_.material.textureFilePath);
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndex(modelData_.material.textureFilePath);
 
 }
 
@@ -47,7 +47,7 @@ void Model::Update() {
 ///						描画
 void Model::Draw() {
 
-	if(!vertexBuffer_ || !materialBuffer_ ) {
+	if(!vertexBuffer_ || !materialBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
 	}
 	// コマンドリスト取得
@@ -59,10 +59,29 @@ void Model::Draw() {
 	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
 
 	//SRVのDescriptorTableの設定
-	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureIndex_));
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureFilePath));
 
 	//描画(DrawCall)
 	commandList->DrawInstanced(UINT(modelData_.vertices.size()), 1, 0, 0);
+}
+
+// TODO: この関数はどこで使われているのか？
+///=============================================================================
+///						インスタンシング描画
+void Model::InstancingDraw(uint32_t instanceCount) {
+	if(!vertexBuffer_ || !materialBuffer_) {
+		throw std::runtime_error("One or more buffers are not initialized.");
+	}
+	// コマンドリスト取得
+	auto commandList = modelSetup_->GetDXManager()->GetCommandList();
+	//VertexBufferViewの設定
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	//マテリアルバッファの設定
+	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
+	//SRVのDescriptorTableの設定
+	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(modelData_.material.textureFilePath));
+	//描画(DrawCall)
+	commandList->DrawInstanced(6, instanceCount, 0, 0);
 }
 
 ///=============================================================================

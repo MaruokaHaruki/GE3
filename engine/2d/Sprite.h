@@ -181,7 +181,7 @@ public:
 	 * \param  textureFilePath
 	 * \note
 	 */
-	void SetTexture(std::string& textureFilePath) { textureIndex = TextureManager::GetInstance()->GetTextureIndexByFilePath(textureFilePath); }
+	void SetTexture(std::string& textureFilePath) { this->textureFilePath_ = textureFilePath; }
 
 
 	/**----------------------------------------------------------------------------
@@ -303,7 +303,9 @@ private:
 
 	///---------------------------------------
 	/// テクスチャ番号
-	uint32_t textureIndex = 0;
+	//uint32_t textureIndex = 0;
+	//ファイルパス
+	std::string textureFilePath_ = "";
 
 	///---------------------------------------
 	/// アンカーポイント
