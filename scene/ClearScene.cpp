@@ -11,6 +11,12 @@
 ///=============================================================================
 ///						初期化
 void ClearScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSetup, ParticleSetup *particleSetup) {
+	//適当に引数を使用
+	//引数を使用しない場合は警告を出さないようにする
+	spriteSetup;
+	object3dSetup;
+	particleSetup;
+
 }
 
 ///=============================================================================
