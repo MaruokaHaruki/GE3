@@ -122,7 +122,13 @@ void MRFramework::Initialize() {
 	// Object3Dのカメラ設定
 	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());///
 	//カメラの設定
-	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());///
+	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
+	
+	///--------------------------------------------------------------
+	///						 シーンマネージャ
+	sceneManager_ = std::make_unique<SceneManager>();
+	//シーンマネージャの初期化
+	sceneManager_->Initialize(spriteSetup_.get(), object3dSetup_.get(), particleSetup_.get());
 }
 
 ///=============================================================================
@@ -131,6 +137,9 @@ void MRFramework::Update() {
 	//========================================
 	// インプットの更新
 	input_->Update();
+	//========================================
+	// シーンマネージャの更新
+	sceneManager_->Update();
 }
 
 ///=============================================================================
@@ -179,12 +188,16 @@ void MRFramework::FrameworkPostDraw() {
 ///=============================================================================
 ///						ImGuiの更新前処理
 void MRFramework::ImGuiPreDraw() {
+	// imguiの初期化
 	imguiSetup_->Begin();
+	// imguiの描画
+	sceneManager_->ImGuiDraw();
 }
 
 ///=============================================================================
 ///						ImGuiの更新後処理
 void MRFramework::ImGuiPostDraw() {
+	// imguiの終了処理
 	imguiSetup_->End();
 }
 
@@ -192,16 +205,22 @@ void MRFramework::ImGuiPostDraw() {
 ///						Object2D共通描画設定
 void MRFramework::Object2DCommonDraw() {
 	spriteSetup_->CommonDrawSetup();
+	// 2D描画
+	sceneManager_->Object2DDraw();
 }
 
 ///=============================================================================
 ///						particle共通描画設定
 void MRFramework::ParticleCommonDraw() {
 	particleSetup_->CommonDrawSetup();
+	// パーティクル描画
+	sceneManager_->ParticleDraw();
 }
 
 ///=============================================================================
 ///						Object3D共通描画設定
 void MRFramework::Object3DCommonDraw() {
 	object3dSetup_->CommonDrawSetup();
+	// 3D描画
+	sceneManager_->Object3DDraw();
 }
