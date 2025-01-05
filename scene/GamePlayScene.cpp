@@ -1,33 +1,16 @@
 /*********************************************************************
- * \file   MaruRhythm.cpp
- * \brief
- *
+ * \file   GamePlayScene.cpp
+ * \brief  
+ * 
  * \author Harukichimaru
  * \date   January 2025
- * \note
+ * \note   
  *********************************************************************/
-#include "MaruRhythm.h"
-//========================================
-// Framework
-#include "WinApp.h"
-#include "DirectXCore.h"
-#include "ImguiSetup.h"
-#include "SrvSetup.h"
-#include "Input.h"
-#include "MAudioG.h"
-#include "SpriteSetup.h"
-#include "TextureManager.h"
-#include "ParticleSetup.h"
-#include "Object3dSetup.h"
-#include "ModelManager.h"
+#include "GamePlayScene.h"
 
 ///=============================================================================
 ///						初期化
-void MaruRhythm::Initialize() {
-	///--------------------------------------------------------------
-	///						 フレームワーク初期化
-	MRFramework::Initialize();
-
+void GamePlayScene::Initialize(SpriteSetup* spriteSetup, Object3dSetup* object3dSetup, ParticleSetup* particleSetup) {
 	///--------------------------------------------------------------
 	///						 音声クラス
 	// ポインタの取得
@@ -46,7 +29,7 @@ void MaruRhythm::Initialize() {
 	//ユニークポインタ
 	sprite_ = std::make_unique<Sprite>();
 	//スプライトの初期化
-	sprite_->Initialize(spriteSetup_.get(), "uvChecker.png");
+	sprite_->Initialize(spriteSetup, "uvChecker.png");
 	//サイズ
 	sprite_->SetSize({ 256.0f,256.0f });
 
@@ -59,7 +42,7 @@ void MaruRhythm::Initialize() {
 	// 3Dオブジェクトクラス
 	object3d_ = std::make_unique<Object3d>();
 	//3Dオブジェクトの初期化
-	object3d_->Initialize(object3dSetup_.get());
+	object3d_->Initialize(object3dSetup);
 	object3d_->SetModel("axisPlus.obj");
 
 	///--------------------------------------------------------------
@@ -68,7 +51,7 @@ void MaruRhythm::Initialize() {
 	// パーティクルクラス
 	particle_ = std::make_unique<Particle>();
 	//パーティクルの初期化
-	particle_->Initialize(particleSetup_.get());
+	particle_->Initialize(particleSetup);
 	//パーティクルグループの作成
 	particle_->CreateParticleGroup("Particle", "monsterBall.png");
 
@@ -85,25 +68,18 @@ void MaruRhythm::Initialize() {
 
 ///=============================================================================
 ///						終了処理
-void MaruRhythm::Finalize() {
-	CameraManager::GetInstance()->Finalize();///
-	//========================================
-	// フレームワークの終了処理
-	MRFramework::Finalize();
+void GamePlayScene::Finalize() {
+
 }
 
 ///=============================================================================
 ///						更新
-void MaruRhythm::Update() {
-	//========================================
-	// 更新処理
-	MRFramework::Update();
-
+void GamePlayScene::Update() {
 	///--------------------------------------------------------------
 	///						更新処理
 	//========================================
 	// カメラの更新
-	CameraManager::GetInstance()->UpdateAll();
+	//CameraManager::GetInstance()->UpdateAll();
 
 	//========================================
 	// 2D更新
@@ -139,12 +115,36 @@ void MaruRhythm::Update() {
 	if(audio_->IsWavPlaying("Duke_Ellington.wav") == false) {
 		audio_->PlayWav("Duke_Ellington.wav", true, 1.0f, 1.0f);
 	}
+}
 
+///=============================================================================
+///						
+void GamePlayScene::Object2DDraw() {
 	//========================================
-	// ImGuiの更新
-	MRFramework::ImGuiPreDraw();
-	//↓この間に書け!!!
+	// 2D描画
+	sprite_->Draw();
+}
 
+///=============================================================================
+///						
+void GamePlayScene::Object3DDraw() {
+	//========================================
+	// 3D描画
+	object3d_->Draw();
+}
+
+///=============================================================================
+///						
+void GamePlayScene::ParticleDraw() {
+	//========================================
+	// パーティクル描画
+	particle_->Draw();
+	particleEmitter_->Draw();
+}
+
+///=============================================================================
+///						ImGui描画
+void GamePlayScene::ImGuiDraw() {
 	//DEMOウィンドウの表示
 	ImGui::ShowDemoWindow();
 	ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiCond_Once);
@@ -162,37 +162,4 @@ void MaruRhythm::Update() {
 	ImGui::DragFloat("Rotate", &transformSprite.rotate.x, 0.01f);
 	ImGui::DragFloat3("Translate", &transformSprite.translate.x, 1.0f);
 	ImGui::End();
-
-	//↑
-	MRFramework::ImGuiPostDraw();
-}
-
-///=============================================================================
-///						描画
-void MaruRhythm::Draw() {
-	//========================================
-	// ループ前処理
-	MRFramework::FrameworkPreDraw();
-
-	//========================================
-	//3Dオブジェクト共通描画設定
-	MRFramework::Object3DCommonDraw();
-	// 3D描画
-	object3d_->Draw();
-
-	//========================================
-	// 2Dオブジェクト共通描画設定
-	MRFramework::Object2DCommonDraw();
-	//Spriteクラス
-	sprite_->Draw();
-
-	//========================================
-	//パーティクル共通描画設定
-	MRFramework::ParticleCommonDraw();
-	//パーティクル描画
-	particle_->Draw();
-
-	//========================================
-	// ループ後処理
-	MRFramework::FrameworkPostDraw();
 }

@@ -7,8 +7,8 @@
  * \note   
  *********************************************************************/
 #pragma once
- //========================================
- // Framework
+//========================================
+// Framework
 #include "WinApp.h"
 #include "DirectXCore.h"
 #include "ImguiSetup.h"
@@ -22,6 +22,7 @@
 #include "ModelManager.h"
 #include "Camera.h"
 #include "CameraManager.h"
+#include "SceneManager.h"
 
 ///=============================================================================
 ///						FrameWorkクラス
@@ -112,5 +113,7 @@ protected:
 	//========================================
 	// モデルセットアップ
 	std::unique_ptr<ModelSetup> modelSetup_;
+	//========================================
+	// シーンマネージャ
+	std::unique_ptr<SceneManager> sceneManager_;
 };
-

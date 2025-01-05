@@ -1,42 +1,13 @@
 /*********************************************************************
- * \file   MaruRhythm.h
- * \brief
- *
+ * \file   GamePlayScene.h
+ * \brief  
+ * 
  * \author Harukichimaru
  * \date   January 2025
- * \note
+ * \note   
  *********************************************************************/
 #pragma once
-///=============================================================================
-///						インクルードファイル
-#include <Windows.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
-//---------------------------------------
-// コムポインタ
-#include <wrl.h>
-#include <memory> // std::unique_ptr
-//---------------------------------------
-// ファイル読み込み用
-#include <fstream>
-#include <sstream>
-//========================================
-// Framework
-#include "WinApp.h"
-#include "DirectXCore.h"
-#include "ImguiSetup.h"
-#include "SrvSetup.h"
-#include "Input.h"
-#include "MAudioG.h"
-#include "SpriteSetup.h"
-#include "TextureManager.h"
-#include "ParticleSetup.h"
-#include "Object3dSetup.h"
-#include "ModelManager.h"
-//
-#include "CameraManager.h"
-
+#include "BaseScene.h"
 //========================================
 // Game
 #include "Camera.h"
@@ -45,18 +16,16 @@
 #include "ParticleEmitter.h"
 #include "Object3d.h"
 #include "Model.h"
-
-#include "MRFramework.h"
+#include "MAudioG.h"
 
 ///=============================================================================
-///						MaruRhythmクラス
-class MaruRhythm : public MRFramework {
+///						ゲームプレイシーンクラス
+class GamePlayScene : public BaseScene {
 	///--------------------------------------------------------------
 	///							メンバ関数
 public:
-
 	/// \brief 初期化
-	void Initialize() override;
+	void Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSetup, ParticleSetup *particleSetup) override;
 
 	/// \brief 終了処理
 	void Finalize() override;
@@ -64,8 +33,17 @@ public:
 	/// \brief 更新
 	void Update() override;
 
-	/// \brief 描画 
-	void Draw() override;
+	/// @brie 2D描画
+	void Object2DDraw() override;
+
+	/// \brief 3D描画 
+	void Object3DDraw() override;
+
+	/// \brief パーティクル描画
+	void ParticleDraw() override;
+
+	/// \brief ImGui描画
+	void ImGuiDraw() override;
 
 	///--------------------------------------------------------------
 	///							静的メンバ関数
@@ -76,13 +54,11 @@ private:
 public:
 
 	///--------------------------------------------------------------
-	///							メンバ変数(FrameWork)
+	///							メンバ変数
 private:
+	//========================================
 	// オーディオ
 	MAudioG *audio_;
-
-	///--------------------------------------------------------------
-	///						 Game
 	//========================================
 	// カメラ
 	std::unique_ptr<Camera> camera_;
@@ -99,7 +75,7 @@ private:
 	std::unique_ptr<ParticleEmitter> particleEmitter_;
 
 	///--------------------------------------------------------------
-	///						 テスト用
+	///						 アプリケーション固有
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	//========================================
@@ -107,13 +83,12 @@ private:
 	//TransformSprite
 	Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	//マテリアル
-    Vector4 materialSprite = {1.0f, 1.0f, 1.0f, 1.0f};
+	Vector4 materialSprite = {1.0f, 1.0f, 1.0f, 1.0f};
 	//UV座標
 	Transform uvTransformSprite{
 		{1.0f,1.0f,1.0f},
 		{0.0f,0.0f,0.0f},
 		{0.0f,0.0f,0.0f},
 	};
-
 };
 
