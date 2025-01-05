@@ -17,6 +17,15 @@ void GamePlayScene::Initialize(SpriteSetup* spriteSetup, Object3dSetup* object3d
 	object3dSetup;
 	particleSetup;
 
+	//========================================
+	// プレイヤー
+	object3d_ = std::make_unique<Object3d>();
+	//3Dオブジェクトの初期化
+	object3d_->Initialize(object3dSetup);
+	object3d_->SetModel("axisPlus.obj");
+	//プレイヤーの初期化
+	player_ = std::make_unique<Player>();
+	player_->Initialize(object3d_.get());
 }
 
 ///=============================================================================
@@ -28,6 +37,9 @@ void GamePlayScene::Finalize() {
 ///=============================================================================
 ///						更新
 void GamePlayScene::Update() {
+	//========================================
+	// プレイヤー
+	player_->Update();
 
 }
 
@@ -40,7 +52,9 @@ void GamePlayScene::Object2DDraw() {
 ///=============================================================================
 ///						
 void GamePlayScene::Object3DDraw() {
-
+	//========================================
+	// プレイヤー
+	player_->Draw();
 }
 
 ///=============================================================================

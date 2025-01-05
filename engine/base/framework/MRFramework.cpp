@@ -75,9 +75,10 @@ void MRFramework::Initialize() {
 	///--------------------------------------------------------------
 	///						 入力クラス
 	//ユニークポインタ
-	input_ = std::make_unique<Input>();
-	//入力の初期化
-	input_->Initialize(win_->GetWindowClass().hInstance, win_->GetWindowHandle());
+	//input_ = std::make_unique<Input>();
+	////入力の初期化
+	//input_->Initialize(win_->GetWindowClass().hInstance, win_->GetWindowHandle());
+	Input::GetInstance()->Initialize(win_->GetWindowClass().hInstance, win_->GetWindowHandle());
 
 	///--------------------------------------------------------------
 	///						 スプライトクラス
@@ -136,7 +137,7 @@ void MRFramework::Initialize() {
 void MRFramework::Update() {
 	//========================================
 	// インプットの更新
-	input_->Update();
+	Input::GetInstance()->Update();
 	//========================================
 	// シーンマネージャの更新
 	sceneManager_->Update();

@@ -3,6 +3,15 @@
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
+/// <summary>
+/// インスタンスの取得
+/// </summary>
+/// <returns>Inputのインスタンス</returns>
+Input* Input::GetInstance() {
+	static Input instance;
+	return &instance;
+}
+
 ///=====================================================/// 
 ///初期化
 ///=====================================================///
@@ -118,3 +127,4 @@ bool Input::TriggerButton(BYTE buttonNumber) {
 
 	return false;
 }
+

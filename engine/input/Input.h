@@ -13,6 +13,11 @@ public:
 	template <class T> using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 public:
+	/// <summary>
+	/// インスタンスの取得
+	/// </summary>
+	/// <returns>Inputのインスタンス</returns>
+	static Input* GetInstance();
 
 	/// <summary>
 	/// 初期化
@@ -53,6 +58,27 @@ public:
 	bool TriggerButton(BYTE buttonNumber);
 
 private:
+	/// <summary>
+	/// コンストラクタ
+	/// </summary>
+	Input() = default;
+
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
+	~Input() = default;
+
+	/// <summary>
+	/// コピーコンストラクタを削除
+	/// </summary>
+	Input(const Input&) = delete;
+
+	/// <summary>
+	/// 代入演算子を削除
+	/// </summary>
+	Input& operator=(const Input&) = delete;
+
+private:
 	/// ===キーボードのデバイス=== ///
 	ComPtr<IDirectInputDevice8> keyboard;
 
@@ -77,3 +103,4 @@ private:
 	/// ===コントローラーが接続されているかどうか=== ///
 	bool controllerConnected = false;
 };
+
