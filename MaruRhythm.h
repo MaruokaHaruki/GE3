@@ -34,6 +34,8 @@
 #include "ParticleSetup.h"
 #include "Object3dSetup.h"
 #include "ModelManager.h"
+//
+#include "CameraManager.h"
 
 //========================================
 // Game
@@ -43,31 +45,27 @@
 #include "ParticleEmitter.h"
 #include "Object3d.h"
 #include "Model.h"
-#include "MAudioG.h"
 
-#include "Vector2.h"
-#include "Vector3.h"
-#include "Vector4.h"
-#include "Transform.h"
+#include "MRFramework.h"
 
 ///=============================================================================
 ///						MaruRhythmクラス
-class MaruRhythm {
+class MaruRhythm : public MRFramework {
 	///--------------------------------------------------------------
 	///							メンバ関数
 public:
 
 	/// \brief 初期化
-	void Initialize();
+	void Initialize() override;
 
 	/// \brief 終了処理
-	void Finalize();
+	void Finalize() override;
 
 	/// \brief 更新
-	void Update();
+	void Update() override;
 
 	/// \brief 描画 
-	void Draw();
+	void Draw() override;
 
 	///--------------------------------------------------------------
 	///							静的メンバ関数
@@ -76,47 +74,10 @@ private:
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
-	/**----------------------------------------------------------------------------
-	 * \brief  IsEndRequest 終了リクエストの取得
-	 * \return 終了リクエスト
-	 */
-	bool IsEndRequest() const { return isEndRequest_; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数(FrameWork)
 private:
-	//========================================
-	// ゲーム終了フラグ
-	bool isEndRequest_ = false;
-
-	//========================================
-	// ウィンドウクラス
-	std::unique_ptr<WinApp> win_;
-	//========================================
-	// ダイレクトX
-	std::unique_ptr<DirectXCore> dxCore_;
-	//========================================
-	// ImGui
-	std::unique_ptr<ImguiSetup> imguiSetup_;
-	//========================================
-	// SrvSetup
-	std::unique_ptr<SrvSetup> srvSetup_;
-	//========================================
-	// 入力
-	std::unique_ptr<Input> input_;
-	//========================================
-	// スプライト共通部
-	std::unique_ptr<SpriteSetup> spriteSetup_;
-	//========================================
-	// パーティクルセットアップ
-	std::unique_ptr<ParticleSetup> particleSetup_;
-	//========================================
-	// 3Dオブジェクト共通部
-	std::unique_ptr<Object3dSetup> object3dSetup_;
-	//========================================
-	// モデルセットアップ
-	std::unique_ptr<ModelSetup> modelSetup_;
-	//========================================
 	// オーディオ
 	MAudioG *audio_;
 

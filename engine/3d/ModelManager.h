@@ -85,6 +85,5 @@ private:
 	// モデルデータコンテナ
 	// NOTE:vectorだと検索が遅いのでmapを使う
 	std::map<std::string, std::unique_ptr<Model>> models_;
-
 };
 
