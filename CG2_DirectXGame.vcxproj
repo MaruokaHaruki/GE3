@@ -105,6 +105,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\camera\CameraManager.cpp" />
     <ClCompile Include="engine\2d\ParticleEmitter.cpp" />
     <ClCompile Include="engine\audio\MAudioG.cpp" />
     <ClCompile Include="engine\base\SrvSetup.cpp" />
@@ -127,8 +128,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="engine\2d\Particle.cpp" />
     <ClCompile Include="engine\2d\ParticleSetup.cpp" />
     <ClCompile Include="MaruRhythm.cpp" />
+    <ClCompile Include="MRFramework.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\camera\CameraManager.h" />
     <ClInclude Include="engine\2d\ParticleEmitter.h" />
     <ClInclude Include="engine\audio\MAudioG.h" />
     <ClInclude Include="engine\base\SrvSetup.h" />
@@ -166,6 +169,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\2d\ParticleSetup.h" />
     <ClInclude Include="engine\base\ImguiSetup.h" />
     <ClInclude Include="MaruRhythm.h" />
+    <ClInclude Include="MRFramework.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
