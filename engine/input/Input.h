@@ -38,9 +38,26 @@ public:
 	/// <returns>トリガーか?</returns>
 	bool TriggerKey(BYTE keyNumber);
 
+	/// <summary>
+	/// コントローラーボタンの押下をチェック
+	/// </summary>
+	/// <param name="buttonNumber">ボタン番号</param>
+	/// <returns>押されているか</returns>
+	bool PushButton(BYTE buttonNumber);
+
+	/// <summary>
+	/// コントローラーボタンのトリガーをチェック
+	/// </summary>
+	/// <param name="buttonNumber">ボタン番号</param>
+	/// <returns>トリガーか?</returns>
+	bool TriggerButton(BYTE buttonNumber);
+
 private:
 	/// ===キーボードのデバイス=== ///
 	ComPtr<IDirectInputDevice8> keyboard;
+
+	/// ===コントローラーのデバイス=== ///
+	ComPtr<IDirectInputDevice8> controller;
 
 	/// ===DirectInputのインスタンス=== ///
 	ComPtr<IDirectInput8>directInput = nullptr;
@@ -51,5 +68,12 @@ private:
 	/// ===前回の全キーの状態=== ///
 	BYTE keyPre[256] = {};
 
-};
+	/// ===全ボタンの状態=== ///
+	DIJOYSTATE2 controllerState = {};
 
+	/// ===前回の全ボタンの状態=== ///
+	DIJOYSTATE2 controllerStatePre = {};
+
+	/// ===コントローラーが接続されているかどうか=== ///
+	bool controllerConnected = false;
+};
