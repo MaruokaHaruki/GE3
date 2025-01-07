@@ -10,6 +10,8 @@
 #include "BaseScene.h"
 //========================================
 // Game
+#include "Object3d.h"
+#include "Sprite.h"
 
 ///=============================================================================
 ///						タイトルシーンクラス
@@ -50,6 +52,26 @@ public:
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
+	//========================================
+	// オブジェクト
+	std::unique_ptr<Object3d> objTitle_ = nullptr;
+	// 場所
+	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	//回転用
+	float angle = 0.0f;
+
+	//========================================
+	// スプライト
+	std::unique_ptr<Sprite> pressSprite_;
+	Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	//マテリアル
+	Vector4 materialSprite = {1.0f, 1.0f, 1.0f, 1.0f};
+	//UV座標
+	Transform uvTransformSprite{
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f},
+	};
 
 };
 

@@ -88,6 +88,12 @@ void Object3d::Draw() {
 	}
 }
 
+///=============================================================================
+///						テクスチャの変更
+void Object3d::ChangeTexture(const std::string &texturePath) {
+	model_->ChangeTexture(texturePath);
+}
+
 
 ///--------------------------------------------------------------
 ///						 座標変換行列

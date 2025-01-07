@@ -40,6 +40,9 @@ public:
 	/// \brief 描画 
 	void Draw();
 
+	/// \brief ImGui描画
+	void ChangeTexture(const std::string &texturePath);
+
 	///--------------------------------------------------------------
 	///						 静的メンバ関数
 private:

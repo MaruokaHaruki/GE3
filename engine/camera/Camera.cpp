@@ -17,7 +17,7 @@
 ///						デフォルトコンストラクタ
 Camera::Camera()
 //	Matrix4x4 projectionMatrix = MakePerspectiveFovMatrix(0.45f, float(object3dSetup_->GetDXManager()->GetWinApp().GetWindowWidth()) / float(object3dSetup_->GetDXManager()->GetWinApp().GetWindowHeight()), 0.1f, 100.0f);
-	:transform_({ {1.0f,1.0f,1.0f},{0.2f,0.0f,0.0f},{0.0f,6.0f,-30.0f} })
+	:transform_({ {1.0f,1.0f,1.0f},{0.2f,0.0f,0.0f},{0.0f,4.0f,-16.0f} })
 	, horizontalFieldOfView_(0.45f)
 	, aspectRatio_(static_cast<float>( WinApp::kWindowWidth_ ) / static_cast<float>( WinApp::kWindowHeight_ ))
 	, nearClipRange_(0.1f)

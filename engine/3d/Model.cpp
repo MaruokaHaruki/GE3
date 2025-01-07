@@ -85,6 +85,19 @@ void Model::InstancingDraw(uint32_t instanceCount) {
 }
 
 ///=============================================================================
+///						テクスチャの変更
+void Model::ChangeTexture(const std::string &textureFilePath) {
+	// 新しいテクスチャを読み込む
+	TextureManager::GetInstance()->LoadTexture(textureFilePath);
+
+	// 新しいテクスチャのインデックスを取得して設定
+	textureIndex_ = TextureManager::GetInstance()->GetTextureIndex(textureFilePath);
+
+	// マテリアルデータを更新
+	modelData_.material.textureFilePath = textureFilePath;
+}
+
+///=============================================================================
 ///						ローカルメンバ関数
 ///--------------------------------------------------------------
 ///						 ファイル読み込み関数

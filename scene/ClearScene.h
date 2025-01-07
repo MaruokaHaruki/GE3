@@ -8,6 +8,7 @@
  *********************************************************************/
 #pragma once
 #include "BaseScene.h"
+#include "Sprite.h"
 
 ///=============================================================================
 ///						クリアシーンクラス
@@ -49,5 +50,36 @@ public:
 	///							メンバ変数
 private:
 
+	//========================================
+	// スプライト
+	std::unique_ptr<Sprite> sprite_;
+	//========================================
+	// 2Dオブジェクト用
+	//TransformSprite
+	Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	//マテリアル
+	Vector4 materialSprite = {1.0f, 1.0f, 1.0f, 1.0f};
+	//UV座標
+	Transform uvTransformSprite{
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f},
+	};
+
+	//========================================
+	// スプライト
+	std::unique_ptr<Sprite> pressSprite_;
+	//========================================
+	// 2Dオブジェクト用
+	//TransformSprite
+	//Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	////マテリアル
+	//Vector4 materialSprite = {1.0f, 1.0f, 1.0f, 1.0f};
+	////UV座標
+	//Transform uvTransformSprite{
+	//	{1.0f,1.0f,1.0f},
+	//	{0.0f,0.0f,0.0f},
+	//	{0.0f,0.0f,0.0f},
+	//};
 };
 

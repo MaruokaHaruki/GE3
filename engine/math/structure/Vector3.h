@@ -67,3 +67,10 @@ inline Vector3 AddVec3(const Vector3& v1, const Vector3& v2) {
 inline Vector3 MultiplyVec3(float scalar, const Vector3& v) {
 	return { scalar * v.x, scalar * v.y, scalar * v.z };
 }
+
+// ベクトルの長さを計算する関数
+inline float Length(const Vector3& v) { return std::sqrt(Dot(v, v)); }
+
+// 2つのベクトル間の距離を計算する関数
+inline float Distance(const Vector3& v1, const Vector3& v2) { return Length(v1 - v2); }
+

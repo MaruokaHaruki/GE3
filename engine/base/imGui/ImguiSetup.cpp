@@ -86,9 +86,11 @@ void ImguiSetup::Begin() {
 	ImGui_ImplWin32_NewFrame(); // ImGuiのWin32サポート開始
 	ImGui::NewFrame();			// ImGuiのフレーム開始
 
+#ifdef DEBUG
 	//========================================
 	// 
 	ShowPerformanceMonitor();
+#endif // DEBUG
 }
 
 ///=============================================================================

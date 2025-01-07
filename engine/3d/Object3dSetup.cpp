@@ -135,9 +135,26 @@ void Object3dSetup::CreateGraphicsPipeline() {
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
 	//========================================
-	// BlendStateの設定を行う
+	// BlendStateの設定を行う(αブレンディング)
 	D3D12_BLEND_DESC blendDesc{};
-	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = FALSE;
+	D3D12_RENDER_TARGET_BLEND_DESC renderTargetBlendDesc{};
+	//renderTargetBlendDesc.BlendEnable = TRUE;
+	//renderTargetBlendDesc.LogicOpEnable = FALSE;
+	//renderTargetBlendDesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	//renderTargetBlendDesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	//renderTargetBlendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+	//renderTargetBlendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+	//renderTargetBlendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+	//renderTargetBlendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	//renderTargetBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	renderTargetBlendDesc.BlendEnable = FALSE; // ブレンディングを無効化
+	renderTargetBlendDesc.LogicOpEnable = FALSE;
+	renderTargetBlendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	blendDesc.RenderTarget[0] = renderTargetBlendDesc;
+
 
 	//========================================
 	// RasterizerStateの設定を行う
