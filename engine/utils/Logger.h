@@ -3,12 +3,16 @@
 ///ログの出力
 /// 
 ///=====================================================///
-
 #pragma once
 #include <string>
 #include <Windows.h>
 
 namespace Logger {
-	///ログの生成
-	void Log(const std::string& message);
+	enum class LogLevel {
+		Info,
+		Warning,
+		Error
+	};
+
+	void Log(const std::string &message, LogLevel level = LogLevel::Info);
 }

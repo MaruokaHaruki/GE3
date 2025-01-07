@@ -99,9 +99,6 @@ protected:
 	// SrvSetup
 	std::unique_ptr<SrvSetup> srvSetup_;
 	//========================================
-	// 入力
-	//std::unique_ptr<Input> input_;
-	//========================================
 	// スプライト共通部
 	std::unique_ptr<SpriteSetup> spriteSetup_;
 	//========================================

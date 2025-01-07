@@ -11,22 +11,22 @@ public:
     virtual ~BaseObject() = default;
 
     /// \brief 初期化
-	void Initialize() {}
+    void Initialize(Vector3& position, float radius);
 
     /// \brief 更新
-	void Update() {}
+    void Update(Vector3 &position);
 
-    /// \brief 描画
-	void Draw() {}
+ //   /// \brief 描画
+	//void Draw() {}
 
     /// \brief 衝突開始時の処理
-	virtual void OnCollisionEnter(BaseObject *other) {}
+	virtual void OnCollisionEnter(BaseObject *other) = 0;
 
     /// \brief 衝突継続時の処理
-	virtual void OnCollisionStay(BaseObject *other) {}
+    virtual void OnCollisionStay(BaseObject *other) = 0;
 
     /// \brief 衝突終了時の処理
-	virtual void OnCollisionExit(BaseObject *other) {}
+	virtual void OnCollisionExit(BaseObject *other) = 0;
 
     /// \brief コライダーの取得
     std::shared_ptr<Collider> GetCollider() const { return collider_; }
