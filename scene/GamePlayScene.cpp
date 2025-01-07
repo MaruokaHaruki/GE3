@@ -33,6 +33,9 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 	TextureManager::GetInstance()->LoadTexture("player_left_run_01.png");
 	TextureManager::GetInstance()->LoadTexture("player_left_run_02.png");
 	TextureManager::GetInstance()->LoadTexture("player_left_run_03.png");
+	//チュートリアル
+	TextureManager::GetInstance()->LoadTexture("move.png");
+
 
 	//========================================
 	// オブジェクト読み込み
@@ -41,6 +44,16 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 	ModelManager::GetInstance()->LoadMedel("player.obj");
 	ModelManager::GetInstance()->LoadMedel("hitCircle.obj");
 	ModelManager::GetInstance()->LoadMedel("enemy.obj");
+
+	//========================================
+	// スプライトクラス(Game)
+	//ユニークポインタ
+	moveSprite_ = std::make_unique<Sprite>();
+	//スプライトの初期化
+	moveSprite_->Initialize(spriteSetup, "move.png");
+	//サイズ
+	moveSprite_->SetSize({ 256.0f,128.0f });
+	moveSprite_->SetPosition(Vector2{ 500.0f, 600.0f });
 
 	//========================================
 	// 地面
@@ -82,12 +95,26 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 ///=============================================================================
 ///						終了処理
 void GamePlayScene::Finalize() {
-
+	//========================================
+	// BGMの停止
+	MAudioG::GetInstance()->StopWav("Beast-Mode.wav");
 }
 
 ///=============================================================================
 ///						更新
 void GamePlayScene::Update() {
+	//========================================
+	// BGMの再生
+	if(MAudioG::GetInstance()->IsWavPlaying("Beast-Mode.wav") == false) {
+		MAudioG::GetInstance()->PlayWav("Beast-Mode.wav");
+	}
+
+	//========================================
+	// チュートリアル
+	//=======================================
+	//画面中央下に配置
+	moveSprite_->Update();
+
 	//========================================
 	// 地面
 	ground_->Update();
@@ -123,6 +150,9 @@ void GamePlayScene::Update() {
 ///=============================================================================
 ///						
 void GamePlayScene::Object2DDraw() {
+	//========================================
+	// チュートリアル
+	moveSprite_->Draw();
 
 }
 
