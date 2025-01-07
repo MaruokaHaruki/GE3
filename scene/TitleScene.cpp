@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 #include "Input.h"
 #include "CameraManager.h"
+#include "MAudioG.h"
 
  ///=============================================================================
  ///						初期化
@@ -23,6 +24,16 @@ void TitleScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSet
 	// カメラ設定
 	CameraManager::GetInstance()->GetCamera("DefaultCamera")->SetTransform({ {1.0f,1.0f,1.0f},{0.2f,0.0f,0.0f},{0.0f,4.0f,-16.0f} });
 
+	//========================================
+	// 音の読み込み
+	MAudioG::GetInstance()->LoadWav("se_charge.wav");
+	MAudioG::GetInstance()->LoadWav("se_damage.wav");
+	MAudioG::GetInstance()->LoadWav("se_exlpo.wav");
+	MAudioG::GetInstance()->LoadWav("se_samon.wav");
+	MAudioG::GetInstance()->LoadWav("se_select.wav");
+	MAudioG::GetInstance()->LoadWav("se_shot.wav");
+	MAudioG::GetInstance()->LoadWav("Refine.wav");
+	MAudioG::GetInstance()->LoadWav("Beast-Mode.wav");
 
 	//========================================
 	// モデルの読み込み
@@ -48,12 +59,18 @@ void TitleScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSet
 ///=============================================================================
 ///						終了処理
 void TitleScene::Finalize() {
+	//曲の終了
+	MAudioG::GetInstance()->StopWav("Refine.wav");
 }
 
 ///=============================================================================
 ///						更新
 void TitleScene::Update() {
-
+	//========================================
+	// 曲を再生
+	if(MAudioG::GetInstance()->IsWavPlaying("Refine.wav") == false){
+		MAudioG::GetInstance()->PlayWav("Refine.wav", true);
+	}
 	//タイトルを左右に回転させて揺らす
 	angle += 0.04f;
 	transform.rotate.y = sin(angle) * 0.4f;

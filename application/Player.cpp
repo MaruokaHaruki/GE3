@@ -9,6 +9,8 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Input.h"
+#include "MAudioG.h"
+#include "CameraManager.h"
 
 ///=============================================================================
 ///						初期化
@@ -43,11 +45,14 @@ void Player::Update() {
 		Dodge();
 	}
 	//コントローラーのボタンで回避
-	if(Input::GetInstance()->TriggerButton(Input::BUTTON_B)) {
+	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
+		//SE再生
+		MAudioG::GetInstance()->PlayWav("se_charge.wav");
+		// 回避処理
 		Dodge();
 	}
- 
- 	//========================================
+
+	//========================================
 	// 移動処理
 	Move();
 
@@ -58,7 +63,7 @@ void Player::Update() {
 
 	//========================================
 	// 攻撃処理
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
 		Attack();
 	}
 	//コントローラーのボタンで攻撃
@@ -80,6 +85,11 @@ void Player::Update() {
 	//========================================
 	// 当たり判定との同期
 	BaseObject::Update(transform.translate);
+
+
+	//========================================
+	// 追跡カメラ
+	ChaseCamera();
 }
 
 ///=============================================================================
@@ -315,4 +325,36 @@ void Player::AnimationRun() {
 			object3d_->ChangeTexture("player_left.png");
 		}
 	}
+}
+
+///=============================================================================
+///						追跡カメラ
+void Player::ChaseCamera() {
+	// カメラマネージャーからデフォルトカメラを取得
+	Camera *camera = CameraManager::GetInstance()->GetCamera("DefaultCamera");
+	if(!camera) return;
+
+	// 現在のカメラの位置を取得
+	Vector3 currentCameraPos = camera->GetTransform().translate;
+
+	// 目標とするカメラの位置を計算
+	Vector3 targetCameraPos = { transform.translate.x, 2.3f, transform.translate.z - 8.0f };
+
+	// イージング係数（0.0f～1.0f）、値を小さくすると追従が遅くなります
+	float easingFactor = 0.05f;
+
+	// イージングを適用して新しいカメラ位置を計算
+	Vector3 newCameraPos = currentCameraPos + ( targetCameraPos - currentCameraPos ) * easingFactor;
+
+	// カメラの回転角度（固定）
+	Vector3 cameraRotation = { 0.3f, 0.0f, 0.0f };
+
+	// カメラのスケール（固定）
+	Vector3 cameraScale = { 1.0f, 1.0f, 1.0f };
+
+	// カメラのトランスフォームを更新
+	camera->SetTransform({ cameraScale, cameraRotation, newCameraPos });
+
+	// カメラの更新
+	CameraManager::GetInstance()->GetCamera("DefaultCamera")->SetTransform({ cameraScale, cameraRotation, newCameraPos });
 }

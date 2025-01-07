@@ -84,5 +84,9 @@ private:
 	std::unique_ptr<Enemy> enemy_;
 	// 3dオブジェクト
 	std::unique_ptr<Object3d> objEnemy_;
+
+	//========================================
+	// スプライト
+	std::unique_ptr<Sprite> moveSprite_;
 };
 
