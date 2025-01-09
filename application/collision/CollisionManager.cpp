@@ -12,14 +12,14 @@ void CollisionManager::Update() {
 }
 
 void CollisionManager::Draw() {
-	if(isHitDraw_) {
-		for(auto &baseObj : Objects_) {
-			// 当たり判定の位置にオブジェクトを配置
-			object3d_->SetPosition(baseObj->GetCollider()->GetPosition());
-			object3d_->Update();
-			object3d_->Draw();
-		}
-	}
+	//if(isHitDraw_) {
+	//	for(auto &baseObj : Objects_) {
+	//		// 当たり判定の位置にオブジェクトを配置
+	//		object3d_->SetPosition(baseObj->GetCollider()->GetPosition());
+	//		object3d_->Update();
+	//		object3d_->Draw();
+	//	}
+	//}
 }
 
 ///=============================================================================

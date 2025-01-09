@@ -276,7 +276,7 @@ void DirectXCore::CreateFence() {
 
 	//FenceのSignalを持つためのイベントを生成する
 	fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(SUCCEEDED(hr_));
+	assert(fenceEvent_ != nullptr);
 }
 
 ///=============================================================================

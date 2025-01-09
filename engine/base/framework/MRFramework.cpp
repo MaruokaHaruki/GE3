@@ -188,7 +188,7 @@ void MRFramework::FrameworkPostDraw() {
 void MRFramework::ImGuiPreDraw() {
 	// imguiの初期化
 	imguiSetup_->Begin();
-#ifdef DEBUG
+#ifdef _DEBUG
 	// imguiの描画
 	sceneManager_->ImGuiDraw();
 	// InPutのImGui描画
