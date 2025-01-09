@@ -285,7 +285,6 @@ bool Input::IsRightStickDown() const {
 ///=============================================================================
 ///						ImGui描画
 void Input::ImGuiDraw() {
-#ifdef _DEBUG
 	//========================================
 	// すべてのキーの状態
 	ImGui::Begin("Input");
@@ -307,6 +306,4 @@ void Input::ImGuiDraw() {
 		ImGui::Text("Right Stick Y: %f", GetRightStickY());
 		ImGui::End();
 	}
-#endif // DEBUG
-
 }
