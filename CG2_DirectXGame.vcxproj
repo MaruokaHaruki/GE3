@@ -159,7 +159,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\base\core\DirectXCore.h" />
     <ClInclude Include="engine\utils\WstringUtility.h" />
     <ClInclude Include="engine\utils\Logger.h" />
-    <ClInclude Include="engine\externals\imgui\imconfig.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="engine\math\MathFunc4x4.h" />
     <ClInclude Include="engine\math\structure\drawData\DirectionalLight.h" />
@@ -197,12 +196,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
-    <None Include="externals\imgui\imgui.vcxproj" />
-    <None Include="externals\imgui\imgui.vcxproj.filters" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="engine\externals\imgui\LICENSE.txt" />
-    <Text Include="externals\imgui\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

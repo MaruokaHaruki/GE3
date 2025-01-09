@@ -16,9 +16,6 @@
     <Filter Include="exetrnals">
       <UniqueIdentifier>{9ad13fd6-31dd-4ca2-8b46-e7330180a5ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="exetrnals\imgui">
-      <UniqueIdentifier>{ecd53172-705f-485c-b6bd-5606c0b1d8e2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="シェーダー ファイル">
       <UniqueIdentifier>{66ca4481-71e8-4658-87ef-81752d63166e}</UniqueIdentifier>
     </Filter>
@@ -91,16 +88,28 @@
     <Filter Include="ヘッダー ファイル\engine\camera">
       <UniqueIdentifier>{2d7f20ff-184b-4f2a-bc4d-2e26ba02a233}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\engine\base\core">
+      <UniqueIdentifier>{1110e84e-fd80-4565-84de-6819cc25e5aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\framework">
+      <UniqueIdentifier>{3b9ebcdb-8654-4af4-bd80-ece0308d2922}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\engine\base\imgui">
+      <UniqueIdentifier>{36f70b3c-e2fc-492c-ae36-861083b2a729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\core">
+      <UniqueIdentifier>{ab498827-4dc0-421f-82d8-7efd275317b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\framework">
+      <UniqueIdentifier>{8786b13e-a927-4057-b6cf-9f4eee85d78c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\engine\base\imgui">
+      <UniqueIdentifier>{58dcd944-fb47-4384-a9b3-0b2848ac5bd9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\core\DirectXCore.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\base\core\WinApp.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
     </ClCompile>
     <ClCompile Include="engine\3d\Object3d.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
@@ -144,62 +153,68 @@
     <ClCompile Include="engine\2d\ParticleEmitter.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\core\SrvSetup.cpp">
-      <Filter>ソース ファイル\engine\base</Filter>
-    </ClCompile>
     <ClCompile Include="engine\camera\Camera.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="engine\base\imGui\ImguiSetup.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\base\core\DirectXCore.cpp">
+      <Filter>ソース ファイル\engine\base\core</Filter>
     </ClCompile>
-    <ClCompile Include="engine\audio\MAudioG.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\base\core\SrvSetup.cpp">
+      <Filter>ソース ファイル\engine\base\core</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\core\WinApp.cpp">
+      <Filter>ソース ファイル\engine\base\core</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\framework\MaruRhythm.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\base\framework</Filter>
     </ClCompile>
     <ClCompile Include="engine\base\framework\MRFramework.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\base\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\base\imGui\ImguiSetup.cpp">
+      <Filter>ソース ファイル\engine\base\imgui</Filter>
     </ClCompile>
     <ClCompile Include="engine\camera\CameraManager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
     <ClCompile Include="scene\GamePlayScene.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="scene\BaseScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\SceneManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\DebugScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\TitleScene.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="scene\ClearScene.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\collision\Collider.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="scene\DebugScene.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\collision\CollisionManager.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="scene\TitleScene.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\collision\BaseObject.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="scene\SceneManager.cpp">
+      <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="application\Player.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="engine\audio\MAudioG.cpp">
+      <Filter>ソース ファイル\engine\audio</Filter>
     </ClCompile>
     <ClCompile Include="application\Ground.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
+    <ClCompile Include="application\Player.cpp">
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
+    <ClCompile Include="application\collision\CollisionManager.cpp">
+      <Filter>ソース ファイル\application</Filter>
     </ClCompile>
     <ClCompile Include="application\Enemy.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
+    <ClCompile Include="application\collision\Collider.cpp">
+      <Filter>ソース ファイル\application</Filter>
+    </ClCompile>
+    <ClCompile Include="application\collision\BaseObject.cpp">
+      <Filter>ソース ファイル\application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -254,9 +269,6 @@
     <ClInclude Include="engine\math\AffineTransformations.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\core\DirectXCore.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\math\RenderingMatrices.h">
       <Filter>ヘッダー ファイル\engine\math</Filter>
     </ClInclude>
@@ -284,12 +296,6 @@
     <ClInclude Include="engine\math\structure\drawData\DirectionalLight.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\core\WinApp.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\externals\imgui\imconfig.h">
-      <Filter>exetrnals\imgui</Filter>
-    </ClInclude>
     <ClInclude Include="engine\2d\ParticleSetup.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
@@ -299,79 +305,73 @@
     <ClInclude Include="engine\2d\ParticleEmitter.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\core\SrvSetup.h">
-      <Filter>ヘッダー ファイル\engine\base</Filter>
-    </ClInclude>
     <ClInclude Include="engine\camera\Camera.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\imGui\ImguiSetup.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\base\core\DirectXCore.h">
+      <Filter>ヘッダー ファイル\engine\base\core</Filter>
     </ClInclude>
-    <ClInclude Include="engine\audio\MAudioG.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\base\core\SrvSetup.h">
+      <Filter>ヘッダー ファイル\engine\base\core</Filter>
     </ClInclude>
-    <ClInclude Include="engine\base\framework\MaruRhythm.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\base\framework\MRFramework.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="engine\camera\CameraManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\GamePlayScene.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\base\core\WinApp.h">
+      <Filter>ヘッダー ファイル\engine\base\core</Filter>
     </ClInclude>
     <ClInclude Include="scene\BaseScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\SceneManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\DebugScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\TitleScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\ClearScene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="application\collision\Collider.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="application\collision\CollisionManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
     <ClInclude Include="application\collision\BaseObject.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
-    <ClInclude Include="application\Player.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="engine\camera\CameraManager.h">
+      <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="application\Ground.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="scene\ClearScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\DebugScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\GamePlayScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\SceneManager.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\TitleScene.h">
+      <Filter>ヘッダー ファイル\engine\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\Collider.h">
+      <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="application\collision\CollisionManager.h">
+      <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
     <ClInclude Include="application\Enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Ground.h">
+      <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="application\Player.h">
+      <Filter>ヘッダー ファイル\application</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\imGui\ImguiSetup.h">
+      <Filter>ヘッダー ファイル\engine\base\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\framework\MaruRhythm.h">
+      <Filter>ヘッダー ファイル\engine\base\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\base\framework\MRFramework.h">
+      <Filter>ヘッダー ファイル\engine\base\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\audio\MAudioG.h">
+      <Filter>ヘッダー ファイル\engine\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig">
       <Filter>exetrnals</Filter>
     </None>
-    <None Include="externals\imgui\imgui.vcxproj.filters">
-      <Filter>exetrnals\imgui</Filter>
-    </None>
-    <None Include="externals\imgui\imgui.vcxproj">
-      <Filter>exetrnals\imgui</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="engine\externals\imgui\LICENSE.txt">
-      <Filter>exetrnals</Filter>
-    </Text>
-    <Text Include="externals\imgui\LICENSE.txt" />
   </ItemGroup>
 </Project>
