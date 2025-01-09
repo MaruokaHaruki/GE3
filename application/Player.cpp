@@ -23,11 +23,6 @@ void Player::Initialize(Object3d *object3d) {
 	maxSpeed = 0.1f; // 最大速度を設定
 
 	//========================================
-	// 武器の設定
-	wepon_ = std::make_unique<PlayerWepon>();
-	wepon_->Initialize();
-
-	//========================================
 	// 当たり判定との同期
 	BaseObject::Initialize(transform.translate, 0.1f);
 }
@@ -40,19 +35,6 @@ void Player::Update() {
 	AnimationRun();
 
 	//========================================
-	// 回避処理
-	if(Input::GetInstance()->PushKey(DIK_LSHIFT)) {
-		Dodge();
-	}
-	//コントローラーのボタンで回避
-	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
-		//SE再生
-		MAudioG::GetInstance()->PlayWav("se_charge.wav");
-		// 回避処理
-		Dodge();
-	}
-
-	//========================================
 	// 移動処理
 	Move();
 
@@ -62,30 +44,18 @@ void Player::Update() {
 	object3d_->Update();
 
 	//========================================
-	// 攻撃処理
+	// 回避処理
 	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
-		Attack();
+		Dodge();
 	}
-	//コントローラーのボタンで攻撃
+	//コントローラーのボタン
 	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
-		Attack();
-	}
-
-	//========================================
-	// weponの更新
-	wepon_->Update();
-
-	//時間で判定を別の場所に移動weponHitTimeで管理
-	if(weponHitTime > 0) {
-		weponHitTime--;
-	} else {
-		wepon_->GetCollider()->SetPosition({ 100.0f, 100.0f, 100.0f });
+		Dodge();
 	}
 
 	//========================================
 	// 当たり判定との同期
 	BaseObject::Update(transform.translate);
-
 
 	//========================================
 	// 追跡カメラ
@@ -113,8 +83,6 @@ void Player::ImGuiDraw() {
 	ImGui::Text("HitStay: %s", isHitStay ? "true" : "false");
 	ImGui::Text("HitExit: %s", isHitExit ? "true" : "false");
 	ImGui::Separator();
-	//武器の位置
-	ImGui::DragFloat3("WeaponPosition", &wepon_->GetCollider()->GetPosition().x, 0.01f);
 	ImGui::End();
 }
 
@@ -216,37 +184,6 @@ void Player::Move() {
 	// 減速処理	
 	velocity.x *= deceleration;
 	velocity.z *= deceleration;
-}
-
-///=============================================================================
-///						攻撃処理
-void Player::Attack() {
-	//時間で判定を別の場所に移動
-	weponHitTime = weponHitTimeReset;
-
-	// 攻撃の方向を決定
-	Vector3 attackDirection = { 0.0f, 0.0f, 0.0f };
-
-	// プレイヤーの加速方向に更にダッシュ
-	if(acceleration.x > 0.0f) {
-		attackDirection.x = 1.0f;
-	} else if(acceleration.x < 0.0f) {
-		attackDirection.x = -1.0f;
-	} else if(acceleration.z > 0.0f) {
-		attackDirection.z = 1.0f;
-	} else if(acceleration.z < 0.0f) {
-		attackDirection.z = -1.0f;
-	}
-
-	//========================================
-	// スティックの傾きの方向に回避
-	acceleration.x = Input::GetInstance()->GetLeftStickX() * 0.8f;
-	acceleration.z = Input::GetInstance()->GetLeftStickY() * 0.8f;
-
-
-	// 武器の位置をプレイヤーの少し前に設定
-	Vector3 weaponPosition = transform.translate + attackDirection * 0.5f; // 0.5f はプレイヤーの少し前の距離
-	wepon_->SetPosition(weaponPosition);
 }
 
 ///=============================================================================

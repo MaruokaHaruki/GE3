@@ -41,6 +41,5 @@ private:
 	Object3d *object3d_ = nullptr;
 	// 場所
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
 };
 

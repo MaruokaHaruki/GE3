@@ -134,7 +134,6 @@ void GamePlayScene::Update() {
 	//追加
 	collisionManager_->AddCollider(enemy_.get());
 	collisionManager_->AddCollider(player_.get());
-	collisionManager_->AddCollider(player_->GetWepon());
 	//チェック
 	collisionManager_->CheckAllCollisions();
 	//更新
@@ -174,7 +173,6 @@ void GamePlayScene::Object3DDraw() {
 	//========================================
 	// 当たり判定
 	collisionManager_->Draw();
-
 }
 
 ///=============================================================================

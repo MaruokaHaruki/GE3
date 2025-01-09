@@ -8,7 +8,6 @@
  *********************************************************************/
 #include "Enemy.h"
 #include "Player.h"
-#include "PlayerWepon.h"
 #include "MathFunc4x4.h"
 #include "AffineTransformations.h"
 #include "Vector3.h"
@@ -67,18 +66,9 @@ void Enemy::ImGuiDraw() {
 ///						
 void Enemy::OnCollisionEnter(BaseObject *other) {
 	//プレイヤーの攻撃判定に当たったら
-	//Bossとの衝突判定
-	if(dynamic_cast<PlayerWepon *>( other ) != nullptr) {
-		//後ろに吹っ飛ぶ
-		transform.translate.x += 0.2f;
-
-		// プレイヤーの攻撃判定に当たったら
-		isAlive = false;
-	}
-
 	if(dynamic_cast<Player *>( other ) != nullptr) {
 		//後ろに吹っ飛ぶ
-		//transform.translate.x += 0.1f;
+		transform.translate.x += 0.1f;
 	}
 }
 

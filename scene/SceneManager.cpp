@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "ImguiSetup.h"
 // シーンの種類
 #include "DebugScene.h"
 #include "TitleScene.h"
@@ -99,7 +100,25 @@ void SceneManager::ParticleDraw() {
 ///=============================================================================
 ///						ImGui描画
 void SceneManager::ImGuiDraw() {
+	//========================================
+
 	if(nowScene_) {
 		nowScene_->ImGuiDraw();
 	}
+	//========================================
+	// シーンを切り替えるボタン
+	ImGui::Begin("SceneChange");
+	if(ImGui::Button("DebugScene")) {
+		nowScene_->SetSceneNo(DEBUG);
+	}
+	if(ImGui::Button("TitleScene")) {
+		nowScene_->SetSceneNo(TITLE);
+	}
+	if(ImGui::Button("GamePlayScene")) {
+		nowScene_->SetSceneNo(GAMEPLAY);
+	}
+	if(ImGui::Button("ClearScene")) {
+		nowScene_->SetSceneNo(CLEAR);
+	}
+	ImGui::End();
 }

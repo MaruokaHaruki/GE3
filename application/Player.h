@@ -9,7 +9,6 @@
 #pragma once
 #include "BaseObject.h"
 #include "Object3d.h"
-#include "PlayerWepon.h"
 
 ///=============================================================================
 ///						プレイヤークラス
@@ -49,11 +48,6 @@ private:
 	void Move();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  Attack
-	 */
-	void Attack();
-
-	/**----------------------------------------------------------------------------
 	 * \brief  Dodge
 	 */
 	void Dodge();
@@ -63,17 +57,14 @@ private:
 	 */
 	void AnimationRun();
 
-	// 追跡カメラ
+	/**----------------------------------------------------------------------------
+	 * \brief  ChaseCamera 追跡カメラ
+	 */
 	void ChaseCamera();
 
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
-
-	//========================================
-	// 武器の取得
-	PlayerWepon *GetWepon() { return wepon_.get(); }
-
 	/**----------------------------------------------------------------------------
 	 * \brief  GetPosition 場所の取得
 	 * \return Vector3
@@ -120,12 +111,5 @@ private:
 	bool isHitEnter = false;
 	bool isHitStay = false;
 	bool isHitExit = false;
-
-	//========================================
-	// 武器
-	std::unique_ptr<PlayerWepon> wepon_;
-	// 武器の判定時間
-	int weponHitTime = 0;
-	int weponHitTimeReset = 8;
 };
 
