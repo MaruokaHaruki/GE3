@@ -7,6 +7,7 @@
  * \note   
  *********************************************************************/
 #include "ClearScene.h"
+#include "Input.h"
 
 ///=============================================================================
 ///						初期化
@@ -16,7 +17,6 @@ void ClearScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSet
 	spriteSetup;
 	object3dSetup;
 	particleSetup;
-
 }
 
 ///=============================================================================
@@ -27,6 +27,15 @@ void ClearScene::Finalize() {
 ///=============================================================================
 ///						更新
 void ClearScene::Update() {
+	//========================================
+	// シーン遷移
+	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
+		BaseScene::sceneNo = TITLE;
+	}
+	//コントローラ
+	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
+		BaseScene::sceneNo = TITLE;
+	}
 }
 
 ///=============================================================================
@@ -47,8 +56,10 @@ void ClearScene::ParticleDraw() {
 ///=============================================================================
 ///						ImGui描画
 void ClearScene::ImGuiDraw() {
+#ifdef DEBUG
 	//ClearSceneのImGui描画
 	ImGui::Begin("ClearScene");
 	ImGui::Text("Hello, ClearScene!");
 	ImGui::End();
+#endif // DEBUG
 }

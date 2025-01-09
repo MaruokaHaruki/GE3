@@ -66,7 +66,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;$(ProjectDir)application;$(ProjectDir)application/collision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,7 +90,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;$(ProjectDir)application;$(ProjectDir)application/collision;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -105,6 +105,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="application\collision\Collider.cpp" />
+    <ClCompile Include="application\collision\CollisionManager.cpp" />
+    <ClCompile Include="application\collision\BaseObject.cpp" />
+    <ClCompile Include="application\Player.cpp" />
+    <ClCompile Include="application\Ground.cpp" />
+    <ClCompile Include="application\Enemy.cpp" />
     <ClCompile Include="scene\ClearScene.cpp" />
     <ClCompile Include="scene\DebugScene.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
@@ -137,6 +143,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="application\collision\Collider.h" />
+    <ClInclude Include="application\collision\CollisionManager.h" />
+    <ClInclude Include="application\collision\BaseObject.h" />
+    <ClInclude Include="application\Player.h" />
+    <ClInclude Include="application\Ground.h" />
+    <ClInclude Include="application\Enemy.h" />
     <ClInclude Include="scene\ClearScene.h" />
     <ClInclude Include="scene\DebugScene.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />

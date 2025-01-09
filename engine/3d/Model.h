@@ -42,6 +42,9 @@ public:
 	/// @brief インスタンス描画
 	void InstancingDraw(uint32_t instanceCount);
 
+	/// \brief テクスチャの変更
+	void ChangeTexture(const std::string& textureFilePath);
+
 	///--------------------------------------------------------------
 	///							静的メンバ関数
 private:

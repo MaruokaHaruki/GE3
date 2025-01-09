@@ -53,6 +53,13 @@ public:
 	* \return
 	*/
 	int GetSceneNo() { return sceneNo; }
+	
+	/**----------------------------------------------------------------------------
+	 * \brief  SetSceneNo 
+	 * \param  sceneNo
+	 * \return 
+	 */
+	int SetSceneNo(int nextNo) { return sceneNo = nextNo; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数

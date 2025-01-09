@@ -52,7 +52,7 @@ void MRFramework::Initialize() {
 	///						 ウィンドウ生成
 	win_ = std::make_unique<WinApp>();
 	//ウィンドウの生成
-	win_->CreateGameWindow(L"GE3");
+	win_->CreateGameWindow(L"Tuisou_Game");
 
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
@@ -74,10 +74,8 @@ void MRFramework::Initialize() {
 
 	///--------------------------------------------------------------
 	///						 入力クラス
-	//ユニークポインタ
-	input_ = std::make_unique<Input>();
 	//入力の初期化
-	input_->Initialize(win_->GetWindowClass().hInstance, win_->GetWindowHandle());
+	Input::GetInstance()->Initialize(win_->GetWindowClass().hInstance, win_->GetWindowHandle());
 
 	///--------------------------------------------------------------
 	///						 スプライトクラス
@@ -121,7 +119,7 @@ void MRFramework::Initialize() {
 	CameraManager::GetInstance()->SetCurrentCamera("DefaultCamera");///
 	// Object3Dのカメラ設定
 	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());///
-	//カメラの設定
+	// カメラの設定
 	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
 	
 	///--------------------------------------------------------------
@@ -136,7 +134,7 @@ void MRFramework::Initialize() {
 void MRFramework::Update() {
 	//========================================
 	// インプットの更新
-	input_->Update();
+	Input::GetInstance()->Update();
 	//========================================
 	// シーンマネージャの更新
 	sceneManager_->Update();
@@ -190,8 +188,12 @@ void MRFramework::FrameworkPostDraw() {
 void MRFramework::ImGuiPreDraw() {
 	// imguiの初期化
 	imguiSetup_->Begin();
+#ifdef _DEBUG
 	// imguiの描画
 	sceneManager_->ImGuiDraw();
+	// InPutのImGui描画
+	Input::GetInstance()->ImGuiDraw();
+#endif // DEBUG
 }
 
 ///=============================================================================

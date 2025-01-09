@@ -85,10 +85,9 @@ void ImguiSetup::Begin() {
 	ImGui_ImplDX12_NewFrame();	// ImGuiのDirectX12サポート開始
 	ImGui_ImplWin32_NewFrame(); // ImGuiのWin32サポート開始
 	ImGui::NewFrame();			// ImGuiのフレーム開始
-
-	//========================================
-	// 
+#ifdef _DEBUG
 	ShowPerformanceMonitor();
+#endif // DEBUG
 }
 
 ///=============================================================================
