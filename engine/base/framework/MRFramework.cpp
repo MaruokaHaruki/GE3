@@ -52,7 +52,7 @@ void MRFramework::Initialize() {
 	///						 ウィンドウ生成
 	win_ = std::make_unique<WinApp>();
 	//ウィンドウの生成
-	win_->CreateGameWindow(L"Tuisou_Game");
+	win_->CreateGameWindow(L"Ver1.0_SpaceDodgeBall");
 
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
