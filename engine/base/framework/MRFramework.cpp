@@ -52,7 +52,7 @@ void MRFramework::Initialize() {
 	///						 ウィンドウ生成
 	win_ = std::make_unique<WinApp>();
 	//ウィンドウの生成
-	win_->CreateGameWindow(L"Tuisou_Game");
+	win_->CreateGameWindow(L"Ver1.0_SpaceDodgeBall");
 
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
@@ -115,10 +115,10 @@ void MRFramework::Initialize() {
 	/// デフォルトカメラの初期化
 	//========================================
 	// カメラ
-	CameraManager::GetInstance()->AddCamera("DefaultCamera");///
-	CameraManager::GetInstance()->SetCurrentCamera("DefaultCamera");///
+	CameraManager::GetInstance()->Initialize();
+	// TODO: カメラの改善 現在、カメラの設定はここで行っているが、自由に変更がしにくいという問題が発生している。
 	// Object3Dのカメラ設定
-	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());///
+	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
 	// カメラの設定
 	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
 	
@@ -132,9 +132,26 @@ void MRFramework::Initialize() {
 ///=============================================================================
 ///						更新
 void MRFramework::Update() {
+	// デバックカメラの呼び出し
+	if(Input::GetInstance()->PushKey(DIK_1)) {
+		CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
+	}
+	if(Input::GetInstance()->PushKey(DIK_2)) {
+		CameraManager::GetInstance()->SetCurrentCamera("DefaultCamera");
+	}
+
+	//========================================
+	// カメラの更新
+	CameraManager::GetInstance()->UpdateAll();
+	//========================================
+	// Object3Dのカメラ設定の更新
+	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
+	// particleのカメラ設定の更新
+	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
 	//========================================
 	// インプットの更新
 	Input::GetInstance()->Update();
+	
 	//========================================
 	// シーンマネージャの更新
 	sceneManager_->Update();
@@ -193,6 +210,8 @@ void MRFramework::ImGuiPreDraw() {
 	sceneManager_->ImGuiDraw();
 	// InPutのImGui描画
 	Input::GetInstance()->ImGuiDraw();
+	// CameraのImGui描画
+	CameraManager::GetInstance()->DrawImGui();
 #endif // DEBUG
 }
 

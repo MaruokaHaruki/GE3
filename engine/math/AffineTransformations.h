@@ -96,6 +96,20 @@ inline Matrix4x4 MakeRotateZMatrix(float radian) {
 	return result;
 }
 
+/**----------------------------------------------------------------------------
+ * \brief  MakeRotateMatrix 回転行列を作成する関数
+ * \param  rotation
+ * \return 
+ */
+inline Matrix4x4 MakeRotateMatrix(const Vector3& rotation) {
+	Matrix4x4 rotX = MakeRotateXMatrix(rotation.x);
+	Matrix4x4 rotY = MakeRotateYMatrix(rotation.y);
+	Matrix4x4 rotZ = MakeRotateZMatrix(rotation.z);
+
+	// 回転行列を合成（順序は必要に応じて変更）
+	return Multiply4x4(rotZ, Multiply4x4(rotX, rotY));
+}
+
 /// <summary>
 /// 座標変換を行う関数
 /// </summary>

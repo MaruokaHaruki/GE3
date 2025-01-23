@@ -134,8 +134,6 @@ void GamePlayScene::Update() {
 	//追加
 	collisionManager_->AddCollider(enemy_.get());
 	collisionManager_->AddCollider(player_.get());
-	//チェック
-	collisionManager_->CheckAllCollisions();
 	//更新
 	collisionManager_->Update();
 

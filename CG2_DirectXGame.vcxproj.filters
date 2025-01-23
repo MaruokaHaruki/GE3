@@ -177,22 +177,22 @@
     <ClCompile Include="engine\camera\CameraManager.cpp">
       <Filter>ソース ファイル\engine\camera</Filter>
     </ClCompile>
-    <ClCompile Include="scene\GamePlayScene.cpp">
+    <ClCompile Include="scene\publicScene\GamePlayScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="scene\BaseScene.cpp">
+    <ClCompile Include="scene\base\BaseScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="scene\ClearScene.cpp">
+    <ClCompile Include="scene\publicScene\ClearScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="scene\DebugScene.cpp">
+    <ClCompile Include="scene\privateScene\DebugScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="scene\TitleScene.cpp">
+    <ClCompile Include="scene\publicScene\TitleScene.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
-    <ClCompile Include="scene\SceneManager.cpp">
+    <ClCompile Include="scene\base\SceneManager.cpp">
       <Filter>ソース ファイル\engine\scene</Filter>
     </ClCompile>
     <ClCompile Include="engine\audio\MAudioG.cpp">
@@ -317,7 +317,7 @@
     <ClInclude Include="engine\base\core\WinApp.h">
       <Filter>ヘッダー ファイル\engine\base\core</Filter>
     </ClInclude>
-    <ClInclude Include="scene\BaseScene.h">
+    <ClInclude Include="scene\base\BaseScene.h">
       <Filter>ヘッダー ファイル\application</Filter>
     </ClInclude>
     <ClInclude Include="application\collision\BaseObject.h">
@@ -326,19 +326,19 @@
     <ClInclude Include="engine\camera\CameraManager.h">
       <Filter>ヘッダー ファイル\engine\camera</Filter>
     </ClInclude>
-    <ClInclude Include="scene\ClearScene.h">
+    <ClInclude Include="scene\publicScene\ClearScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="scene\DebugScene.h">
+    <ClInclude Include="scene\privateScene\DebugScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="scene\GamePlayScene.h">
+    <ClInclude Include="scene\publicScene\GamePlayScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="scene\SceneManager.h">
+    <ClInclude Include="scene\base\SceneManager.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
-    <ClInclude Include="scene\TitleScene.h">
+    <ClInclude Include="scene\publicScene\TitleScene.h">
       <Filter>ヘッダー ファイル\engine\scene</Filter>
     </ClInclude>
     <ClInclude Include="application\collision\Collider.h">

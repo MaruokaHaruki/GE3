@@ -14,15 +14,26 @@ Input *Input::GetInstance() {
 	return &instance;
 }
 
-///=====================================================/// 
-///初期化
-///=====================================================///
+///=============================================================================
+///						初期化
 void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 
 	HRESULT result;
 
 	/// ===DirectInputのインスタンス生成=== ///
 	result = DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&directInput, nullptr);
+	assert(SUCCEEDED(result));
+
+	/// ===マウスデバイス生成=== ///
+	result = directInput->CreateDevice(GUID_SysMouse, &mouse_, NULL);
+	assert(SUCCEEDED(result));
+
+	// マウスデバイスのデータフォーマットを設定
+	result = mouse_->SetDataFormat(&c_dfDIMouse2);
+	assert(SUCCEEDED(result));
+
+	// マウスデバイスの協調レベルを設定
+	result = mouse_->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	assert(SUCCEEDED(result));
 
 	/// ===キーボードデバイス生成=== ///
@@ -54,28 +65,70 @@ void Input::Initialize(HINSTANCE hInstance, HWND hwnd) {
 	}
 }
 
-///=====================================================///  
-///更新
-///=====================================================///
+///=============================================================================
+///						更新
 void Input::Update() {
+	//========================================
+	// 前回のマウスの状態を保存
+	mouseStatePrev_ = mouseState_;
+	HRESULT result = mouse_->Acquire();
+	if (SUCCEEDED(result)) {
+		result = mouse_->GetDeviceState(sizeof(DIMOUSESTATE2), &mouseState_);
+		if (FAILED(result)) {
+			ZeroMemory(&mouseState_, sizeof(mouseState_));
+		}
+	}
 
-	/// ===前回のキー入力を保存=== ///
+	//========================================
+	// 前回のキーボードの状態を保存
 	memcpy(keyPre, key, sizeof(key));
-
-	/// ===キーボード情報の取得開始=== ///
+	//キーボード情報の取得開始
 	keyboard->Acquire();
-	/// ===全キーの取得=== ///
+	//キーボードの状態を取得
 	keyboard->GetDeviceState(sizeof(key), key);
 
+	//========================================
+	// コントローラーが接続されている場合
 	if(controllerConnected) {
-		/// ===前回のコントローラー入力を保存=== ///
+		// 前回のコントローラーの状態を保存
 		controllerStatePre = controllerState;
-
-		/// ===コントローラー情報の取得開始=== ///
+		// コントローラー情報の取得開始
 		controller->Acquire();
-		/// ===全ボタンの取得=== ///
+		// コントローラーの状態を取得
 		controller->GetDeviceState(sizeof(DIJOYSTATE2), &controllerState);
 	}
+
+}
+
+///=============================================================================
+///						マウスの移動量を取得
+Vector2 Input::GetMouseMove() const {
+	return Vector2(static_cast<float>( mouseState_.lX ), static_cast<float>( mouseState_.lY ));
+}
+
+///=============================================================================
+///						マウスのホイールの移動量を取得
+float Input::GetMouseWheel() const {
+	return static_cast<float>( mouseState_.lZ );
+}
+
+///=============================================================================
+///						マウスのボタンの押下をチェック
+bool Input::PushMouseButton(int buttonNumber) const {
+	if(mouseState_.rgbButtons[buttonNumber] & 0x80) {
+		return true;
+	}
+	return false;
+}
+
+///=============================================================================
+///						マウスのボタンが押されているかをチェック
+bool Input::TriggerMouseButton(int buttonNumber) const {
+	if(( mouseState_.rgbButtons[buttonNumber] & 0x80 ) &&
+		!( mouseStatePrev_.rgbButtons[buttonNumber] & 0x80 )) {
+		return true;
+	}
+	return false;
 }
 
 ///=====================================================/// 
@@ -285,25 +338,40 @@ bool Input::IsRightStickDown() const {
 ///=============================================================================
 ///						ImGui描画
 void Input::ImGuiDraw() {
+	ImGui::Begin("Input");
 	//========================================
 	// すべてのキーの状態
-	ImGui::Begin("Input");
+	ImGui::Text("Keys:");
 	for(int i = 0; i < 256; ++i) {
 		if(key[i]) {
 			ImGui::Text("Key: %d", i);
 		}
 	}
-	ImGui::End();
-
 	//========================================
 	// すべてのコントローラの状態
 	if(controllerConnected) {
-		ImGui::Begin("Controller");
+		ImGui::Separator();
+		ImGui::Text("Controller:");
 		ImGui::Text("Controller Connected");
 		ImGui::Text("Left Stick X: %f", GetLeftStickX());
 		ImGui::Text("Left Stick Y: %f", GetLeftStickY());
 		ImGui::Text("Right Stick X: %f", GetRightStickX());
 		ImGui::Text("Right Stick Y: %f", GetRightStickY());
-		ImGui::End();
 	}
+	//========================================
+	// マウスの状態
+	ImGui::Separator();
+	ImGui::Text("Mouse:");
+	ImGui::Text("Mouse X: %d", GetMouseMove().x);
+	ImGui::Text("Mouse Y: %d", GetMouseMove().y);
+	ImGui::Text("Mouse Z: %d", mouseState_.lZ);
+	// マウスのボタンの状態
+	for(int i = 0; i < 8; ++i) {
+		if(mouseState_.rgbButtons[i]) {
+			ImGui::Text("Mouse Button: %d", i);
+		}
+	}
+
+	ImGui::End();
+
 }

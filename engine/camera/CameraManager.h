@@ -27,6 +27,9 @@ public:
 	/// \brief 終了処理
     void Finalize();
 
+	/// \brief 初期化
+    void Initialize();
+
 	/// \brief カメラの追加
     void AddCamera(const std::string& name);
 
@@ -42,6 +45,15 @@ public:
 	/// \brief 全てのカメラの更新
     void UpdateAll();
 
+	/// @brief デバックカメラの更新
+    void DebugCameraUpdate();
+
+    /// @brief デバックカメラの呼び出し
+	void ChangeDebugCamera();
+
+	/// @brief ImGuiの描画
+	void DrawImGui();
+
     ///--------------------------------------------------------------
 	///						 メンバ変数
 private:
@@ -53,4 +65,7 @@ private:
     std::map<std::string, std::unique_ptr<Camera>> cameras_;
 	//現在のカメラ名
     std::string currentCameraName_;
+
+	//過去のカメラ名
+	std::string previousCameraName_;
 };

@@ -53,12 +53,5 @@ public:
 
 	/// \brief 描画 
 	void Draw() override;
-
-	///--------------------------------------------------------------
-	///							メンバ変
-private:
-	//========================================
-	// ゲームシーン
-	std::unique_ptr<GamePlayScene> gamePlayScene_;
 };
 
