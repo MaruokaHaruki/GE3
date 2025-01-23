@@ -155,16 +155,16 @@ void CameraManager::DebugCameraUpdate() {
     Vector3 forward = { rotationMatrix.m[0][2], rotationMatrix.m[1][2], rotationMatrix.m[2][2] };
     Vector3 right = { rotationMatrix.m[0][0], rotationMatrix.m[1][0], rotationMatrix.m[2][0] };
 
-    if(input->PushKey(DIK_W)) {
+    if(input->PushKey(DIK_UPARROW)) {
         targetPoint = targetPoint + forward * moveSpeed;
     }
-    if(input->PushKey(DIK_S)) {
+    if(input->PushKey(DIK_DOWNARROW)) {
         targetPoint = targetPoint - forward * moveSpeed;
     }
-    if(input->PushKey(DIK_A)) {
+    if(input->PushKey(DIK_LEFTARROW)) {
         targetPoint = targetPoint - right * moveSpeed;
     }
-    if(input->PushKey(DIK_D)) {
+    if(input->PushKey(DIK_RIGHTARROW)) {
         targetPoint = targetPoint + right * moveSpeed;
     }
 
