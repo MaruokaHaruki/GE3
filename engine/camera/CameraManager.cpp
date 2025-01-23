@@ -33,7 +33,7 @@ void CameraManager::Initialize() {
 	//デフォルトカメラの追加
 	AddCamera("DefaultCamera");
 	//デフォルトカメラの設定
-	SetCurrentCamera("DefaultCamera");
+	SetCurrentCamera("DebugCamera");
 }
 
 ///=============================================================================
@@ -79,112 +79,113 @@ void CameraManager::UpdateAll() {
 			pair.second->Update();
 		}
 	}
-    // デバックカメラの更新
+
+	// デバックカメラの更新
 	DebugCameraUpdate();
 }
 
 ///=============================================================================
 ///						デバックカメラの更新
 void CameraManager::DebugCameraUpdate() {
-    // デバッグカメラを取得
-    Camera *debugCamera = GetCamera("DebugCamera");
+	// デバッグカメラを取得
+	Camera *debugCamera = GetCamera("DebugCamera");
 
-    // カメラが存在しない場合は処理しない
-    if(!debugCamera) {
-        return;
-    }
+	// カメラが存在しない場合は処理しない
+	if(!debugCamera) {
+		return;
+	}
 
-    // 入力クラスのインスタンスを取得
-    Input *input = Input::GetInstance();
+	// 入力クラスのインスタンスを取得
+	Input *input = Input::GetInstance();
 
-    // マウスの移動量を取得
-    float mouseDx, mouseDy;
-    mouseDx = input->GetMouseMove().x;
-    mouseDy = input->GetMouseMove().y;
+	// マウスの移動量を取得
+	float mouseDx, mouseDy;
+	mouseDx = input->GetMouseMove().x;
+	mouseDy = input->GetMouseMove().y;
 
-    // マウスのホイール量を取得（ズームに使用）
-    float mouseWheel = input->GetMouseWheel();
+	// マウスのホイール量を取得（ズームに使用）
+	float mouseWheel = input->GetMouseWheel();
 
-    // マウスのボタン状態を取得
-    bool isLeftButtonPressed = input->PushMouseButton(0);
-    bool isMiddleButtonPressed = input->PushMouseButton(2);
+	// マウスのボタン状態を取得
+	bool isLeftButtonPressed = input->PushMouseButton(0);
+	bool isMiddleButtonPressed = input->PushMouseButton(2);
    // bool isRightButtonPressed = input->PushMouseButton(1);
 
-    // カメラのトランスフォームを取得
-    Transform cameraTransform = debugCamera->GetTransform();
+	// カメラのトランスフォームを取得
+	Transform cameraTransform = debugCamera->GetTransform();
 
-    // 中心点を基準にした回転
-    static Vector3 targetPoint = {0.0f, 0.0f, 0.0f}; // 回転の中心点
-    static float distanceToTarget = 5.0f; // 中心点とカメラの距離
+	// 中心点を基準にした回転
+	static Vector3 targetPoint = { 0.0f, 0.0f, 0.0f }; // 回転の中心点
+	static float distanceToTarget = 5.0f; // 中心点とカメラの距離
 
-    if(isLeftButtonPressed) {
-        // 回転速度の調整
-        const float rotateSpeed = 0.005f;
+	if(isLeftButtonPressed) {
+		// 回転速度の調整
+		const float rotateSpeed = 0.005f;
 
-        // マウス移動量に応じてカメラの回転を更新
-        cameraTransform.rotate.y -= mouseDx * rotateSpeed;
-        cameraTransform.rotate.x -= mouseDy * rotateSpeed;
+		// マウス移動量に応じてカメラの回転を更新
+		cameraTransform.rotate.y -= mouseDx * rotateSpeed;
+		cameraTransform.rotate.x -= mouseDy * rotateSpeed;
 
-        // 回転行列を作成
-        Matrix4x4 rotationMatrix = MakeRotateMatrix(cameraTransform.rotate);
+		// 回転行列を作成
+		Matrix4x4 rotationMatrix = MakeRotateMatrix(cameraTransform.rotate);
 
-        // カメラの位置を更新
-        cameraTransform.translate = targetPoint - Conversion({ 0.0f, 0.0f, 1.0f }, rotationMatrix) * distanceToTarget;
-    }
+		// カメラの位置を更新
+		cameraTransform.translate = targetPoint - Conversion({ 0.0f, 0.0f, 1.0f }, rotationMatrix) * distanceToTarget;
+	}
 
-    // パン（カメラの平行移動）
-    if(isMiddleButtonPressed) {
-        // パン速度の調整
-        const float panSpeed = 0.01f;
+	// パン（カメラの平行移動）
+	if(isMiddleButtonPressed) {
+		// パン速度の調整
+		const float panSpeed = 0.01f;
 
-        // カメラの向きから右方向と上方向のベクトルを計算
-        Matrix4x4 rotationMatrix = MakeRotateMatrix(cameraTransform.rotate);
-        Vector3 right = { rotationMatrix.m[0][0], rotationMatrix.m[1][0], rotationMatrix.m[2][0] };
-        Vector3 up = { rotationMatrix.m[0][1], rotationMatrix.m[1][1], rotationMatrix.m[2][1] };
+		// カメラの向きから右方向と上方向のベクトルを計算
+		Matrix4x4 rotationMatrix = MakeRotateMatrix(cameraTransform.rotate);
+		Vector3 right = { rotationMatrix.m[0][0], rotationMatrix.m[1][0], rotationMatrix.m[2][0] };
+		Vector3 up = { rotationMatrix.m[0][1], rotationMatrix.m[1][1], rotationMatrix.m[2][1] };
 
-        // マウス移動量に応じてカメラの位置を更新
-        cameraTransform.translate = cameraTransform.translate - ( right * ( mouseDx * panSpeed ) );
-        cameraTransform.translate = cameraTransform.translate + ( up * ( mouseDy * panSpeed ) );
-        targetPoint = targetPoint - ( right * ( mouseDx * panSpeed ) );
-        targetPoint = targetPoint + ( up * ( mouseDy * panSpeed ) );
-    }
+		// マウス移動量に応じてカメラの位置を更新
+		cameraTransform.translate = cameraTransform.translate - ( right * ( mouseDx * panSpeed ) );
+		cameraTransform.translate = cameraTransform.translate + ( up * ( mouseDy * panSpeed ) );
+		targetPoint = targetPoint - ( right * ( mouseDx * panSpeed ) );
+		targetPoint = targetPoint + ( up * ( mouseDy * panSpeed ) );
+	}
 
-    // WASDキー（中心点の平行移動）
-    const float moveSpeed = 0.1f;
-    Matrix4x4 rotationMatrix = MakeRotateMatrix(cameraTransform.rotate);
-    Vector3 forward = { rotationMatrix.m[0][2], rotationMatrix.m[1][2], rotationMatrix.m[2][2] };
-    Vector3 right = { rotationMatrix.m[0][0], rotationMatrix.m[1][0], rotationMatrix.m[2][0] };
+	// WASDキー（中心点の平行移動）
+	const float moveSpeed = 0.1f;
+	Matrix4x4 rotationMatrix = MakeRotateMatrix(cameraTransform.rotate);
+	Vector3 forward = { rotationMatrix.m[0][2], rotationMatrix.m[1][2], rotationMatrix.m[2][2] };
+	Vector3 right = { rotationMatrix.m[0][0], rotationMatrix.m[1][0], rotationMatrix.m[2][0] };
 
-    if(input->PushKey(DIK_UPARROW)) {
-        targetPoint = targetPoint + forward * moveSpeed;
-    }
-    if(input->PushKey(DIK_DOWNARROW)) {
-        targetPoint = targetPoint - forward * moveSpeed;
-    }
-    if(input->PushKey(DIK_LEFTARROW)) {
-        targetPoint = targetPoint - right * moveSpeed;
-    }
-    if(input->PushKey(DIK_RIGHTARROW)) {
-        targetPoint = targetPoint + right * moveSpeed;
-    }
+	if(input->PushKey(DIK_UPARROW)) {
+		targetPoint = targetPoint + forward * moveSpeed;
+	}
+	if(input->PushKey(DIK_DOWNARROW)) {
+		targetPoint = targetPoint - forward * moveSpeed;
+	}
+	if(input->PushKey(DIK_LEFTARROW)) {
+		targetPoint = targetPoint - right * moveSpeed;
+	}
+	if(input->PushKey(DIK_RIGHTARROW)) {
+		targetPoint = targetPoint + right * moveSpeed;
+	}
 
-    // ズーム（中心点とカメラの距離の変更）
-    if(mouseWheel != 0.0f) {
-        // ズーム速度の調整
-        const float zoomSpeed = 0.01f;
+	// ズーム（中心点とカメラの距離の変更）
+	if(mouseWheel != 0.0f) {
+		// ズーム速度の調整
+		const float zoomSpeed = 0.01f;
 
-        // ホイールの回転量に応じて距離を更新
-        distanceToTarget -= mouseWheel * zoomSpeed;
-        if (distanceToTarget < 0.1f) {
-            distanceToTarget = 0.1f; // 距離が負になるのを防ぐ
-        }
+		// ホイールの回転量に応じて距離を更新
+		distanceToTarget -= mouseWheel * zoomSpeed;
+		if(distanceToTarget < 0.1f) {
+			distanceToTarget = 0.1f; // 距離が負になるのを防ぐ
+		}
 
-        // カメラの位置を更新
-        cameraTransform.translate = targetPoint - Conversion({ 0.0f, 0.0f, 1.0f }, rotationMatrix) * distanceToTarget;
-    }
+		// カメラの位置を更新
+		cameraTransform.translate = targetPoint - Conversion({ 0.0f, 0.0f, 1.0f }, rotationMatrix) * distanceToTarget;
+	}
 
-    // 更新されたトランスフォームをカメラに反映
-    debugCamera->SetTransform(cameraTransform);
+	// 更新されたトランスフォームをカメラに反映
+	debugCamera->SetTransform(cameraTransform);
 }
 
 

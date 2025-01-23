@@ -133,10 +133,13 @@ void MRFramework::Initialize() {
 ///						更新
 void MRFramework::Update() {
 	// デバックカメラの呼び出し
-	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
+	if(Input::GetInstance()->PushKey(DIK_1)) {
 		CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
 	}
-	CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
+	if(Input::GetInstance()->PushKey(DIK_2)) {
+		CameraManager::GetInstance()->SetCurrentCamera("DefaultCamera");
+	}
+
 	//========================================
 	// カメラの更新
 	CameraManager::GetInstance()->UpdateAll();
