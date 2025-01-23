@@ -3,10 +3,10 @@
 #include <wrl.h>
 #define DIRECTINPUT_VERSION    0x0800 //DirectInputのバージョン指定
 #include <dinput.h>
+#include "Vector2.h"
 
-///=====================================================/// 
-///入力クラス
-///=====================================================///
+///=============================================================================
+///						入力クラス
 class Input {
 public:
 	/// ===namespace省略=== ///
@@ -29,115 +29,130 @@ public:
 	/// </summary>
 	void Update();
 
-	/// <summary>
-	/// キーの押下をチェック
-	/// </summary>
-	/// <param name="keyNumber">キー番号</param>
-	/// <returns>押されているか</returns>
-	bool PushKey(BYTE keyNumber);
 
-	/// <summary>
-	/// キーのトリガーをチェック
-	/// </summary>
-	/// <param name="keyNumber">"キー番号"(DIK_0等)</param>
-	/// <returns>トリガーか?</returns>
+	///--------------------------------------------------------------
+	///						 マウス系
+	/**----------------------------------------------------------------------------
+	 * \brief  GetMouseMove 
+	 * \return 
+	 */
+	Vector2 GetMouseMove()const;
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetMouseWheel マウスホイールの移動量を取得
+	 * \return ホイール回転量（前回からの差分）
+	 */
+	float GetMouseWheel() const;
+	/**----------------------------------------------------------------------------
+	 * \brief  PushMouseButton マウスのボタンの押下をチェック
+	 * \param  buttonNumber ボタン番号（0:左ボタン、1:右ボタン、2:中ボタン）
+	 * \return
+	 */
+	bool PushMouseButton(int buttonNumber) const;
+	/**----------------------------------------------------------------------------
+	 * \brief  TriggerMouseButton マウスのボタンが押されているかをチェック
+	 * \param  buttonNumber ボタン番号（0:左ボタン、1:右ボタン、2:中ボタン）
+	 * \return
+	 */
+	bool TriggerMouseButton(int buttonNumber) const;
+
+	///--------------------------------------------------------------
+	///						 キーボード系
+	/*
+	 * \brief  PushKey キーの押下をチェック
+	 * \param  keyNumber "キー番号"(DIK_0等)
+	 * \return 押されているか
+	 */
+	bool PushKey(BYTE keyNumber);
+	/**----------------------------------------------------------------------------
+	 * \brief  TriggerKey キーのトリガーをチェック
+	 * \param  keyNumber "キー番号"(DIK_0等)
+	 * \return トリガーか?
+	 */
 	bool TriggerKey(BYTE keyNumber);
 
-	/// <summary>
-	/// コントローラーボタンの押下をチェック
-	/// </summary>
-	/// <param name="buttonNumber">ボタン番号</param>
-	/// <returns>押されているか</returns>
+	///--------------------------------------------------------------
+	///						コントローラ系
+	/**----------------------------------------------------------------------------
+	 * \brief  PushButton コントローラーボタンの押下をチェック
+	 * \param  buttonNumber ボタン番号
+	 * \return 押されているか
+	 */
 	bool PushButton(BYTE buttonNumber);
-
-	/// <summary>
-	/// コントローラーボタンのトリガーをチェック
-	/// </summary>
-	/// <param name="buttonNumber">ボタン番号</param>
-	/// <returns>トリガーか?</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  TriggerButton コントローラーボタンのトリガーをチェック
+	 * \param  buttonNumber ボタン番号
+	 * \return
+	 */
 	bool TriggerButton(BYTE buttonNumber);
-
-	/// <summary>
-	/// 左スティックのX軸の値を取得
-	/// </summary>
-	/// <returns>左スティックのX軸の値</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  GetLeftStickX 左スティックのX軸の値を取得
+	 * \return 左スティックのX軸の値
+	 */
 	float GetLeftStickX() const;
-
-	/// <summary>
-	/// 左スティックのY軸の値を取得
-	/// </summary>
-	/// <returns>左スティックのY軸の値</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  GetLeftStickY 左スティックのY軸の値を取得
+	 * \return 左スティックのY軸の値
+	 */
 	float GetLeftStickY() const;
-
-	/// <summary>
-	/// 右スティックのX軸の値を取得
-	/// </summary>
-	/// <returns>右スティックのX軸の値</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  GetRightStickX 右スティックのX軸の値を取得
+	 * \return 右スティックのX軸の値
+	 */
 	float GetRightStickX() const;
-
-	/// <summary>
-	/// 右スティックのY軸の値を取得
-	/// </summary>
-	/// <returns>右スティックのY軸の値</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  GetRightStickY
+	 * \return
+	*/
 	float GetRightStickY() const;
-
-	/// <summary>
-	/// デッドゾーンの値を設定
-	/// </summary>
-	/// <param name="deadZone">デッドゾーンの値 (0.0 ~ 1.0)</param>
+	/**
+	 * \brief デッドゾーンの設定
+	 */
 	//void SetDeadZone(float deadZone);
-
-	/// <summary>
-	/// 左スティックが左に傾いているかをチェック
-	/// </summary>
-	/// <returns>左に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsLeftStickLeft 左スティックが左に傾いているかをチェック
+	 * \return
+	 */
 	bool IsLeftStickLeft() const;
-
-	/// <summary>
-	/// 左スティックが右に傾いているかをチェック
-	/// </summary>
-	/// <returns>右に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsLeftStickRight 左スティックが右に傾いているかをチェック
+	 * \return
+	 */
 	bool IsLeftStickRight() const;
-
-	/// <summary>
-	/// 左スティックが上に傾いているかをチェック
-	/// </summary>
-	/// <returns>上に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsLeftStickUp 左スティックが上に傾いているかをチェック
+	 * \return
+	 */
 	bool IsLeftStickUp() const;
-
-	/// <summary>
-	/// 左スティックが下に傾いているかをチェック
-	/// </summary>
-	/// <returns>下に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsLeftStickDown 左スティックが下に傾いているかをチェック
+	 * \return
+	 */
 	bool IsLeftStickDown() const;
-
-	/// <summary>
-	/// 右スティックが左に傾いているかをチェック
-	/// </summary>
-	/// <returns>左に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsRightStickLeft 右スティックが左に傾いているかをチェック
+	 * \return
+	 */
 	bool IsRightStickLeft() const;
-
-	/// <summary>
-	/// 右スティックが右に傾いているかをチェック
-	/// </summary>
-	/// <returns>右に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsRightStickRight 右スティックが右に傾いているかをチェック
+	 * \return
+	 */
 	bool IsRightStickRight() const;
-
-	/// <summary>
-	/// 右スティックが上に傾いているかをチェック
-	/// </summary>
-	/// <returns>上に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsRightStickUp 右スティックが上に傾いているかをチェック
+	 * \return
+	 */
 	bool IsRightStickUp() const;
-
-	/// <summary>
-	/// 右スティックが下に傾いているかをチェック
-	/// </summary>
-	/// <returns>下に傾いているか</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  IsRightStickDown 右スティックが下に傾いているかをチェック
+	 * \return
+	 */
 	bool IsRightStickDown() const;
 
-	/// <summary>
-	///	ImGui描画
-	/// </summary>
+	/**----------------------------------------------------------------------------
+	 * \brief  ImGuiDraw ImGuiの描画
+	 */
 	void ImGuiDraw();
 
 	// コントローラーボタンの定数
@@ -173,12 +188,11 @@ private:
 	/// </summary>
 	Input &operator=(const Input &) = delete;
 
-	/// <summary>
-	/// スティックのデッドゾーンを適用
-	/// </summary>
-	/// <param name="value">スティックの値</param>
-	/// <param name="deadZone">デッドゾーンの値</param>
-	/// <returns>デッドゾーンが適用された値</returns>
+	/**----------------------------------------------------------------------------
+	 * \brief  ApplyDeadZone デッドゾーンを適用する関数
+	 * \param  value デッドゾーンを適用する値
+	 * \return
+	 */
 	float ApplyDeadZone(LONG value) const;
 
 	/**----------------------------------------------------------------------------
@@ -188,32 +202,39 @@ private:
 	*/
 	float NormalizeStickValue(float value)const;
 
+	///=============================================================================
+	///						メンバ変数
 private:
-	/// ===キーボードのデバイス=== ///
-	ComPtr<IDirectInputDevice8> keyboard;
-
-	/// ===コントローラーのデバイス=== ///
-	ComPtr<IDirectInputDevice8> controller;
-
-	/// ===DirectInputのインスタンス=== ///
+	//========================================
+	// DirectInputのインスタンス
 	ComPtr<IDirectInput8>directInput = nullptr;
 
-	/// ===全キーの状態=== ///
-	BYTE key[256] = {};
+	//========================================
+	// マウスのデバイス
+	ComPtr<IDirectInputDevice8> mouse_;
+	// マウスの現在の状態
+	DIMOUSESTATE2 mouseState_ = {};
+	// マウスの前回の状態
+	DIMOUSESTATE2 mouseStatePrev_ = {};
 
-	/// ===前回の全キーの状態=== ///
+	//========================================
+	// キーボードのデバイス
+	ComPtr<IDirectInputDevice8> keyboard = nullptr;
+	//全キーの状態
+	BYTE key[256] = {};
+	//前回の全キーの状態
 	BYTE keyPre[256] = {};
 
-	/// ===全ボタンの状態=== ///
+	//========================================
+	// コントローラーのデバイス
+	ComPtr<IDirectInputDevice8> controller;
+	// 全ボタンの状態
 	DIJOYSTATE2 controllerState = {};
-
-	/// ===前回の全ボタンの状態=== ///
+	// 前回の全ボタンの状態
 	DIJOYSTATE2 controllerStatePre = {};
-
-	/// ===コントローラーが接続されているかどうか=== ///
+	// コントローラーが接続されているかどうか
 	bool controllerConnected = false;
-
-	/// ===スティックのデッドゾーン=== ///
+	// スティックのデッドゾーン
 	float deadZone = 0.2f; // デフォルトのデッドゾーンを0.2に設定
 };
 
