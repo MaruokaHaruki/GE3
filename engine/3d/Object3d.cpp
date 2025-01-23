@@ -46,6 +46,8 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 ///=============================================================================
 ///						更新
 void Object3d::Update() {
+	camera_ = object3dSetup_->GetDefaultCamera();
+
 	// TransformからWorld行列を作成
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 worldViewProjectionMatrix;
