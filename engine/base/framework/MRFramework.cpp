@@ -136,6 +136,7 @@ void MRFramework::Update() {
 	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
 		CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
 	}
+	CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
 	//========================================
 	// カメラの更新
 	CameraManager::GetInstance()->UpdateAll();
