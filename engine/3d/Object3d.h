@@ -24,6 +24,10 @@
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
 
+struct CameraForGpu {
+	Vector3 worldPosition;
+};
+
 class Object3dSetup;
 class Camera;
 class Object3d {
@@ -57,6 +61,12 @@ private:
 	 * \note
 	 */
 	void CreateDirectionalLight();
+
+	/**----------------------------------------------------------------------------
+	 * \brief  カメラバッファの作成
+	 * \note
+	 */
+	void CreateCameraBuffer();
 
 	///--------------------------------------------------------------
 	///							入出力関数
@@ -120,15 +130,47 @@ public:
 	 */
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
-	//ライトの設定
+	/**----------------------------------------------------------------------------
+	 * \brief  SetDirectionalLight 並行光源の設定
+	 * \param  color
+	 * \param  direction
+	 * \param  intensity
+	 */
 	void SetDirectionalLight(const Vector4 &color, const Vector3 &direction, float intensity) {
 		directionalLightData_->color = color;
 		directionalLightData_->direction = direction;
 		directionalLightData_->intensity = intensity;
 	}
 
-	//ライト情報の取得
+	/**----------------------------------------------------------------------------
+	 * \brief  GetDirectionalLight 並行光源の取得
+	 * \return 
+	 */
 	const DirectionalLight &GetDirectionalLight() const { return *directionalLightData_; }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  SetMaterialColor マテリアルカラーの設定
+	 * \param  color
+	 */
+	void SetMaterialColor(const Vector4 &color) { model_->SetMaterialColor(color); }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetMaterialColor マテリアルカラーの取得
+	 * \return
+	 */
+	Vector4 GetMaterialColor() const { return model_->GetMaterialColor(); }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  SetShininess 光沢度の設定
+	 * \param  shininess
+	 */
+	void SetShininess(float shininess) { model_->SetShininess(shininess); }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetShininess 光沢度の取得
+	 * \return
+	 */
+	float GetShininess() const { return model_->GetShininess(); }
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -147,6 +189,9 @@ private:
 	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
 	//並行光源
 	Microsoft::WRL::ComPtr <ID3D12Resource> directionalLightBuffer_;
+	//カメラ
+	Microsoft::WRL::ComPtr <ID3D12Resource> cameraBuffer_;
+
 
 	//---------------------------------------
 	// バッファリソース内のデータを指すポインタ
@@ -154,6 +199,8 @@ private:
 	TransformationMatrix* transformationMatrixData_ = nullptr;
 	//並行光源
 	DirectionalLight* directionalLightData_ = nullptr;
+	//カメラ
+	CameraForGpu *cameraData_ = nullptr;
 
 	//--------------------------------------
 	// Transform
