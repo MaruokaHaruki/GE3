@@ -11,4 +11,4 @@
 ///=============================================================================
 ///						シーン初期化
 // NOTE:タイトルシーンで初期化
-int BaseScene::sceneNo = GAMEPLAY;
+int BaseScene::sceneNo = DEBUG;

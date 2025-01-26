@@ -120,6 +120,16 @@ public:
 	 */
 	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
+	//ライトの設定
+	void SetDirectionalLight(const Vector4 &color, const Vector3 &direction, float intensity) {
+		directionalLightData_->color = color;
+		directionalLightData_->direction = direction;
+		directionalLightData_->intensity = intensity;
+	}
+
+	//ライト情報の取得
+	const DirectionalLight &GetDirectionalLight() const { return *directionalLightData_; }
+
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:

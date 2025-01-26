@@ -40,10 +40,5 @@ PixelShaderOutput main(VertexShaderOutput input){
         output.color = gMaterial.color * textureColor;
     }
     
-    // アルファテストを実装
-    if (output.color.a < 0.1f){
-        discard; // ピクセルを描画しない
-    }
-    
     return output;
 }
