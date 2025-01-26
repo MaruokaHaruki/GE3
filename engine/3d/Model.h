@@ -30,7 +30,7 @@ class Model {
 public:
 
 	/// \brief 初期化
-	void Initialize(ModelSetup* modelSetup, const std::string& directorypath, const std::string& filename);
+	void Initialize(ModelSetup *modelSetup, const std::string &directorypath, const std::string &filename);
 
 	/// \brief 更新
 	void Update();
@@ -43,7 +43,7 @@ public:
 	void InstancingDraw(uint32_t instanceCount);
 
 	/// \brief テクスチャの変更
-	void ChangeTexture(const std::string& textureFilePath);
+	void ChangeTexture(const std::string &textureFilePath);
 
 	///--------------------------------------------------------------
 	///							静的メンバ関数
@@ -55,7 +55,7 @@ private:
 	 * \return materialData マテリアルデータ
 	 * \note
 	*/
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	MaterialData LoadMaterialTemplateFile(const std::string &directoryPath, const std::string &filename);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  LoadObjFile .objファイル読み込み
@@ -63,7 +63,7 @@ private:
 	 * \param  filename ファイルネーム
 	 * \note   そのままmodelDataに格納
 	 */
-	void LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	void LoadObjFile(const std::string &directoryPath, const std::string &filename);
 
 	/**----------------------------------------------------------------------------
 	 * \brief  頂点バッファの作成
@@ -81,13 +81,36 @@ private:
 	///							入出力関数
 public:
 
+	/**----------------------------------------------------------------------------
+	 * \brief  SetMaterialColor マテリアルカラーの設定
+	 * \param  color カラー
+	 */
+	void SetMaterialColor(const Vector4 &color) { materialData_->color = color; }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetMaterialColor マテリアルカラーの取得
+	 * \return 
+	 */
+	Vector4 GetMaterialColor() const { return materialData_->color; }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  SetShininess 光沢度の設定
+	 * \param  shininess
+	 */
+	void SetShininess(float shininess) { materialData_->shininess = shininess; }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetShininess 光沢度の取得
+	 * \return 
+	 */
+	float GetShininess() const { return materialData_->shininess; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
 	//---------------------------------------
 	// ModelSetupポインタ
-	ModelSetup* modelSetup_ = nullptr;
+	ModelSetup *modelSetup_ = nullptr;
 
 	//---------------------------------------
 	// モデルデータ
@@ -102,9 +125,9 @@ private:
 	///---------------------------------------
 	/// バッファリソース内のデータを指すポインタ
 	//頂点
-	VertexData* vertexData_ = nullptr;
+	VertexData *vertexData_ = nullptr;
 	//マテリアル
-	Material* materialData_ = nullptr;
+	Material *materialData_ = nullptr;
 
 	///---------------------------------------
 	/// バッファリソースの使い道を指すポインタ

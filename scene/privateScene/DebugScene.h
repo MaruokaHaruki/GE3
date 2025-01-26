@@ -75,6 +75,6 @@ private:
 	//ライト
 	Vector4 lightColor = { 1.0f,1.0f,1.0f,1.0f };
 	Vector3 lightDirection = { 0.0f,0.0f,0.0f };
-	float lightIntensity = 1.0f;
+	float lightIntensity = 16.0f;
 };
 
