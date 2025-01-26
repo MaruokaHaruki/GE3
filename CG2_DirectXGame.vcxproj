@@ -111,6 +111,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Player.cpp" />
     <ClCompile Include="application\Ground.cpp" />
     <ClCompile Include="application\Enemy.cpp" />
+    <ClCompile Include="engine\3d\Line.cpp" />
+    <ClCompile Include="engine\3d\LineSetup.cpp" />
     <ClCompile Include="scene\publicScene\ClearScene.cpp" />
     <ClCompile Include="scene\privateScene\DebugScene.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
@@ -149,6 +151,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="application\Player.h" />
     <ClInclude Include="application\Ground.h" />
     <ClInclude Include="application\Enemy.h" />
+    <ClInclude Include="engine\3d\Line.h" />
+    <ClInclude Include="engine\3d\LineSetup.h" />
     <ClInclude Include="scene\publicScene\ClearScene.h" />
     <ClInclude Include="scene\privateScene\DebugScene.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
