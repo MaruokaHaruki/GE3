@@ -111,31 +111,31 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Object3d.cpp">
+    <ClCompile Include="engine\3d\object3d\Object3d.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ModelSetup.cpp">
+    <ClCompile Include="engine\3d\model\ModelSetup.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Object3dSetup.cpp">
+    <ClCompile Include="engine\3d\object3d\Object3dSetup.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\ModelManager.cpp">
+    <ClCompile Include="engine\3d\model\ModelManager.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\3d\Model.cpp">
+    <ClCompile Include="engine\3d\model\Model.cpp">
       <Filter>ソース ファイル\engine\3d</Filter>
     </ClCompile>
     <ClCompile Include="engine\input\Input.cpp">
       <Filter>ソース ファイル\engine\io</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\TextureManager.cpp">
+    <ClCompile Include="engine\2d\texture\TextureManager.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\Sprite.cpp">
+    <ClCompile Include="engine\2d\sprite\Sprite.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\SpriteSetup.cpp">
+    <ClCompile Include="engine\2d\sprite\SpriteSetup.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="engine\utils\Logger.cpp">
@@ -144,13 +144,13 @@
     <ClCompile Include="engine\utils\WstringUtility.cpp">
       <Filter>ソース ファイル\engine\utils</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\ParticleSetup.cpp">
+    <ClCompile Include="engine\2d\particle\ParticleSetup.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\Particle.cpp">
+    <ClCompile Include="engine\2d\particle\Particle.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
-    <ClCompile Include="engine\2d\ParticleEmitter.cpp">
+    <ClCompile Include="engine\2d\particle\ParticleEmitter.cpp">
       <Filter>ソース ファイル\engine\2d</Filter>
     </ClCompile>
     <ClCompile Include="engine\camera\Camera.cpp">
@@ -233,25 +233,25 @@
     <ClInclude Include="engine\math\structure\Vector3.h">
       <Filter>ヘッダー ファイル\engine\math\structure</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\TextureManager.h">
+    <ClInclude Include="engine\2d\texture\TextureManager.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\Sprite.h">
+    <ClInclude Include="engine\2d\sprite\Sprite.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\SpriteSetup.h">
+    <ClInclude Include="engine\2d\sprite\SpriteSetup.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Object3dSetup.h">
+    <ClInclude Include="engine\3d\object3d\Object3dSetup.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Object3d.h">
+    <ClInclude Include="engine\3d\object3d\Object3d.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\ModelSetup.h">
+    <ClInclude Include="engine\3d\model\ModelSetup.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\ModelManager.h">
+    <ClInclude Include="engine\3d\model\ModelManager.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\utils\Logger.h">
@@ -263,7 +263,7 @@
     <ClInclude Include="engine\utils\WstringUtility.h">
       <Filter>ヘッダー ファイル\engine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="engine\3d\Model.h">
+    <ClInclude Include="engine\3d\model\Model.h">
       <Filter>ヘッダー ファイル\engine\3d</Filter>
     </ClInclude>
     <ClInclude Include="engine\math\MathFunc4x4.h">
@@ -299,13 +299,13 @@
     <ClInclude Include="engine\math\structure\drawData\DirectionalLight.h">
       <Filter>ヘッダー ファイル\engine\math\structure\drawData</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\ParticleSetup.h">
+    <ClInclude Include="engine\2d\particle\ParticleSetup.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\Particle.h">
+    <ClInclude Include="engine\2d\particle\Particle.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
-    <ClInclude Include="engine\2d\ParticleEmitter.h">
+    <ClInclude Include="engine\2d\particle\ParticleEmitter.h">
       <Filter>ヘッダー ファイル\engine\2d</Filter>
     </ClInclude>
     <ClInclude Include="engine\camera\Camera.h">

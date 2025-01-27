@@ -66,7 +66,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;$(ProjectDir)application;$(ProjectDir)application/collision;$(ProjectDir)scene/base;$(ProjectDir)scene/privateScene;$(ProjectDir)scene/publicScene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/2d/particle;$(ProjectDir)engine/2d/sprite;$(ProjectDir)engine/2d/texture;$(ProjectDir)engine/3d;$(ProjectDir)engine/3d/model;$(ProjectDir)engine/3d/object3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)application;$(ProjectDir)application/collision;$(ProjectDir)scene;$(ProjectDir)scene/base;$(ProjectDir)scene/privateScene;$(ProjectDir)scene/publicScene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,7 +90,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)scene;$(ProjectDir)application;$(ProjectDir)application/collision;$(ProjectDir)scene/base;$(ProjectDir)scene/privateScene;$(ProjectDir)scene/publicScene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)engine/base;$(ProjectDir)engine/camera;$(ProjectDir)engine/2d;$(ProjectDir)engine/2d/particle;$(ProjectDir)engine/2d/sprite;$(ProjectDir)engine/2d/texture;$(ProjectDir)engine/3d;$(ProjectDir)engine/3d/model;$(ProjectDir)engine/3d/object3d;$(ProjectDir)engine/input;$(ProjectDir)engine/utils;$(ProjectDir)engine/math;$(ProjectDir)engine/math/structure;$(ProjectDir)engine/math/structure/drawData;$(ProjectDir)externals/DirectXTex;$(ProjectDir)externals/imgui;$(ProjectDir)engine/audio;$(ProjectDir)engine/base/framework;$(ProjectDir)engine/base/core;$(ProjectDir)engine/base/imGui;$(ProjectDir)application;$(ProjectDir)application/collision;$(ProjectDir)scene;$(ProjectDir)scene/base;$(ProjectDir)scene/privateScene;$(ProjectDir)scene/publicScene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -115,7 +115,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="scene\publicScene\ClearScene.cpp" />
     <ClCompile Include="scene\privateScene\DebugScene.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
-    <ClCompile Include="engine\2d\ParticleEmitter.cpp" />
+    <ClCompile Include="engine\2d\particle\ParticleEmitter.cpp" />
     <ClCompile Include="engine\audio\MAudioG.cpp" />
     <ClCompile Include="engine\base\core\SrvSetup.cpp" />
     <ClCompile Include="engine\camera\Camera.cpp" />
@@ -129,16 +129,16 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="scene\publicScene\GamePlayScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="engine\base\core\WinApp.cpp" />
-    <ClCompile Include="engine\2d\SpriteSetup.cpp" />
-    <ClCompile Include="engine\2d\Sprite.cpp" />
-    <ClCompile Include="engine\2d\TextureManager.cpp" />
-    <ClCompile Include="engine\3d\Object3dSetup.cpp" />
-    <ClCompile Include="engine\3d\Object3d.cpp" />
-    <ClCompile Include="engine\3d\Model.cpp" />
-    <ClCompile Include="engine\3d\ModelSetup.cpp" />
-    <ClCompile Include="engine\3d\ModelManager.cpp" />
-    <ClCompile Include="engine\2d\Particle.cpp" />
-    <ClCompile Include="engine\2d\ParticleSetup.cpp" />
+    <ClCompile Include="engine\2d\sprite\SpriteSetup.cpp" />
+    <ClCompile Include="engine\2d\sprite\Sprite.cpp" />
+    <ClCompile Include="engine\2d\texture\TextureManager.cpp" />
+    <ClCompile Include="engine\3d\object3d\Object3dSetup.cpp" />
+    <ClCompile Include="engine\3d\object3d\Object3d.cpp" />
+    <ClCompile Include="engine\3d\model\Model.cpp" />
+    <ClCompile Include="engine\3d\model\ModelSetup.cpp" />
+    <ClCompile Include="engine\3d\model\ModelManager.cpp" />
+    <ClCompile Include="engine\2d\particle\Particle.cpp" />
+    <ClCompile Include="engine\2d\particle\ParticleSetup.cpp" />
     <ClCompile Include="engine\base\framework\MaruRhythm.cpp" />
     <ClCompile Include="engine\base\framework\MRFramework.cpp" />
     <ClCompile Include="scene\publicScene\TitleScene.cpp" />
@@ -155,7 +155,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="scene\publicScene\ClearScene.h" />
     <ClInclude Include="scene\privateScene\DebugScene.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />
-    <ClInclude Include="engine\2d\ParticleEmitter.h" />
+    <ClInclude Include="engine\2d\particle\ParticleEmitter.h" />
     <ClInclude Include="engine\audio\MAudioG.h" />
     <ClInclude Include="engine\base\core\SrvSetup.h" />
     <ClInclude Include="engine\camera\Camera.h" />
@@ -178,17 +178,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="engine\math\RenderingMatrices.h" />
     <ClInclude Include="engine\math\structure\Matrix3x3.h" />
     <ClInclude Include="engine\base\core\WinApp.h" />
-    <ClInclude Include="engine\2d\SpriteSetup.h" />
-    <ClInclude Include="engine\2d\Sprite.h" />
+    <ClInclude Include="engine\2d\sprite\SpriteSetup.h" />
+    <ClInclude Include="engine\2d\sprite\Sprite.h" />
     <ClInclude Include="engine\math\structure\Vector2.h" />
-    <ClInclude Include="engine\2d\TextureManager.h" />
-    <ClInclude Include="engine\3d\Object3dSetup.h" />
-    <ClInclude Include="engine\3d\Object3d.h" />
-    <ClInclude Include="engine\3d\Model.h" />
-    <ClInclude Include="engine\3d\ModelSetup.h" />
-    <ClInclude Include="engine\3d\ModelManager.h" />
-    <ClInclude Include="engine\2d\Particle.h" />
-    <ClInclude Include="engine\2d\ParticleSetup.h" />
+    <ClInclude Include="engine\2d\texture\TextureManager.h" />
+    <ClInclude Include="engine\3d\object3d\Object3dSetup.h" />
+    <ClInclude Include="engine\3d\object3d\Object3d.h" />
+    <ClInclude Include="engine\3d\model\Model.h" />
+    <ClInclude Include="engine\3d\model\ModelSetup.h" />
+    <ClInclude Include="engine\3d\model\ModelManager.h" />
+    <ClInclude Include="engine\2d\particle\Particle.h" />
+    <ClInclude Include="engine\2d\particle\ParticleSetup.h" />
     <ClInclude Include="engine\base\imGui\ImguiSetup.h" />
     <ClInclude Include="engine\base\framework\MaruRhythm.h" />
     <ClInclude Include="engine\base\framework\MRFramework.h" />
