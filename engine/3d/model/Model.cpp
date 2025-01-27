@@ -239,5 +239,5 @@ void Model::CreateMaterialBuffer() {
 	*materialData_ = material;
 	materialData_->uvTransform = Identity4x4();
 	//光沢度
-	materialData_->shininess = 2.0f;
+	materialData_->shininess = 32.0f;
 }

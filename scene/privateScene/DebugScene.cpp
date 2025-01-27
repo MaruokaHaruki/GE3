@@ -11,6 +11,9 @@
 ///=============================================================================
 ///						初期化
 void DebugScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSetup, ParticleSetup *particleSetup) {
+	spriteSetup;
+	particleSetup;
+
 	///--------------------------------------------------------------
 	///						 音声クラス
 

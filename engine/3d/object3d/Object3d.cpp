@@ -142,7 +142,7 @@ void Object3d::CreateDirectionalLight() {
 	// 書き込み
 	directionalLight.color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLight.direction = { 0.0f,-1.0f,0.0f };
-	directionalLight.intensity = 16.0f;
+	directionalLight.intensity = 32.0f;
 	*directionalLightData_ = directionalLight;
 }
 
