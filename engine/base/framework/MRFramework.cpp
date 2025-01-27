@@ -52,7 +52,7 @@ void MRFramework::Initialize() {
 	///						 ウィンドウ生成
 	win_ = std::make_unique<WinApp>();
 	//ウィンドウの生成
-	win_->CreateGameWindow(L"MREngine_Ver14.0");
+	win_->CreateGameWindow(L"MREngine_Ver15.0");
 
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
