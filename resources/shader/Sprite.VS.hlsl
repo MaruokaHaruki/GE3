@@ -1,9 +1,8 @@
-#include "Object3d.hlsli"
+#include "Sprite.hlsli"
 
 struct TransformationMatrix{
     float4x4 WVP;
     float4x4 World;
-    float4x4 WorldInverseTranspose;
 };
 
 ConstantBuffer<TransformationMatrix> gTransformationMatrix : register(b0);
@@ -19,8 +18,7 @@ VertexShaderOutput main(VertexShaderInput input){
     output.texcoord = input.texcoord;
     output.position = mul(input.position, gTransformationMatrix.WVP);
     //NOTE:法線の変換には拡縮回転情報のみが必要なため取り出す処理を行っている
-    output.normal = normalize(mul(input.normal, (float3x3) gTransformationMatrix.WorldInverseTranspose));
-    output.worldPosition = (float3) mul(input.position, gTransformationMatrix.World).xyz; // 修正
+    output.normal = normalize(mul(input.normal, (float3x3) gTransformationMatrix.World));
     
     return output;
 }

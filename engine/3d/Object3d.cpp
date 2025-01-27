@@ -33,6 +33,8 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 	CreateTransformationMatrixBuffer();
 	//並行光源の作成
 	CreateDirectionalLight();
+	//カメラバッファの作成
+	CreateCameraBuffer();
 
 	//========================================
 	// ワールド行列の初期化
@@ -46,6 +48,13 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 ///=============================================================================
 ///						更新
 void Object3d::Update() {
+	//========================================
+	// カメラの位置を取得
+	camera_ = object3dSetup_->GetDefaultCamera();
+	// カメラの位置を書き込む
+	cameraData_->worldPosition = camera_->GetTransform().translate;
+
+	//========================================
 	// TransformからWorld行列を作成
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 worldViewProjectionMatrix;
@@ -63,8 +72,11 @@ void Object3d::Update() {
 		worldViewProjectionMatrix = worldMatrix;
 	}
 
+	//========================================
+	// トランスフォーメーションマトリックスバッファに書き込む
 	transformationMatrixData_->WVP = worldViewProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
+	transformationMatrixData_->WorldInvTranspose = Inverse4x4(worldMatrix);
 }
 
 ///=============================================================================
@@ -72,21 +84,28 @@ void Object3d::Update() {
 // NOTE:見た目を持たないオブジェクトが存在する
 void Object3d::Draw() {
 	//========================================
-	// バッファが初期化されていない場合はエラーを出す
-	if(!transfomationMatrixBuffer_) {
+	// モデルが存在しない場合は描画しない
+	if (!transfomationMatrixBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
 	}
+
+	//========================================
 	// コマンドリスト取得
 	auto commandList = object3dSetup_->GetDXManager()->GetCommandList();
-	//トランスフォーメーションマトリックスバッファの設定
+	// トランスフォーメーションマトリックスバッファの設定
 	commandList->SetGraphicsRootConstantBufferView(1, transfomationMatrixBuffer_->GetGPUVirtualAddress());
-	//並行光源の設定
+	// 並行光源の設定
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLightBuffer_->GetGPUVirtualAddress());
+	// カメラバッファの設定
+	commandList->SetGraphicsRootConstantBufferView(4, cameraBuffer_->GetGPUVirtualAddress());
+
+	//========================================
 	// 描画コール
-	if(model_) {
+	if (model_) {
 		model_->Draw();
 	}
 }
+
 
 ///=============================================================================
 ///						テクスチャの変更
@@ -98,29 +117,43 @@ void Object3d::ChangeTexture(const std::string &texturePath) {
 ///--------------------------------------------------------------
 ///						 座標変換行列
 void Object3d::CreateTransformationMatrixBuffer() {
-	//wvp用のリソースを作る
-	transfomationMatrixBuffer_ = object3dSetup_->GetDXManager()->CreateBufferResource(sizeof(TransformationMatrix));
-	//書き込み用変数
+	// 定数バッファのサイズを 256 バイトの倍数に設定
+	size_t bufferSize = (sizeof(TransformationMatrix) + 255) & ~255;
+	transfomationMatrixBuffer_ = object3dSetup_->GetDXManager()->CreateBufferResource(bufferSize);
+	// 書き込み用変数
 	TransformationMatrix transformationMatrix = {};
-	//書き込むためのアドレスを取得
-	transfomationMatrixBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &transformationMatrixData_ ));
-	//書き込み
+	// 書き込むためのアドレスを取得
+	transfomationMatrixBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
+	// 書き込み
 	transformationMatrix.WVP = Identity4x4();
-	//単位行列を書き込む
+	// 単位行列を書き込む
 	*transformationMatrixData_ = transformationMatrix;
 }
 
 ///--------------------------------------------------------------
 ///						 並行光源の作成
 void Object3d::CreateDirectionalLight() {
-	directionalLightBuffer_ = object3dSetup_->GetDXManager()->CreateBufferResource(sizeof(DirectionalLight));
-	//並行光源書き込み用データ
+	size_t bufferSize = (sizeof(DirectionalLight) + 255) & ~255;
+	directionalLightBuffer_ = object3dSetup_->GetDXManager()->CreateBufferResource(bufferSize);
+	// 並行光源書き込み用データ
 	DirectionalLight directionalLight{};
-	//書き込むためのアドレス取得
-	directionalLightBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &directionalLightData_ ));
-	//書き込み
+	// 書き込むためのアドレス取得
+	directionalLightBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData_));
+	// 書き込み
 	directionalLight.color = { 1.0f,1.0f,1.0f,1.0f };
 	directionalLight.direction = { 0.0f,-1.0f,0.0f };
-	directionalLight.intensity = 1.0f;
+	directionalLight.intensity = 16.0f;
 	*directionalLightData_ = directionalLight;
+}
+
+///--------------------------------------------------------------
+///						 カメラバッファの作成
+void Object3d::CreateCameraBuffer() {
+	size_t bufferSize = (sizeof(CameraForGpu) + 255) & ~255;
+	cameraBuffer_ = object3dSetup_->GetDXManager()->CreateBufferResource(bufferSize);
+	cameraBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&cameraData_));
+	// カメラの位置を書き込む
+	CameraForGpu cameraForGpu = {};
+	cameraForGpu.worldPosition = { 1.0f, 1.0f, 1.0f };
+	*cameraData_ = cameraForGpu;
 }

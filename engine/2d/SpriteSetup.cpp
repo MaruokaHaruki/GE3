@@ -102,7 +102,7 @@ void SpriteSetup::CreateRootSignature() {
     if (FAILED(hr)) {
         throw std::runtime_error("ENGINE MESSAGE: Object2d Failed to create root signature");
     }
-    Log("ENGINE MESSAGE: Object2d Root signature created successfully :)\n");
+	Log("Object2d Root signature created successfully :), LogLevel::SUCCESS");
 }
 
 ///=============================================================================
@@ -143,17 +143,17 @@ void SpriteSetup::CreateGraphicsPipeline() {
     rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
     /// ===Shaderをcompileする=== ///
-    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3d.VS.hlsl", L"vs_6_0");
+    Microsoft::WRL::ComPtr<IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Sprite.VS.hlsl", L"vs_6_0");
     if (!vertexShaderBlob) {
-        throw std::runtime_error("ENGINE MESSAGE: Sprite Failed to compile vertex shader :(");
+        throw std::runtime_error("Sprite Failed to compile vertex shader :(");
     }
-    Log("ENGINE MESSAGE: Sprite Vertex shader created successfully :)\n");
+	Log("Sprite Vertex shader created successfully :)", LogLevel::Success);
 
-    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3d.PS.hlsl", L"ps_6_0");
+    Microsoft::WRL::ComPtr<IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Sprite.PS.hlsl", L"ps_6_0");
     if (!pixelShaderBlob) {
-        throw std::runtime_error("ENGINE MESSAGE: Sprite Failed to compile pixel shader :(");
+        throw std::runtime_error("Sprite Failed to compile pixel shader :(");
     }
-    Log("ENGINE MESSAGE: Sprite Pixel shader created successfully :)\n");
+	Log("Sprite Pixel shader created successfully :)", LogLevel::Success);
 
     /// ===PSOを生成する=== ///
     D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
@@ -183,5 +183,5 @@ void SpriteSetup::CreateGraphicsPipeline() {
     if (FAILED(hr)) {
         throw std::runtime_error("ENGINE MESSAGE: Sprite Failed to create graphics pipeline state :(");
     }
-    Log("ENGINE MESSAGE: Sprite Graphics pipeline state created successfully :)\n");
+	Log("Sprite Graphics pipeline state created successfully :), LogLevel::SUCCESS");
 }

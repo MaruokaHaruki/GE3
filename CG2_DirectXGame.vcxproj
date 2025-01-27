@@ -111,6 +111,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="application\Player.cpp" />
     <ClCompile Include="application\Ground.cpp" />
     <ClCompile Include="application\Enemy.cpp" />
+    <ClCompile Include="scene\base\SceneFactory.cpp" />
     <ClCompile Include="scene\publicScene\ClearScene.cpp" />
     <ClCompile Include="scene\privateScene\DebugScene.cpp" />
     <ClCompile Include="engine\camera\CameraManager.cpp" />
@@ -143,12 +144,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="scene\publicScene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="scene\base\AbstractSceneFactory.h" />
     <ClInclude Include="application\collision\Collider.h" />
     <ClInclude Include="application\collision\CollisionManager.h" />
     <ClInclude Include="application\collision\BaseObject.h" />
     <ClInclude Include="application\Player.h" />
     <ClInclude Include="application\Ground.h" />
     <ClInclude Include="application\Enemy.h" />
+    <ClInclude Include="scene\base\SceneFactory.h" />
     <ClInclude Include="scene\publicScene\ClearScene.h" />
     <ClInclude Include="scene\privateScene\DebugScene.h" />
     <ClInclude Include="engine\camera\CameraManager.h" />

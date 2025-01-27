@@ -22,7 +22,7 @@
 
 ///=============================================================================
 ///						初期化
-void Model::Initialize(ModelSetup* modelSetup, const std::string& directorypath, const std::string& filename) {
+void Model::Initialize(ModelSetup *modelSetup, const std::string &directorypath, const std::string &filename) {
 	//modelSetupから受け取る
 	modelSetup_ = modelSetup;
 	//モデルデータの読み込み
@@ -102,7 +102,7 @@ void Model::ChangeTexture(const std::string &textureFilePath) {
 ///--------------------------------------------------------------
 ///						 ファイル読み込み関数
 ///NOTE:ディレクトリパスとファイルネームの設定を忘れずに
-MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename) {
+MaterialData Model::LoadMaterialTemplateFile(const std::string &directoryPath, const std::string &filename) {
 	MaterialData materialData;
 	std::string line;
 	std::ifstream file(directoryPath + "/" + filename);
@@ -124,7 +124,7 @@ MaterialData Model::LoadMaterialTemplateFile(const std::string& directoryPath, c
 
 ///--------------------------------------------------------------
 ///						 OBJファイル読み込み関数
-void Model::LoadObjFile(const std::string& directoryPath, const std::string& filename) {
+void Model::LoadObjFile(const std::string &directoryPath, const std::string &filename) {
 	//========================================
 	// 1.中で必要となる変数の宣言
 	ModelData modelData;            //構築するModelData
@@ -220,8 +220,8 @@ void Model::CreateVertexBuffer() {
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);									//1頂点あたりのサイズ
 	//========================================
 	// 頂点リソースにデータを書き込む
-	VertexData* vertexData = nullptr;
-	vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &vertexData ));
+	VertexData *vertexData = nullptr;
+	vertexBuffer_->Map(0, nullptr, reinterpret_cast<void **>( &vertexData ));
 	std::memcpy(vertexData, modelData_.vertices.data(), sizeof(VertexData) * modelData_.vertices.size());
 }
 
@@ -234,8 +234,10 @@ void Model::CreateMaterialBuffer() {
 	//マテリアルデータ書き込み用変数
 	Material material = { {1.0f, 1.0f, 1.0f, 1.0f},true };
 	//書き込むためのアドレス取得
-	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &materialData_ ));
+	materialBuffer_->Map(0, nullptr, reinterpret_cast<void **>( &materialData_ ));
 	//今回は赤を書き込む
 	*materialData_ = material;
 	materialData_->uvTransform = Identity4x4();
+	//光沢度
+	materialData_->shininess = 2.0f;
 }
