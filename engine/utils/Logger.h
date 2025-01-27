@@ -10,6 +10,7 @@
 namespace Logger {
 	enum class LogLevel {
 		Info,
+		Success,
 		Warning,
 		Error
 	};

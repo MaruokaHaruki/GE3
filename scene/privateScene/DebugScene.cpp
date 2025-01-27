@@ -137,7 +137,7 @@ void DebugScene::ImGuiDraw() {
 	//ライトの方向
 	ImGui::SliderFloat3("LightDirection", &lightDirection.x, -1.0f, 1.0f);
 	//ライトの強度
-	ImGui::SliderFloat("LightIntensity", &lightIntensity, 0.2f, 10.0f);
+	ImGui::SliderFloat("LightIntensity", &lightIntensity, 0.2f, 100.0f);
 	//ライトの設定
 	object3d_->SetDirectionalLight(lightColor, lightDirection, lightIntensity);
 	//光沢度の設定

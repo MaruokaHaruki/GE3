@@ -1,16 +1,16 @@
 /*********************************************************************
  * \file   ParticleSetup.cpp
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   December 2024
- * \note   
+ * \note
  *********************************************************************/
 #include "ParticleSetup.h"
 
 ///=============================================================================
 ///						初期化
-void ParticleSetup::Initialize(DirectXCore* dxCore, SrvSetup* srvSetup) {
+void ParticleSetup::Initialize(DirectXCore *dxCore, SrvSetup *srvSetup) {
 	/// ===引数でdxManagerを受取=== ///
 	dxCore_ = dxCore;
 
@@ -96,7 +96,7 @@ void ParticleSetup::CreateRootSignature() {
 	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if(FAILED(hr)) {
-		throw std::runtime_error(reinterpret_cast<char*>( errorBlob->GetBufferPointer() ));
+		throw std::runtime_error(reinterpret_cast<char *>( errorBlob->GetBufferPointer() ));
 	}
 
 	/// ===バイナリを元に生成=== ///
@@ -105,7 +105,7 @@ void ParticleSetup::CreateRootSignature() {
 	if(FAILED(hr)) {
 		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to create root signature");
 	}
-	Log("ENGINE MESSAGE: Particle Root signature created successfully :)\n");
+	Log("Particle Root signature created successfully :)");
 }
 
 ///=============================================================================
@@ -155,13 +155,13 @@ void ParticleSetup::CreateGraphicsPipeline() {
 	if(!vertexShaderBlob) {
 		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to compile vertex shader :(");
 	}
-	Log("ENGINE MESSAGE: Particle Vertex shader created successfully :)\n");
+	Log("Particle Vertex shader created successfully :)", LogLevel::Success);
 
 	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.PS.hlsl", L"ps_6_0");
 	if(!pixelShaderBlob) {
 		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to compile pixel shader :(");
 	}
-	Log("ENGINE MESSAGE: Particle Pixel shader state created successfully :)\n");
+	Log("Particle Pixel shader state created successfully :)", LogLevel::Success);
 
 	//========================================
 	// PSOを生成する
@@ -192,7 +192,7 @@ void ParticleSetup::CreateGraphicsPipeline() {
 	HRESULT hr = dxCore_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState_));
 	if(FAILED(hr)) {
-		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to create graphics pipeline state :(");
+		throw std::runtime_error("Particle Failed to create graphics pipeline state :(");
 	}
-	Log("ENGINE MESSAGE: Particle Graphics pipeline state created successfully :)\n");
+	Log("Particle Graphics pipeline state created successfully :)", LogLevel::Success);
 }

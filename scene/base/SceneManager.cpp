@@ -37,32 +37,20 @@ void SceneManager::Finalize() {
 ///=============================================================================
 ///						更新
 void SceneManager::Update() {
-	// TODO:シーン切り替え機構
-
 	//========================================
-	// シーンのチェック
+	// シーンの切り替え
 	prevSceneNo_ = currentSceneNo_;
 	currentSceneNo_ = nowScene_->GetSceneNo();
 
 	//========================================
-	// 次のシーンがある場合
+	// シーンが切り替わった場合
 	if(prevSceneNo_ != currentSceneNo_) {
-		//---------------------------------------
-		// 旧シーンの終了処理
-		if(nowScene_ != nullptr) {
+		if(nowScene_) {
+			// 現在のシーンの終了処理
 			nowScene_->Finalize();
 		}
-		//---------------------------------------
-		// 新シーンの初期化
-		if(currentSceneNo_ == DEBUG) {
-			nowScene_ = std::make_unique<DebugScene>();
-		} else if(currentSceneNo_ == GAMEPLAY) {
-			nowScene_ = std::make_unique<GamePlayScene>();
-		} else if(currentSceneNo_ == TITLE) {
-			nowScene_ = std::make_unique<TitleScene>();
-		} else if(currentSceneNo_ == CLEAR) {
-			nowScene_ = std::make_unique<ClearScene>();
-		}
+		// シーンの生成
+		nowScene_ = sceneFactory_->CreateScene(currentSceneNo_);
 		// シーンの初期化
 		nowScene_->Initialize(spriteSetup_, object3dSetup_, particleSetup_);
 	}

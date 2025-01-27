@@ -23,6 +23,7 @@
 #include "Camera.h"
 #include "CameraManager.h"
 #include "SceneManager.h"
+#include "SceneFactory.h"
 
 ///=============================================================================
 ///						FrameWorkクラス
@@ -101,16 +102,15 @@ protected:
 	//========================================
 	// スプライト共通部
 	std::unique_ptr<SpriteSetup> spriteSetup_;
-	//========================================
 	// パーティクルセットアップ
 	std::unique_ptr<ParticleSetup> particleSetup_;
-	//========================================
 	// 3Dオブジェクト共通部
 	std::unique_ptr<Object3dSetup> object3dSetup_;
-	//========================================
 	// モデルセットアップ
 	std::unique_ptr<ModelSetup> modelSetup_;
 	//========================================
 	// シーンマネージャ
 	std::unique_ptr<SceneManager> sceneManager_;
+	// シーンファクトリー
+	std::unique_ptr<SceneFactory> sceneFactory_;
 };

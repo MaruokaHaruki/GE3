@@ -9,6 +9,7 @@
 #pragma once
 #include <memory>
 #include "BaseScene.h"
+#include "AbstractSceneFactory.h"
 
 ///=============================================================================
 ///						シーンマネージャ
@@ -20,7 +21,7 @@ public:
 	/// \brief 初期化
 	void Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSetup, ParticleSetup *particleSetup);
 
-	/// @brief 
+	/// @brief 終了処理
 	void Finalize();
 
 	/// @brief 更新処理
@@ -38,21 +39,29 @@ public:
 	/// @brief ImGui描画
 	void ImGuiDraw();
 
+	/// @brief シーンファクトリーのSetter
+	void SetSceneFactory(AbstractSceneFactory *sceneFactory) {
+		sceneFactory_ = sceneFactory;
+	}
+
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
+	//========================================
+	// シーンファクトリーポインタ
+	AbstractSceneFactory *sceneFactory_ = nullptr;
+
 	//========================================
 	// 今のシーン
 	std::unique_ptr<BaseScene> nowScene_;
 	// 次のシーン
 	std::unique_ptr<BaseScene> nextScene_;
 
-
 	//========================================
 	// 現在のシーン番号　
-	int currentSceneNo_;
+	int currentSceneNo_ = 0;
 	// 前のシーン番号
-	int prevSceneNo_;
+	int prevSceneNo_ = -1;
 
 	//========================================
 	// Sprite共通部

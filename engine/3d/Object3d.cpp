@@ -48,9 +48,13 @@ void Object3d::Initialize(Object3dSetup* object3dSetup) {
 ///=============================================================================
 ///						更新
 void Object3d::Update() {
+	//========================================
+	// カメラの位置を取得
 	camera_ = object3dSetup_->GetDefaultCamera();
+	// カメラの位置を書き込む
 	cameraData_->worldPosition = camera_->GetTransform().translate;
 
+	//========================================
 	// TransformからWorld行列を作成
 	Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	Matrix4x4 worldViewProjectionMatrix;
@@ -68,6 +72,8 @@ void Object3d::Update() {
 		worldViewProjectionMatrix = worldMatrix;
 	}
 
+	//========================================
+	// トランスフォーメーションマトリックスバッファに書き込む
 	transformationMatrixData_->WVP = worldViewProjectionMatrix;
 	transformationMatrixData_->World = worldMatrix;
 	transformationMatrixData_->WorldInvTranspose = Inverse4x4(worldMatrix);
@@ -77,22 +83,23 @@ void Object3d::Update() {
 ///						描画
 // NOTE:見た目を持たないオブジェクトが存在する
 void Object3d::Draw() {
+	//========================================
+	// モデルが存在しない場合は描画しない
 	if (!transfomationMatrixBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
 	}
 
+	//========================================
 	// コマンドリスト取得
 	auto commandList = object3dSetup_->GetDXManager()->GetCommandList();
-
 	// トランスフォーメーションマトリックスバッファの設定
 	commandList->SetGraphicsRootConstantBufferView(1, transfomationMatrixBuffer_->GetGPUVirtualAddress());
-
 	// 並行光源の設定
 	commandList->SetGraphicsRootConstantBufferView(3, directionalLightBuffer_->GetGPUVirtualAddress());
-
 	// カメラバッファの設定
 	commandList->SetGraphicsRootConstantBufferView(4, cameraBuffer_->GetGPUVirtualAddress());
 
+	//========================================
 	// 描画コール
 	if (model_) {
 		model_->Draw();

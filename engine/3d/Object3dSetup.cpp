@@ -92,9 +92,9 @@ void Object3dSetup::CreateRootSignature() {
 
 	hr = dxCore_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
 	if(FAILED(hr)) {
-		throw std::runtime_error("ENGINE MESSAGE: Failed to create root signature");
+		throw std::runtime_error("Failed to create root signature");
 	}
-	Log("ENGINE MESSAGE: Object3d Root signature created successfully :)\n");
+	Log("Object3d Root signature created successfully :), LogLevel::SUCCESS");
 }
 
 
@@ -162,13 +162,13 @@ void Object3dSetup::CreateGraphicsPipeline() {
 	if(!vertexShaderBlob) {
 		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to compile vertex shader :(");
 	}
-	Log("ENGINE MESSAGE: Object3d Vertex shader created successfully :)\n");
+	Log("Object3d Vertex shader created successfully :)", LogLevel::Success);
 
 	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Object3D.PS.hlsl", L"ps_6_0");
 	if(!pixelShaderBlob) {
 		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to compile pixel shader :(");
 	}
-	Log("ENGINE MESSAGE: Object3d Pixel shader state created successfully :)\n");
+	Log("Object3d Pixel shader state created successfully :)", LogLevel::Success);
 
 	//========================================
 	// PSOを生成する
@@ -201,5 +201,5 @@ void Object3dSetup::CreateGraphicsPipeline() {
 	if(FAILED(hr)) {
 		throw std::runtime_error("ENGINE MESSAGE: Object3d Failed to create graphics pipeline state :(");
 	}
-	Log("ENGINE MESSAGE: Object3d Graphics pipeline state created successfully :)\n");
+	Log("Object3d Graphics pipeline state created successfully :)", LogLevel::Success);
 }

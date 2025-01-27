@@ -52,7 +52,7 @@ void MRFramework::Initialize() {
 	///						 ウィンドウ生成
 	win_ = std::make_unique<WinApp>();
 	//ウィンドウの生成
-	win_->CreateGameWindow(L"Ver1.0_SpaceDodgeBall");
+	win_->CreateGameWindow(L"MREngine_Ver14.0");
 
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
@@ -127,6 +127,9 @@ void MRFramework::Initialize() {
 	sceneManager_ = std::make_unique<SceneManager>();
 	//シーンマネージャの初期化
 	sceneManager_->Initialize(spriteSetup_.get(), object3dSetup_.get(), particleSetup_.get());
+	//シーンファクトリーのセット
+	sceneFactory_ = std::make_unique<SceneFactory>();
+	sceneManager_->SetSceneFactory(sceneFactory_.get());
 }
 
 ///=============================================================================
