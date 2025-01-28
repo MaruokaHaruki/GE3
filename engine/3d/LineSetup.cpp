@@ -32,81 +32,45 @@ void LineSetup::CommonDrawSetup() {
 	commandList->SetGraphicsRootSignature(rootSignature_.Get());
 	//グラフィックスパイプラインステートをセット
 	commandList->SetPipelineState(graphicsPipelineState_.Get());
-	//プリミティブトポロジーをセットする
-	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	//プリミティブトポロジーをセットする(Line用にLINELISTに変更)
+	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 }
 
 ///=============================================================================
 ///						ルートシグネチャーの作成
 void LineSetup::CreateRootSignature() {
-	/// ===RootSignature作成=== ///
-	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
-	descriptionRootSignature.Flags =
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	// ルートパラメータの設定
+	D3D12_ROOT_PARAMETER rootParameters[1] = {};
 
-	/// ===DescriptorRangeの設定=== ///
-	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
-	descriptorRangeForInstancing[0].BaseShaderRegister = 0; // から始まる
-	descriptorRangeForInstancing[0].NumDescriptors = 1; //
-	descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	/// ===RootParameter作成=== ///
-	D3D12_ROOT_PARAMETER rootParameters[3] = {};
+	// 定数バッファ（TransformationMatrix）の設定（b0、頂点シェーダーで使用）
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters[0].Descriptor.ShaderRegister = 0; // b0
+	rootParameters[0].Descriptor.RegisterSpace = 0;
 
-	rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
-	rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
+	// ルートシグネチャの設定
+	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+	rootSignatureDesc.NumParameters = _countof(rootParameters);
+	rootSignatureDesc.pParameters = rootParameters;
+	rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	/// ===DescropterTable=== ///
-	rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
-	rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
-
-
-	/// ====DirectionalLight=== ///
-	//rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;	   //CBV
-	//rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;    //PixelShader
-	//rootParameters[3].Descriptor.ShaderRegister = 1; // b1
-
-	descriptionRootSignature.pParameters = rootParameters;                //ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumParameters = _countof(rootParameters);    //配列の長さ
-
-	/// ===Samplerの設定=== ///
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-	staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX;
-	staticSamplers[0].ShaderRegister = 0; // s0
-	staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-	descriptionRootSignature.pStaticSamplers = staticSamplers;                //ルートパラメータ配列へのポインタ
-	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);    //配列の長さ
-
-	/// ===シリアライズしてバイナリにする=== ///
-	Microsoft::WRL::ComPtr <ID3DBlob> signatureBlob = nullptr;
-	Microsoft::WRL::ComPtr <ID3DBlob> errorBlob = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&descriptionRootSignature,
+	// シリアライズとルートシグネチャの作成
+	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
+	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc,
 		D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-	if(FAILED(hr)) {
-		throw std::runtime_error(reinterpret_cast<char*>( errorBlob->GetBufferPointer() ));
+	if (FAILED(hr)) {
+		throw std::runtime_error(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 	}
 
-	/// ===バイナリを元に生成=== ///
 	hr = dxCore_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(),
 		signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature_));
-	if(FAILED(hr)) {
-		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to create root signature");
+	if (FAILED(hr)) {
+		throw std::runtime_error("Failed to create root signature");
 	}
-	Log("ENGINE MESSAGE: Particle Root signature created successfully :)\n");
+	Log("Particle Root signature created successfully :)", LogLevel::Success);
 }
+
 
 ///=============================================================================
 ///						グラフィックスパイプラインの作成
@@ -116,24 +80,27 @@ void LineSetup::CreateGraphicsPipeline() {
 	CreateRootSignature();
 
 	//========================================
-	// InputLayoutの設定を行う
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
-	//頂点データ
+	// InputElementの設定
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[2] = {};
+	// 位置データ
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
-	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	inputElementDescs[0].InputSlot = 0;
 	inputElementDescs[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//画像座標データ
-	inputElementDescs[1].SemanticName = "TEXCOORD";
+	inputElementDescs[0].InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+	inputElementDescs[0].InstanceDataStepRate = 0;
+	// カラーデータ
+	inputElementDescs[1].SemanticName = "COLOR";
 	inputElementDescs[1].SemanticIndex = 0;
-	inputElementDescs[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDescs[1].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	inputElementDescs[1].InputSlot = 0;
 	inputElementDescs[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-	//法線データ
-	inputElementDescs[2].SemanticName = "NORMAL";
-	inputElementDescs[2].SemanticIndex = 0;
-	inputElementDescs[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	inputElementDescs[2].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDescs[1].InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+	inputElementDescs[1].InstanceDataStepRate = 0;
 
+	//========================================
+	// InputLayoutの設定を行う
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDescs;
 	inputLayoutDesc.NumElements = _countof(inputElementDescs);
@@ -150,18 +117,21 @@ void LineSetup::CreateGraphicsPipeline() {
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 	//========================================
-	// Shaderをcompileする
-	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.VS.hlsl", L"vs_6_0");
+	// VertexShaderをコンパイルする
+	Microsoft::WRL::ComPtr <IDxcBlob> vertexShaderBlob = dxCore_->CompileShader(L"resources/shader/Line.VS.hlsl", L"vs_6_0");
 	if(!vertexShaderBlob) {
-		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to compile vertex shader :(");
+		Log("Particle Failed to compile vertex shader :(", LogLevel::Error);
+		throw std::runtime_error("Particle Failed to compile vertex shader :(");
 	}
-	Log("ENGINE MESSAGE: Particle Vertex shader created successfully :)\n");
-
-	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Particle.PS.hlsl", L"ps_6_0");
+	Log("Particle Vertex shader created successfully :)", LogLevel::Success);
+	//========================================
+	// PixelShaderをコンパイルする
+	Microsoft::WRL::ComPtr <IDxcBlob> pixelShaderBlob = dxCore_->CompileShader(L"resources/shader/Line.PS.hlsl", L"ps_6_0");
 	if(!pixelShaderBlob) {
-		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to compile pixel shader :(");
+		Log("Particle Failed to compile pixel shader :(", LogLevel::Error);
+		throw std::runtime_error("Particle Failed to compile pixel shader :(");
 	}
-	Log("ENGINE MESSAGE: Particle Pixel shader state created successfully :)\n");
+	Log("Particle Pixel shader state created successfully :)", LogLevel::Success);
 
 	//========================================
 	// PSOを生成する
@@ -192,7 +162,8 @@ void LineSetup::CreateGraphicsPipeline() {
 	HRESULT hr = dxCore_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc,
 		IID_PPV_ARGS(&graphicsPipelineState_));
 	if(FAILED(hr)) {
-		throw std::runtime_error("ENGINE MESSAGE: Particle Failed to create graphics pipeline state :(");
+		Log("Particle Failed to create graphics pipeline state :(", LogLevel::Error);
+		throw std::runtime_error("Particle Failed to create graphics pipeline state :(");
 	}
-	Log("ENGINE MESSAGE: Particle Graphics pipeline state created successfully :)\n");
+	Log("Particle Graphics pipeline state created successfully :)", LogLevel::Success);
 }

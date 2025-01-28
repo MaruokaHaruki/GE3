@@ -44,7 +44,16 @@ public:
 	/// \brief 描画 
 	void Draw();
 
+	/**----------------------------------------------------------------------------
+	 * \brief  DrawLine ライン描画
+	 * \param  start 始点
+	 * \param  end 終点
+	 * \param  color 色
+	 */
 	void DrawLine(const Vector3 &start, const Vector3 &end, const Vector4 &color);
+
+	//グリッドの描画
+	void DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &color, int gridNum);
 
 	///--------------------------------------------------------------
 	///						 静的メンバ関数
