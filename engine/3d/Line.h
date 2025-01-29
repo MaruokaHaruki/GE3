@@ -45,6 +45,11 @@ public:
 	void Draw();
 
 	/**----------------------------------------------------------------------------
+	 * \brief  ClearLines 
+	 */
+	void ClearLines();
+
+	/**----------------------------------------------------------------------------
 	 * \brief  DrawLine ライン描画
 	 * \param  start 始点
 	 * \param  end 終点
@@ -52,7 +57,13 @@ public:
 	 */
 	void DrawLine(const Vector3 &start, const Vector3 &end, const Vector4 &color);
 
-	//グリッドの描画
+	/**----------------------------------------------------------------------------
+	 * \brief  DrawGrid 
+	 * \param  start
+	 * \param  end
+	 * \param  color
+	 * \param  gridNum
+	 */
 	void DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &color, int gridNum);
 
 	///--------------------------------------------------------------
@@ -63,9 +74,75 @@ private:
 	 */
 	void CreateVertexBuffer();
 
+	/**----------------------------------------------------------------------------
+	 * \brief  CreateTransformationMatrixBuffer 
+	 * \return 
+	 */
+	void CreateTransformationMatrixBuffer();
+
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
+
+	
+
+	/**----------------------------------------------------------------------------
+	* \brief  SetTransform トランスフォーメーションの設定
+	* \param  transform トランスフォーメーション
+	* \note
+	*/
+	void SetTransform(const Transform& transform) { transform_ = transform; }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetTransform 
+	 * \return 
+	 */
+	Transform GetTransform() const { return transform_; }
+
+	/**----------------------------------------------------------------------------
+	* \brief  SetModel モデルの設定
+	* \param  model モデル
+	* \note
+	*/
+	void SetScale(const Vector3& scale) { transform_.scale = scale; }
+	/**----------------------------------------------------------------------------
+	* \brief  GetScale スケールの取得
+	* \return Vector3 スケール
+	* \note
+	*/
+	const Vector3& GetScale() const { return transform_.scale; }
+
+	/**----------------------------------------------------------------------------
+	* \brief  SetRotate 回転の設定
+	* \param  rotate 回転
+	* \note
+	*/
+	void SetRotation(const Vector3& rotate) { transform_.rotate = rotate; }
+	/**----------------------------------------------------------------------------
+	* \brief  GetRotate 回転の取得
+	* \return Vector3 回転
+	* \note
+	*/
+	const Vector3& GetRotation() const { return transform_.rotate; }
+
+	/**----------------------------------------------------------------------------
+	* \brief  SetTranslate 移動の設定
+	* \param  translate 移動
+	* \note
+	*/
+	void SetPosition(const Vector3& translate) { transform_.translate = translate; } 
+	/**----------------------------------------------------------------------------
+	* \brief  GetTranslate 移動の取得
+	* \return Vector3 移動
+	* \note
+	*/
+	const Vector3& GetPosition() const { return transform_.translate; }
+
+	/**----------------------------------------------------------------------------
+	* \brief  SetCamera カメラの設定
+	* \param  camera
+	*/
+	void SetCamera(Camera* camera) { this->camera_ = camera; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -81,24 +158,22 @@ private:
 
 	//---------------------------------------
 	// 頂点バッファ
-	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 	// バッファリソースの使い道を指すポインタ
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 
-	////---------------------------------------
-	////トランスフォーメーションマトリックス
-	//Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
+	//---------------------------------------
+	//トランスフォーメーションマトリックス
+	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
 
-	////---------------------------------------
-	//// バッファリソース内のデータを指すポインタ
-	////トランスフォーメーションマトリックス
-	//TransformationMatrix* transformationMatrixData_ = nullptr;
-	////並行光源
-	//DirectionalLight* directionalLightData_ = nullptr;
+	//---------------------------------------
+	// バッファリソース内のデータを指すポインタ
+	//トランスフォーメーションマトリックス
+	TransformationMatrix* transformationMatrixData_ = nullptr;
 
-	////--------------------------------------
-	//// Transform
-	//Transform transform_ = {};
+	//--------------------------------------
+	// Transform
+	Transform transform_ = {};
 
 	//--------------------------------------
 	// カメラ

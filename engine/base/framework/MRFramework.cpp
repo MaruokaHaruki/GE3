@@ -108,6 +108,12 @@ void MRFramework::Initialize() {
 	particleSetup_->Initialize(dxCore_.get(), srvSetup_.get());
 
 	///--------------------------------------------------------------
+	///						 ラインマネージャ
+	//========================================
+	// ラインマネージャの初期化
+	LineManager::GetInstance()->Initialize(dxCore_.get(), srvSetup_.get());
+
+	///--------------------------------------------------------------
 	///						 オーディオの初期化
 	MAudioG::GetInstance()->Initialize("resources/sound/");
 
@@ -119,8 +125,10 @@ void MRFramework::Initialize() {
 	// TODO: カメラの改善 現在、カメラの設定はここで行っているが、自由に変更がしにくいという問題が発生している。
 	// Object3Dのカメラ設定
 	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
-	// カメラの設定
+	// パーティクルのカメラ設定
 	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
+	// Lineのカメラ設定
+	LineManager::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
 	
 	///--------------------------------------------------------------
 	///						 シーンマネージャ
@@ -135,6 +143,7 @@ void MRFramework::Initialize() {
 ///=============================================================================
 ///						更新
 void MRFramework::Update() {
+	//========================================
 	// デバックカメラの呼び出し
 	if(Input::GetInstance()->PushKey(DIK_1)) {
 		CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
@@ -146,6 +155,63 @@ void MRFramework::Update() {
 	//========================================
 	// カメラの更新
 	CameraManager::GetInstance()->UpdateAll();
+
+	//========================================
+	// グリッドの描画
+    // グリッドの範囲を決定します。ここでは、仮に範囲を (-10, -10, -10) から (10, 10, 10) とします。
+    Vector3 start(-10.0f, -10.0f, -10.0f);
+    Vector3 end(10.0f, 10.0f, 10.0f);
+
+    // グリッドの幅、高さ、奥行きを計算
+    float width = end.x - start.x;
+    float height = end.y - start.y;
+    float depth = end.z - start.z;
+
+    int gridNum = 64;
+    Vector4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+    // xy平面のグリッドを描画
+    for (int i = 0; i <= gridNum; ++i) {
+    float x = start.x + (width / gridNum) * i;
+    float y = start.y + (height / gridNum) * i;
+    Vector3 lineStartX = Vector3(x, start.y, start.z);
+    Vector3 lineEndX = Vector3(x, end.y, start.z);
+    Vector3 lineStartY = Vector3(start.x, y, start.z);
+    Vector3 lineEndY = Vector3(end.x, y, start.z);
+    LineManager::GetInstance()->DrawLine(lineStartX, lineEndX, color);
+    LineManager::GetInstance()->DrawLine(lineStartY, lineEndY, color);
+    }
+
+    // xz平面のグリッドを描画
+    for (int i = 0; i <= gridNum; ++i) {
+    float x = start.x + (width / gridNum) * i;
+    float z = start.z + (depth / gridNum) * i;
+    Vector3 lineStartX = Vector3(x, start.y, start.z);
+    Vector3 lineEndX = Vector3(x, start.y, end.z);
+    Vector3 lineStartZ = Vector3(start.x, start.y, z);
+    Vector3 lineEndZ = Vector3(end.x, start.y, z);
+    LineManager::GetInstance()->DrawLine(lineStartX, lineEndX, color);
+    LineManager::GetInstance()->DrawLine(lineStartZ, lineEndZ, color);
+    }
+
+    // yz平面のグリッドを描画
+    for (int i = 0; i <= gridNum; ++i) {
+    float y = start.y + (height / gridNum) * i;
+    float z = start.z + (depth / gridNum) * i;
+    Vector3 lineStartY = Vector3(start.x, y, start.z);
+    Vector3 lineEndY = Vector3(start.x, y, end.z);
+    Vector3 lineStartZ = Vector3(start.x, start.y, z);
+    Vector3 lineEndZ = Vector3(start.x, end.y, z);
+    LineManager::GetInstance()->DrawLine(lineStartY, lineEndY, color);
+    LineManager::GetInstance()->DrawLine(lineStartZ, lineEndZ, color);
+    }
+
+	LineManager::GetInstance()->DrawGrid({ -10.0f,0.0f,-10.0f }, { 10.0f,0.0f,-10.0f }, { 1.0f,1.0f,1.0f,1.0f }, 128);
+	//中心からxyz軸を描画
+
+	// ラインの更新
+	LineManager::GetInstance()->Update();
+
 	//========================================
 	// Object3Dのカメラ設定の更新
 	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
@@ -154,7 +220,6 @@ void MRFramework::Update() {
 	//========================================
 	// インプットの更新
 	Input::GetInstance()->Update();
-	
 	//========================================
 	// シーンマネージャの更新
 	sceneManager_->Update();
@@ -176,6 +241,9 @@ void MRFramework::Finalize() {
 	// モデルマネージャの終了処理
 	ModelManager::GetInstance()->Finalize();
 	//========================================
+	// ラインマネージャの終了処理
+	LineManager::GetInstance()->Finalize();
+	//========================================
 	// ダイレクトX
 	dxCore_->ReleaseDirectX();
 	//========================================
@@ -190,6 +258,10 @@ void MRFramework::FrameworkPreDraw() {
 	// ループ前処理
 	dxCore_->PreDraw();
 	srvSetup_->PreDraw();
+
+	//========================================
+	// Lineの描画
+	LineManager::GetInstance()->Draw();
 }
 
 ///=============================================================================
@@ -215,6 +287,8 @@ void MRFramework::ImGuiPreDraw() {
 	Input::GetInstance()->ImGuiDraw();
 	// CameraのImGui描画
 	CameraManager::GetInstance()->DrawImGui();
+	// LineのImGui描画
+	LineManager::GetInstance()->DrawImGui();
 #endif // DEBUG
 }
 

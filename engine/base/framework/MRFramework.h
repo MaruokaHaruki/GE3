@@ -15,12 +15,15 @@
 #include "SrvSetup.h"
 #include "Input.h"
 #include "MAudioG.h"
+#include "Camera.h"
+// 共通部
 #include "SpriteSetup.h"
 #include "TextureManager.h"
 #include "ParticleSetup.h"
 #include "Object3dSetup.h"
 #include "ModelManager.h"
-#include "Camera.h"
+#include "LineManager.h"
+// シーン
 #include "CameraManager.h"
 #include "SceneManager.h"
 #include "SceneFactory.h"
@@ -100,11 +103,12 @@ protected:
 	// SrvSetup
 	std::unique_ptr<SrvSetup> srvSetup_;
 	//========================================
-	// スプライト共通部
+	// 共通部
+	// スプライトセットアップ
 	std::unique_ptr<SpriteSetup> spriteSetup_;
 	// パーティクルセットアップ
 	std::unique_ptr<ParticleSetup> particleSetup_;
-	// 3Dオブジェクト共通部
+	// 3Dオブジェクセットアップ
 	std::unique_ptr<Object3dSetup> object3dSetup_;
 	// モデルセットアップ
 	std::unique_ptr<ModelSetup> modelSetup_;

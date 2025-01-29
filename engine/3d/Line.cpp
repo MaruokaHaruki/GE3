@@ -9,20 +9,64 @@
 #include "Line.h"
 #include "LineSetup.h"
 #include "DirectXCore.h"
+#include "Camera.h"
+#include "TransformationMatrix.h"
+#include "Object3dSetup.h"
+#include "LineManager.h"
+//========================================
+// 数学関数のインクルード
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include "AffineTransformations.h"
+#include "MathFunc4x4.h"
 
 ///=============================================================================
 ///						初期化
 void Line::Initialize(LineSetup* lineSetup) {
+	//========================================
 	// ラインセットアップの取得
     lineSetup_ = lineSetup;
+	//========================================
 	// 頂点バッファの作成
     CreateVertexBuffer();
+	// トランスフォーメーションマトリックスバッファの作成
+	CreateTransformationMatrixBuffer();
+	//========================================
+	// ワールド行列の初期化
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	//========================================
+	// カメラの取得
+	camera_ = lineSetup_->GetDefaultCamera();
 }
 
 ///=============================================================================
 ///						更新
 void Line::Update() {
+    // カメラの取得
+    camera_ = lineSetup_->GetDefaultCamera();
+
+    // ワールド行列の作成
+    Matrix4x4 worldMatrix = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
+    Matrix4x4 worldViewProjectionMatrix;
+
+    if(camera_) {
+        // ビュー行列とプロジェクション行列を取得
+        const Matrix4x4& viewMatrix = camera_->GetViewMatrix();
+        const Matrix4x4& projectionMatrix = camera_->GetProjectionMatrix();
+
+        // 行列の乗算（ワールド → ビュー → プロジェクション）
+        Matrix4x4 worldViewMatrix = Multiply4x4(worldMatrix, viewMatrix);
+        worldViewProjectionMatrix = Multiply4x4(worldViewMatrix, projectionMatrix);
+    } else {
+        worldViewProjectionMatrix = worldMatrix;
+    }
+
+    // 定数バッファへの書き込み
+    transformationMatrixData_->WVP = worldViewProjectionMatrix;
+    transformationMatrixData_->World = worldMatrix;
+    transformationMatrixData_->WorldInvTranspose = Inverse4x4(worldMatrix);
 }
+
 
 ///=============================================================================
 ///						ライン描画
@@ -42,14 +86,14 @@ void Line::DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &col
 		//========================================
 		// 横線
 		DrawLine(
-			Vector3(start.x, start.y, start.z + i),
-			Vector3(end.x, end.y, start.z + i),
+			Vector3(start.x, start.y, start.z + i * (end.z - start.z) / gridNum),
+			Vector3(end.x, end.y, start.z + i * (end.z - start.z) / gridNum),
 			color
 		);
 		// 縦線
 		DrawLine(
-			Vector3(start.x + i, start.y, start.z),
-			Vector3(start.x + i, end.y, end.z),
+			Vector3(start.x + i * (end.x - start.x) / gridNum, start.y, start.z),
+			Vector3(start.x + i * (end.x - start.x) / gridNum, end.y, end.z),
 			color
 		);
 	}
@@ -58,29 +102,36 @@ void Line::DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &col
 ///=============================================================================
 ///                     描画
 void Line::Draw() {
-    //========================================
+	//========================================
 	// 描画するラインがない場合は何もしない
-    if (vertices_.empty()) return;
-    //========================================
-	// 描画設定
-    void* pData;
-	// バーテックスバッファのマップ
-    vertexBuffer_->Map(0, nullptr, &pData);
-	// メモリコピー
-    memcpy(pData, vertices_.data(), sizeof(LineVertex) * vertices_.size());
-	// バーテックスバッファのアンマップ
-    vertexBuffer_->Unmap(0, nullptr);
+	if (vertices_.empty()) return;
 	//========================================
 	// 描画設定
-    auto commandList = lineSetup_->GetDXManager()->GetCommandList();
-	// ルートシグネチャのセット
-    commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
+	void* pData;
+	// バーテックスバッファのマップ
+	vertexBuffer_->Map(0, nullptr, &pData);
+	// メモリコピー
+	memcpy(pData, vertices_.data(), sizeof(LineVertex) * vertices_.size());
+	// バーテックスバッファのアンマップ
+	vertexBuffer_->Unmap(0, nullptr);
+	//========================================
+	// 描画設定
+	auto commandList = lineSetup_->GetDXManager()->GetCommandList();
+	// taransformMatrixBufferのマップ
+	commandList->SetGraphicsRootConstantBufferView(0, transfomationMatrixBuffer_->GetGPUVirtualAddress()); // 修正: RootParameterIndexを0に変更
+	// vertexBufferの設定
+	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//========================================
 	// 描画
-    commandList->DrawInstanced(vertices_.size(), 1, 0, 0);
-   //========================================
-	// 描画後の処理
-    vertices_.clear();
+	commandList->DrawInstanced(vertices_.size(), 1, 0, 0);
+	// NOTE:描画した後はラインをクリアするのを忘れるな
+}
+
+///=============================================================================
+///						ラインのクリア
+void Line::ClearLines() {
+	// ラインのクリア
+	vertices_.clear();
 }
 
 ///=============================================================================
@@ -91,7 +142,7 @@ void Line::CreateVertexBuffer() {
     auto device = lineSetup_->GetDXManager()->GetDevice();
 	// バッファサイズ
 	// NOTE: 1000本のラインを描画できるようにしている
-    auto bufferSize = sizeof(LineVertex) * 1000;
+    auto bufferSize = sizeof(LineVertex) * 10000;
     //========================================
 	// バーテックスバッファの作成
     D3D12_HEAP_PROPERTIES heapProps = {};
@@ -125,5 +176,21 @@ void Line::CreateVertexBuffer() {
     vertexBufferView_.SizeInBytes = bufferSize;
 	// ストライド
     vertexBufferView_.StrideInBytes = sizeof(LineVertex);
+}
+
+///=============================================================================
+///						
+void Line::CreateTransformationMatrixBuffer() {
+	// 定数バッファのサイズを 256 バイトの倍数に設定
+	size_t bufferSize = (sizeof(TransformationMatrix) + 255) & ~255;
+	transfomationMatrixBuffer_ = lineSetup_->GetDXManager()->CreateBufferResource(bufferSize);
+	// 書き込み用変数
+	TransformationMatrix transformationMatrix = {};
+	// 書き込むためのアドレスを取得
+	transfomationMatrixBuffer_->Map(0, nullptr, reinterpret_cast<void**>(&transformationMatrixData_));
+	// 書き込み
+	transformationMatrix.WVP = Identity4x4();
+	// 単位行列を書き込む
+	*transformationMatrixData_ = transformationMatrix;
 }
 
