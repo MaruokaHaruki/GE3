@@ -29,11 +29,11 @@ void ClearScene::Finalize() {
 void ClearScene::Update() {
 	//========================================
 	// シーン遷移
-	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
+	if(Input::GetInstance()->PushKey(VK_SPACE)) {
 		BaseScene::sceneNo = TITLE;
 	}
 	//コントローラ
-	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
+	if(Input::GetInstance()->TriggerButton(XINPUT_GAMEPAD_A)) {
 		BaseScene::sceneNo = TITLE;
 	}
 }

@@ -1,10 +1,10 @@
 /*********************************************************************
  * \file   Enemy.h
- * \brief  
- * 
+ * \brief
+ *
  * \author Harukichimaru
  * \date   January 2025
- * \note   
+ * \note
  *********************************************************************/
 #pragma once
 #include "BaseObject.h"
@@ -21,7 +21,7 @@ public:
 	void Initialize(Object3d *object3d);
 
 	/// \brief 更新
-	void Update(const Vector3& playerPos);
+	void Update(const Vector3 &playerPos);
 
 	/// \brief 描画 
 	void Draw();
@@ -42,19 +42,24 @@ public:
 	///							静的メンバ関数
 private:
 
+	/**----------------------------------------------------------------------------
+	* \brief  Move
+	*/
+	void Move();
+
+	/**/
+	void DamageAnimation();
+
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
 
 	/**----------------------------------------------------------------------------
-	 * \brief  Move 
-	 */
-	void Move();
-
-	/**----------------------------------------------------------------------------
 	 * \brief  Attack
 	 */
-	bool GetIsAlive() const { return isAlive; }
+	bool IsAlive() const { return isAlive; }
+
+	void SetPosition(const Vector3 &position) { transform.translate = position; }
 
 	///--------------------------------------------------------------
 	///							メンバ変数
@@ -63,7 +68,7 @@ private:
 	// Object3D
 	Object3d *object3d_ = nullptr;
 	// 場所
-	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{2.0f,0.0f,0.0f} };
 
 	//========================================
 	// プレイヤーの位置情報
@@ -91,10 +96,25 @@ private:
 	float maxSpeed_ = 0.05f;
 	//========================================
 	// 移動範囲
-	float moveLimit = 2.0f;
+	float moveLimit = 4.0f;
 
 	//========================================
 	// 死亡フラグ
 	bool isAlive = true;
+	int life = 3;
+
+
+	// 突進のためのフラグとタイマー
+	bool isDashing = false;
+	int dashCooldown = 0;
+	int dashDuration = 0;
+	const int maxDashCooldown = 300; // 突進のクールダウン時間
+	const int maxDashDuration = 30;  // 突進の持続時間
+
+	//========================================
+	// エフェクト
+	int frameCount = 0;
+	const int numLines = 10;
+	const float maxLength = 1.0f;
 };
 

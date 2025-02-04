@@ -78,28 +78,6 @@ void Line::DrawLine(const Vector3& start, const Vector3& end, const Vector4& col
 }
 
 ///=============================================================================
-///						グリッド描画
-void Line::DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &color, int gridNum) {
-	//========================================
-	// グリッドの描画
-	for(int i = 0; i <= gridNum; i++) {
-		//========================================
-		// 横線
-		DrawLine(
-			Vector3(start.x, start.y, start.z + i * (end.z - start.z) / gridNum),
-			Vector3(end.x, end.y, start.z + i * (end.z - start.z) / gridNum),
-			color
-		);
-		// 縦線
-		DrawLine(
-			Vector3(start.x + i * (end.x - start.x) / gridNum, start.y, start.z),
-			Vector3(start.x + i * (end.x - start.x) / gridNum, end.y, end.z),
-			color
-		);
-	}
-}
-
-///=============================================================================
 ///                     描画
 void Line::Draw() {
 	//========================================
@@ -142,7 +120,7 @@ void Line::CreateVertexBuffer() {
     auto device = lineSetup_->GetDXManager()->GetDevice();
 	// バッファサイズ
 	// NOTE: 1000本のラインを描画できるようにしている
-    auto bufferSize = sizeof(LineVertex) * 10000;
+    auto bufferSize = sizeof(LineVertex) * 100000000;
     //========================================
 	// バーテックスバッファの作成
     D3D12_HEAP_PROPERTIES heapProps = {};

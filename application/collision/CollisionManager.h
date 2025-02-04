@@ -96,8 +96,6 @@ private:
 	 */
 	void CheckCollisionsBetweenCells(const GridCell& cellA, const GridCell& cellB);
 
-
-
 	///--------------------------------------------------------------
 	///						 メンバ変数
 private:
@@ -106,7 +104,6 @@ private:
 	std::unordered_map<int, GridCell> grid_;
 	// グリッドのセルのサイズ
 	float cellSize_ = 64.0f;
-
 	//========================================
 	// 当たり判定
 	std::list<BaseObject*> Objects_;
@@ -114,7 +111,6 @@ private:
 	std::unordered_set<BaseObject*> collidedObjects_;
 	// 衝突済みペア
 	std::unordered_set<std::pair<BaseObject*, BaseObject*>, PairHash> collidedPairs_;
-
 	//========================================
 	// 判定描画
 	bool isHitDraw_ = false;

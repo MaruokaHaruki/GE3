@@ -171,7 +171,6 @@ public:
 	 * \return
 	 */
 	float GetShininess() const { return model_->GetShininess(); }
-
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:

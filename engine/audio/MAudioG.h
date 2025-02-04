@@ -156,6 +156,18 @@ public:
 		float maxPlaySpeed = 2.0f);
 
 	/**----------------------------------------------------------------------------
+	* \brief  PlayWavReverse		ファイル名でWAVファイルを逆再生
+	* \param  filename		ファイル名
+	* \param  loopFlag		ループするかどうか
+	* \param  volume		ボリューム
+	* \param  maxPlaySpeed	最大再生速度
+	*/
+	void PlayWavReverse(const std::string& filename,
+		bool loopFlag = false,
+		float volume = 1.0f,
+		float maxPlaySpeed = 2.0f);
+
+	/**----------------------------------------------------------------------------
 	* \brief  StopWav		ファイル名で再生を停止
 	* \param  filename		ファイル名
 	*/
@@ -208,34 +220,26 @@ private:
 	//========================================
 	// 出力オーディオ
 	std::vector<AudioDeviceInfo> audioDevices_;
-
 	//========================================
 	// XAudio2インターフェース
 	Microsoft::WRL::ComPtr<IXAudio2> xAudio2_;
-
 	//========================================
 	// マスターボイス
 	IXAudio2MasteringVoice* masterVoice_ = nullptr;
-
 	//========================================
 	// サウンドデータのマップ（ファイル名で管理）
 	std::unordered_map<std::string, SoundData> soundDataMap_;
-
 	//========================================
 	// 再生中のボイスのマップ（ファイル名で管理）
 	std::unordered_map<std::string, Voice> voiceMap_;
-
 	//========================================
 	// 音声ファイルのディレクトリパス
 	std::string directoryPath_;
-
 	//========================================
 	// オーディオコールバック
 	XAudio2VoiceCallback voiceCallback_;
-
 	// ボイス操作のためのミューテックス
 	std::mutex voiceMutex_;
-
 	// サンプリングレート
 	float waveSamplingRate;
 };

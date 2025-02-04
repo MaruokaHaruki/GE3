@@ -57,15 +57,6 @@ public:
 	 */
 	void DrawLine(const Vector3 &start, const Vector3 &end, const Vector4 &color);
 
-	/**----------------------------------------------------------------------------
-	 * \brief  DrawGrid 
-	 * \param  start
-	 * \param  end
-	 * \param  color
-	 * \param  gridNum
-	 */
-	void DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &color, int gridNum);
-
 	///--------------------------------------------------------------
 	///						 静的メンバ関数
 private:

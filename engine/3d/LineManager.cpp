@@ -1,13 +1,17 @@
 /*********************************************************************
- * \file   LineManager.cpp
- * \brief  
- * 
- * \author Harukichimaru
- * \date   January 2025
- * \note   
- *********************************************************************/
+* \file   LineManager.cpp
+* \brief
+*
+* \author Harukichimaru
+* \date   January 2025
+* \note
+*********************************************************************/
 #include "LineManager.h"
 #include "ImguiSetup.h"
+//========================================
+// 数学関数のインクルード
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 ///=============================================================================
 ///						インスタンス
@@ -53,6 +57,8 @@ void LineManager::Finalize() {
 ///=============================================================================
 ///						更新処理
 void LineManager::Update() {
+	//Gridの描画
+	DrawGrid(gridSize_, gridDivisions_, gridColor_);
 	// ラインの更新
 	line_->Update();
 }
@@ -75,18 +81,25 @@ void LineManager::Draw() {
 ///						Imguiの描画
 void LineManager::DrawImGui() {
 	//========================================
-	// すべての情報の表示
+	// 描画設定
 	ImGui::Begin("LineManager");
-	// ラインの位置
-	ImGui::Text("Line Position");
-	Transform transform = line_->GetTransform();
-	// ラインの位置の表示
-	ImGui::Text("Position: %f, %f, %f", transform.translate.x, transform.translate.y, transform.translate.z);
-	// ラインの回転の表示
-	ImGui::Text("Rotation: %f, %f, %f", transform.rotate.x, transform.rotate.y, transform.rotate.z);
-	// ラインのスケールの表示
-	ImGui::Text("Scale: %f, %f, %f", transform.scale.x, transform.scale.y, transform.scale.z);
-
+	//========================================
+	// Lineを描画するか
+	ImGui::Checkbox("Line", &isDrawLine_);
+	ImGui::Separator();
+	//========================================
+	// Gridの描画
+	ImGui::Checkbox("Grid", &isDrawGrid_);
+	//Gridの設定
+	ImGui::SliderFloat("GridSize", &gridSize_, 1.0f, 10000.0f);
+	ImGui::SliderInt("Divisions", &gridDivisions_, 1, 512);
+	//色
+	ImGui::ColorEdit4("Color", &gridColor_.x);
+	//セパレーター
+	ImGui::Separator();
+	//========================================
+	// Sphereの描画
+	ImGui::Checkbox("Sphere", &isDrawSphere_);
 	ImGui::End();
 }
 
@@ -100,26 +113,122 @@ void LineManager::ClearLines() {
 ///=============================================================================
 ///						ラインの追加
 void LineManager::DrawLine(const Vector3 &start, const Vector3 &end, const Vector4 &color) {
+	if(!isDrawLine_) {
+		return;
+	}
+#ifdef _DEBUG
 	// ラインの追加
 	line_->DrawLine(start, end, color);
+#endif // _DEBUG
 }
 
 ///=============================================================================
 ///						グリッドの描画
-void LineManager::DrawGrid(const Vector3 &start, const Vector3 &end, const Vector4 &color, int gridNum) {
-	// グリッドの幅と奥行きを計算
-	float width = end.x - start.x;
-	float depth = end.z - start.z;
-
-	// 縦線を描画
-	for (int i = 0; i <= gridNum; ++i) {
-		float x = start.x + (width / gridNum) * i;
-		line_->DrawLine(Vector3(x, start.y, start.z), Vector3(x, start.y, end.z), color);
+void LineManager::DrawGrid(float gridSize, int divisions, const Vector4 &color) {
+	if(!isDrawGrid_ || divisions <= 0) {
+		return;
 	}
+	float halfSize = gridSize * 0.5f;
+	float step = gridSize / divisions;
 
-	// 横線を描画
-	for (int i = 0; i <= gridNum; ++i) {
-		float z = start.z + (depth / gridNum) * i;
-		line_->DrawLine(Vector3(start.x, start.y, z), Vector3(end.x, start.y, z), color);
+	for(int i = 0; i <= divisions; ++i) {
+		float offset = -halfSize + ( i * step );
+
+		// X軸に平行な線
+		DrawLine(Vector3(-halfSize, 0.0f, offset), Vector3(halfSize, 0.0f, offset), color);
+
+		// Z軸に平行な線
+		DrawLine(Vector3(offset, 0.0f, -halfSize), Vector3(offset, 0.0f, halfSize), color);
 	}
 }
+
+///=============================================================================
+///						球体の描画
+void LineManager::DrawSphere(const Vector3 &center, float radius, const Vector4 &color, int divisions) {
+	if(!isDrawSphere_ || divisions <= 0) {
+		return;
+	}
+	float angleStep = 2.0f * static_cast<float>( M_PI ) / divisions;
+
+	// XY, XZ, YZ 平面の円を描画
+	for(int i = 0; i < divisions; ++i) {
+		float angle1 = angleStep * i;
+		float angle2 = angleStep * ( i + 1 );
+
+		// XY 平面の円
+		DrawLine(
+			Vector3(center.x + radius * cosf(angle1), center.y + radius * sinf(angle1), center.z),
+			Vector3(center.x + radius * cosf(angle2), center.y + radius * sinf(angle2), center.z),
+			color
+		);
+
+		// XZ 平面の円
+		DrawLine(
+			Vector3(center.x + radius * cosf(angle1), center.y, center.z + radius * sinf(angle1)),
+			Vector3(center.x + radius * cosf(angle2), center.y, center.z + radius * sinf(angle2)),
+			color
+		);
+
+		// YZ 平面の円
+		DrawLine(
+			Vector3(center.x, center.y + radius * cosf(angle1), center.z + radius * sinf(angle1)),
+			Vector3(center.x, center.y + radius * cosf(angle2), center.z + radius * sinf(angle2)),
+			color
+		);
+	}
+
+	// 緯度方向の分割を追加
+	for(int lat = 1; lat < divisions / 2; ++lat) {
+		float latAngle1 = static_cast<float>( M_PI ) * lat / ( divisions / 2 );
+		float latAngle2 = static_cast<float>( M_PI ) * ( lat + 1 ) / ( divisions / 2 );
+
+		float r1 = radius * sinf(latAngle1);
+		float r2 = radius * sinf(latAngle2);
+		float y1 = center.y + radius * cosf(latAngle1);
+		float y2 = center.y + radius * cosf(latAngle2);
+
+		for(int i = 0; i < divisions; ++i) {
+			float angle1 = angleStep * i;
+			float angle2 = angleStep * ( i + 1 );
+
+			// 緯度方向の円
+			DrawLine(
+				Vector3(center.x + r1 * cosf(angle1), y1, center.z + r1 * sinf(angle1)),
+				Vector3(center.x + r1 * cosf(angle2), y1, center.z + r1 * sinf(angle2)),
+				color
+			);
+
+			DrawLine(
+				Vector3(center.x + r2 * cosf(angle1), y2, center.z + r2 * sinf(angle1)),
+				Vector3(center.x + r2 * cosf(angle2), y2, center.z + r2 * sinf(angle2)),
+				color
+			);
+		}
+	}
+
+	// 経度方向の線を追加
+	for(int lon = 0; lon < divisions; ++lon) {
+		float lonAngle = angleStep * lon;
+		float nextLonAngle = angleStep * ( lon + 1 );
+
+		for(int lat = 0; lat <= divisions / 2; ++lat) {
+			float latAngle = static_cast<float>( M_PI ) * lat / ( divisions / 2 );
+			float nextLatAngle = static_cast<float>( M_PI ) * ( lat + 1 ) / ( divisions / 2 );
+
+			float r1 = radius * sinf(latAngle);
+			float r2 = radius * sinf(nextLatAngle);
+			float y1 = center.y + radius * cosf(latAngle);
+			float y2 = center.y + radius * cosf(nextLatAngle);
+
+			DrawLine(
+				Vector3(center.x + r1 * cosf(lonAngle), y1, center.z + r1 * sinf(lonAngle)),
+				Vector3(center.x + r2 * cosf(lonAngle), y2, center.z + r2 * sinf(lonAngle)),
+				color
+			);
+		}
+	}
+}
+
+
+
+

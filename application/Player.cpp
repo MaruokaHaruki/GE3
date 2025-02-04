@@ -11,6 +11,7 @@
 #include "Input.h"
 #include "MAudioG.h"
 #include "CameraManager.h"
+#include "LineManager.h"
 
 ///=============================================================================
 ///						初期化
@@ -21,42 +22,49 @@ void Player::Initialize(Object3d *object3d) {
 	velocity = { 0.0f, 0.0f, 0.0f };
 	acceleration = { 0.0f, 0.0f, 0.0f };
 	maxSpeed = 0.1f; // 最大速度を設定
-
 	//========================================
 	// 当たり判定との同期
-	BaseObject::Initialize(transform.translate, 0.1f);
+	BaseObject::Initialize(transform.translate, 0.2f);
+	//========================================
+	// 武器
+	playerWepon_ = std::make_unique<PlayerWepon>();
+	playerWepon_->Initialize();
 }
 
 ///=============================================================================
 ///						更新
 void Player::Update() {
 	//========================================
+	// 当たらない位置にリセット
+	playerWepon_->SetPosition({ 0.0f, -10.0f, 0.0f });
+	//========================================
 	// アニメーション
 	AnimationRun();
-
 	//========================================
 	// 移動処理
 	Move();
-
 	//========================================
 	// Object3D
 	object3d_->SetTransform(transform);
 	object3d_->Update();
-
 	//========================================
 	// 回避処理
-	if(Input::GetInstance()->PushKey(DIK_SPACE)) {
+	if(Input::GetInstance()->PushKey(VK_SPACE)
+		|| Input::GetInstance()->TriggerButton(XINPUT_GAMEPAD_B)) {
 		Dodge();
 	}
-	//コントローラーのボタン
-	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
-		Dodge();
+	//========================================
+	// 攻撃処理
+	if(Input::GetInstance()->TriggerKey(DIK_RETURN)
+		|| Input::GetInstance()->TriggerButton(XINPUT_GAMEPAD_A)) {
+		Attack();
 	}
-
+	//========================================
+	// 武器
+	playerWepon_->Update();
 	//========================================
 	// 当たり判定との同期
 	BaseObject::Update(transform.translate);
-
 	//========================================
 	// 追跡カメラ
 	ChaseCamera();
@@ -66,6 +74,11 @@ void Player::Update() {
 ///						描画
 void Player::Draw() {
 	object3d_->Draw();
+}
+
+///=============================================================================
+///						パーティクル描画
+void Player::DrawParticle() {
 }
 
 ///=============================================================================
@@ -120,9 +133,7 @@ void Player::OnCollisionStay(BaseObject *other) {
 ///=============================================================================
 ///						接触終了処理
 void Player::OnCollisionExit(BaseObject *other) {
-
 	if(dynamic_cast<Enemy *>( other ) != nullptr) {}
-
 	//========================================
 	// フラグ
 	isHitExit = true;
@@ -142,7 +153,6 @@ void Player::Move() {
 	} else {
 		acceleration.z = 0.0f;
 	}
-
 	if(Input::GetInstance()->PushKey(DIK_A)) {
 		acceleration.x = -0.01f;
 	} else if(Input::GetInstance()->PushKey(DIK_D)) {
@@ -150,36 +160,30 @@ void Player::Move() {
 	} else {
 		acceleration.x = 0.0f;
 	}
-
 	//========================================
 	// コントローラのスティック操作
 	acceleration.x += Input::GetInstance()->GetLeftStickX() * 0.01f;
 	acceleration.z += Input::GetInstance()->GetLeftStickY() * 0.01f;
-
 	//========================================
 	// 速度に加速度を加算
 	velocity.x += acceleration.x;
 	velocity.z += acceleration.z;
-
 	//========================================
 	// 最大速度を超えないようにする
 	if(velocity.x > maxSpeed) velocity.x = maxSpeed;
 	if(velocity.x < -maxSpeed) velocity.x = -maxSpeed;
 	if(velocity.z > maxSpeed) velocity.z = maxSpeed;
 	if(velocity.z < -maxSpeed) velocity.z = -maxSpeed;
-
 	//========================================
 	// 速度を位置に加算
 	transform.translate.x += velocity.x;
 	transform.translate.z += velocity.z;
-
 	//========================================
 	// 移動範囲の制限を適用
 	if(transform.translate.x > moveLimit) transform.translate.x = moveLimit;
 	if(transform.translate.x < -moveLimit) transform.translate.x = -moveLimit;
 	if(transform.translate.z > moveLimit) transform.translate.z = moveLimit;
 	if(transform.translate.z < -moveLimit) transform.translate.z = -moveLimit;
-
 	//========================================
 	// 減速処理	
 	velocity.x *= deceleration;
@@ -192,16 +196,68 @@ void Player::Dodge() {
 	//========================================
 	// 回避処理
 	isDodge = true;
-
 	//========================================
 	// スティックの傾きの方向に回避
 	acceleration.x = Input::GetInstance()->GetLeftStickX() * 0.8f;
 	acceleration.z = Input::GetInstance()->GetLeftStickY() * 0.8f;
-
 	//========================================
 	// 速度に加速度を加算
 	velocity.x += acceleration.x;
 	velocity.z += acceleration.z;
+}
+
+///=============================================================================
+///						攻撃
+void Player::Attack() {
+	//========================================
+	// 左スティックの入力を取得
+	float stickX = Input::GetInstance()->GetLeftStickX();
+	float stickY = Input::GetInstance()->GetLeftStickY();
+	//========================================
+	// 攻撃方向を計算
+	Vector3 attackDirection = { stickX, 0.0f, stickY };
+	//========================================
+	// スティックの入力がない場合は最後に向いていた方向に攻撃
+	if(stickX == 0.0f && stickY == 0.0f) {
+		attackDirection.x = sinf(transform.rotate.y);
+		attackDirection.z = cosf(transform.rotate.y);
+	} else {
+		// 攻撃方向を正規化
+		float length = sqrtf(attackDirection.x * attackDirection.x + attackDirection.z * attackDirection.z);
+		if(length != 0.0f) {
+			attackDirection.x /= length;
+			attackDirection.z /= length;
+		}
+
+		// プレイヤーの向きを攻撃方向に変更
+		//transform.rotate.y = atan2f(attackDirection.x, attackDirection.z);
+	}
+	//========================================
+	// 攻撃位置をプレイヤーの位置から少し前にオフセット
+	float attackOffset = 0.4f; // オフセット距離
+	Vector3 attackPosition = transform.translate + attackDirection * attackOffset;
+	//========================================
+	// 攻撃する方向に少し加速
+	velocity.x += attackDirection.x * 0.15f;
+	velocity.z += attackDirection.z * 0.15f;
+	//========================================
+	// 攻撃処理
+	// ここに攻撃の具体的な処理を追加します
+	// 例: 弾を発射する、近接攻撃を行うなど
+	playerWepon_->SetPosition(attackPosition);
+	//========================================
+	// デバッグ用に攻撃方向と位置を表示
+	//std::cout << "Attack Direction: (" << attackDirection.x << ", " << attackDirection.z << ")" << std::endl;
+	//std::cout << "Attack Position: (" << attackPosition.x << ", " << attackPosition.y << ", " << attackPosition.z << ")" << std::endl;
+
+	//========================================
+	// 攻撃時にLineで斬撃エフェクトを表示
+	//攻撃方向に半円エフェクトを表示
+	LineManager::GetInstance()->DrawLine(attackPosition, attackPosition + attackDirection * 0.5f, { 1.0f, 0.0f, 0.0f, 1.0f });
+
+	//プレイヤーの向いている方へ、平行に線を出して切っている様に見せる
+	
+
 }
 
 ///=============================================================================

@@ -9,6 +9,7 @@
 #pragma once
 #include "BaseObject.h"
 #include "Object3d.h"
+#include "PlayerWepon.h"
 
 ///=============================================================================
 ///						プレイヤークラス
@@ -25,6 +26,9 @@ public:
 
 	/// \brief 描画
 	void Draw();
+
+	/// @brief ImGui描画
+	void DrawParticle();
 
 	/// \brief ImGui描画
 	void ImGuiDraw();
@@ -53,6 +57,11 @@ private:
 	void Dodge();
 
 	/**----------------------------------------------------------------------------
+	 * \brief  Attack 
+	 */
+	void Attack();
+
+	/**----------------------------------------------------------------------------
 	 * \brief  AnimationRun アニメーション実行
 	 */
 	void AnimationRun();
@@ -72,6 +81,14 @@ public:
 	 */
 	Vector3 GetPosition() const { return transform.translate; }
 
+	Transform GetTransform() const { return transform; }
+
+	/**----------------------------------------------------------------------------
+	 * \brief  GetPlayerWepon 
+	 * \return 
+	 */
+	PlayerWepon *GetPlayerWepon() { return playerWepon_.get(); }
+
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
@@ -80,7 +97,6 @@ private:
 	Object3d *object3d_ = nullptr;
 	// 場所
 	Transform transform{ {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-
 	//========================================
 	// 移動系
 	// 加速度
@@ -91,25 +107,24 @@ private:
 	Vector3 velocity{ 0.0f,0.0f,0.0f };
 	// 最大速度
 	float maxSpeed = 0.8f;
-
 	//========================================
 	// 移動制限
-	float moveLimit = 2.0f;
-
+	float moveLimit = 4.0f;
 	//========================================
 	// アニメーション
 	int count = 0;
-
 	//========================================
 	// 回避フラグ
 	bool isDodge = false;
 	//回避クールタイム
 	int dodgeCoolTime = 0;
-
 	//========================================
 	// ヒットフラグ
 	bool isHitEnter = false;
 	bool isHitStay = false;
 	bool isHitExit = false;
+	//========================================
+	// 武器
+	std::unique_ptr<PlayerWepon> playerWepon_;
 };
 

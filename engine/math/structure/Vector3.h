@@ -8,6 +8,11 @@ struct Vector3 final{
 	float x;
 	float y;
 	float z;
+	
+	//マイナス演算子
+	Vector3 operator-() const {
+		return { -x, -y, -z };
+	}
 
 	// 加算演算子
 	Vector3 operator+(const Vector3& other) const {

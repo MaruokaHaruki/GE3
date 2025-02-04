@@ -15,6 +15,7 @@
 #include "MAudioG.h"
 #include <mmdeviceapi.h>
 #include <Functiondiscoverykeys_devpkey.h>
+#include <algorithm>
 
 ///=============================================================================
 ///						シングルトンインスタンスの取得
@@ -204,6 +205,67 @@ void MAudioG::PlayWav(const std::string& filename, bool loopFlag, float volume, 
 	std::lock_guard<std::mutex> lock(voiceMutex_);
 	voiceMap_[filename] = std::move(voice);
 }
+
+///=============================================================================
+///						逆再生
+void MAudioG::PlayWavReverse(const std::string& filename, bool loopFlag, float volume, float maxPlaySpeed) {
+	// サウンドデータがロードされていなければロードする
+	if (soundDataMap_.find(filename) == soundDataMap_.end()) {
+		LoadWav(filename);
+	}
+
+	auto& soundData = soundDataMap_[filename];
+
+	// 既に再生中の場合は一旦停止
+	StopWav(filename);
+
+	// ソースボイスを作成
+	IXAudio2SourceVoice* sourceVoice = nullptr;
+	HRESULT result = xAudio2_->CreateSourceVoice(&sourceVoice, &soundData.wfex, XAUDIO2_VOICE_USEFILTER, maxPlaySpeed, &voiceCallback_);
+	if (FAILED(result)) {
+		std::cerr << "Failed to create source voice: " << std::hex << result << std::endl;
+		return;
+	}
+
+	// 音声データのバッファを逆順にする
+	std::vector<uint8_t> reversedBuffer(soundData.buffer.size());
+	std::reverse_copy(soundData.buffer.begin(), soundData.buffer.end(), reversedBuffer.begin());
+
+	// バッファを設定
+	XAUDIO2_BUFFER buf = {};
+	buf.pAudioData = reversedBuffer.data();
+	buf.AudioBytes = (UINT32)reversedBuffer.size();
+	buf.Flags = XAUDIO2_END_OF_STREAM;
+	buf.LoopCount = loopFlag ? XAUDIO2_LOOP_INFINITE : 0;
+
+	// ソースボイスにバッファを送信
+	result = sourceVoice->SubmitSourceBuffer(&buf);
+	if (FAILED(result)) {
+		std::cerr << "Failed to submit source buffer: " << std::hex << result << std::endl;
+		sourceVoice->DestroyVoice();
+		return;
+	}
+
+	// 再生開始
+	result = sourceVoice->Start(0);
+	if (FAILED(result)) {
+		std::cerr << "Failed to start playback: " << std::hex << result << std::endl;
+		sourceVoice->DestroyVoice();
+		return;
+	}
+
+	// ボイスを作成し、マップに追加
+	Voice voice = {};
+	voice.sourceVoice = sourceVoice;
+	voice.sourceVoice->SetVolume(volume);
+	voice.oldVolume = volume;
+	voice.oldSpeed = 1.0f;
+
+	std::lock_guard<std::mutex> lock(voiceMutex_);
+	voiceMap_[filename] = std::move(voice);
+}
+
+
 
 ///--------------------------------------------------------------
 ///						 サウンドの停止
