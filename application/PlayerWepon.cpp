@@ -32,14 +32,17 @@ void PlayerWepon::Draw() {
 ///=============================================================================
 ///						当たった時
 void PlayerWepon::OnCollisionEnter(BaseObject *other) {
+	other;
 }
 
 ///=============================================================================
 ///						当たっている時
 void PlayerWepon::OnCollisionStay(BaseObject *other) {
+	other;
 }
 
 ///=============================================================================
 ///						あたり判定から離れた時
 void PlayerWepon::OnCollisionExit(BaseObject *other) {
+	other;
 }

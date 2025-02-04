@@ -33,7 +33,7 @@ void CameraManager::Initialize() {
 	//デフォルトカメラの追加
 	AddCamera("DefaultCamera");
 	//デフォルトカメラの設定
-	SetCurrentCamera("DebugCamera");
+	SetCurrentCamera("DefaultCamera");
 }
 
 ///=============================================================================
@@ -219,7 +219,6 @@ void CameraManager::DrawImGui() {
 	}
 	ImGui::End();
 }
-
 
 ///=============================================================================
 ///                     デストラクタ

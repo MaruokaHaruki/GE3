@@ -100,8 +100,8 @@ void Line::Draw() {
 	// vertexBufferの設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
 	//========================================
-	// 描画
-	commandList->DrawInstanced(vertices_.size(), 1, 0, 0);
+	// 描画安全に設定
+	commandList->DrawInstanced(static_cast<UINT>(vertices_.size()), 1, 0, 0);
 	// NOTE:描画した後はラインをクリアするのを忘れるな
 }
 
@@ -150,8 +150,8 @@ void Line::CreateVertexBuffer() {
 	//========================================
 	// バーテックスバッファビューの設定
     vertexBufferView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress();
-	// バイトサイズ
-    vertexBufferView_.SizeInBytes = bufferSize;
+	// バイトサイズスタティックで設定
+	vertexBufferView_.SizeInBytes = static_cast<UINT>( bufferSize );
 	// ストライド
     vertexBufferView_.StrideInBytes = sizeof(LineVertex);
 }

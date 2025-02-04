@@ -66,19 +66,16 @@ private:
 	std::unique_ptr<CollisionManager> collisionManager_;
 	//3Dオブジェクト
 	std::unique_ptr<Object3d> objCollisionManager_;
-
 	//========================================
 	// 地面
 	std::unique_ptr<Ground> ground_;
 	// 3dオブジェクト
 	std::unique_ptr<Object3d> objGround_;
-
 	//========================================
 	// プレイヤー
 	std::unique_ptr<Player> player_;
 	// 3dオブジェクト
 	std::unique_ptr<Object3d> objPlayer_;
-
 	//========================================
 	//　敵
 	std::unique_ptr<Enemy> enemy_;
@@ -101,6 +98,21 @@ private:
 	// 倒した敵の数
 	int defeatedEnemies_ = 0;
 	// クリアに必要な敵の数
-	const int requiredDefeatedEnemies_ = 2;
+	const int requiredDefeatedEnemies_ = 1;
+
+	//========================================
+	// ゲームクリアスプライト
+	std::unique_ptr<Sprite> clearSprite_;
+	Transform transformSprite{ {256.0f,256.0f,256.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	//マテリアル
+	Vector4 materialSprite = {1.0f, 1.0f, 1.0f, 1.0f};
+	//UV座標
+	Transform uvTransformSprite{
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f},
+	};
+	//ゲームクリアフラグ
+	bool isGameClear = false;
 };
 

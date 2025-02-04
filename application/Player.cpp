@@ -58,6 +58,7 @@ void Player::Update() {
 	if(Input::GetInstance()->TriggerKey(DIK_RETURN)
 		|| Input::GetInstance()->TriggerButton(XINPUT_GAMEPAD_A)) {
 		Attack();
+		Dodge();
 	}
 	//========================================
 	// 武器
@@ -111,7 +112,6 @@ void Player::OnCollisionEnter(BaseObject *other) {
 	}
 	velocity.x *= -velocity.x;
 	velocity.z *= -velocity.z;
-
 	//========================================
 	// フラグ
 	isHitEnter = true;
@@ -198,8 +198,8 @@ void Player::Dodge() {
 	isDodge = true;
 	//========================================
 	// スティックの傾きの方向に回避
-	acceleration.x = Input::GetInstance()->GetLeftStickX() * 0.8f;
-	acceleration.z = Input::GetInstance()->GetLeftStickY() * 0.8f;
+	acceleration.x = Input::GetInstance()->GetLeftStickX() * 1.8f;
+	acceleration.z = Input::GetInstance()->GetLeftStickY() * 1.8f;
 	//========================================
 	// 速度に加速度を加算
 	velocity.x += acceleration.x;
@@ -209,56 +209,42 @@ void Player::Dodge() {
 ///=============================================================================
 ///						攻撃
 void Player::Attack() {
-	//========================================
 	// 左スティックの入力を取得
 	float stickX = Input::GetInstance()->GetLeftStickX();
 	float stickY = Input::GetInstance()->GetLeftStickY();
-	//========================================
+
 	// 攻撃方向を計算
 	Vector3 attackDirection = { stickX, 0.0f, stickY };
-	//========================================
+
 	// スティックの入力がない場合は最後に向いていた方向に攻撃
-	if(stickX == 0.0f && stickY == 0.0f) {
+	if (stickX == 0.0f && stickY == 0.0f) {
 		attackDirection.x = sinf(transform.rotate.y);
 		attackDirection.z = cosf(transform.rotate.y);
 	} else {
 		// 攻撃方向を正規化
 		float length = sqrtf(attackDirection.x * attackDirection.x + attackDirection.z * attackDirection.z);
-		if(length != 0.0f) {
+		if (length != 0.0f) {
 			attackDirection.x /= length;
 			attackDirection.z /= length;
 		}
-
-		// プレイヤーの向きを攻撃方向に変更
-		//transform.rotate.y = atan2f(attackDirection.x, attackDirection.z);
 	}
-	//========================================
+
 	// 攻撃位置をプレイヤーの位置から少し前にオフセット
 	float attackOffset = 0.4f; // オフセット距離
 	Vector3 attackPosition = transform.translate + attackDirection * attackOffset;
-	//========================================
+
 	// 攻撃する方向に少し加速
 	velocity.x += attackDirection.x * 0.15f;
 	velocity.z += attackDirection.z * 0.15f;
-	//========================================
-	// 攻撃処理
-	// ここに攻撃の具体的な処理を追加します
-	// 例: 弾を発射する、近接攻撃を行うなど
+
+	// 武器の位置を更新
 	playerWepon_->SetPosition(attackPosition);
-	//========================================
-	// デバッグ用に攻撃方向と位置を表示
-	//std::cout << "Attack Direction: (" << attackDirection.x << ", " << attackDirection.z << ")" << std::endl;
-	//std::cout << "Attack Position: (" << attackPosition.x << ", " << attackPosition.y << ", " << attackPosition.z << ")" << std::endl;
 
-	//========================================
-	// 攻撃時にLineで斬撃エフェクトを表示
-	//攻撃方向に半円エフェクトを表示
-	LineManager::GetInstance()->DrawLine(attackPosition, attackPosition + attackDirection * 0.5f, { 1.0f, 0.0f, 0.0f, 1.0f });
-
-	//プレイヤーの向いている方へ、平行に線を出して切っている様に見せる
-	
+	// 攻撃方向にに四角い当たり判定ラインを描画
+	LineManager::GetInstance()->DrawLine(transform.translate, attackPosition, { 1.0f, 0.0f, 0.0f });
 
 }
+
 
 ///=============================================================================
 ///						アニメーション

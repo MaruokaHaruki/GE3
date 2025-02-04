@@ -18,7 +18,7 @@ void SceneManager::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dS
 	// パーティクル共通部
 	particleSetup_ = particleSetup;
 	// 初期シーンを設定（例としてDebugSceneを設定）
-	nowScene_ = std::make_unique<DebugScene>();
+	nowScene_ = std::make_unique<TitleScene>();
 	nowScene_->Initialize(spriteSetup_, object3dSetup_, particleSetup_);
 
 	// シーンの初期設定

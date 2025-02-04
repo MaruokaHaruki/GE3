@@ -50,9 +50,9 @@ void Enemy::Update(const Vector3 &playerPos) {
 			//放射状に線を描画してエフェクトを出す
 		float currentLength = maxLength * ( frameCount / 60.0f ); // 60フレームで最大長に達する
 		for(int i = 0; i < numLines; ++i) {
-			float angle = ( 2.0f * M_PI / numLines ) * i;
+			float angle = ( 2.0f * static_cast<float>( M_PI ) / numLines ) * i;
 			for(int j = -1; j <= 1; ++j) {
-				float verticalAngle = ( M_PI / 2.0f ) * j;
+				float verticalAngle = ( static_cast<float>( M_PI ) / 2.0f ) * j;
 				Vector3 direction = { cos(angle) * cos(verticalAngle), sin(verticalAngle), sin(angle) * cos(verticalAngle) };
 				Vector3 endPosition = transform.translate + direction * currentLength;
 				LineManager::GetInstance()->DrawLine(transform.translate, endPosition, { 1.0f, 0.0f, 0.0f });

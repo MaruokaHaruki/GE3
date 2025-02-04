@@ -116,10 +116,10 @@ void LineManager::DrawLine(const Vector3 &start, const Vector3 &end, const Vecto
 	if(!isDrawLine_) {
 		return;
 	}
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	// ラインの追加
 	line_->DrawLine(start, end, color);
-#endif // _DEBUG
+//#endif // _DEBUG
 }
 
 ///=============================================================================
@@ -145,88 +145,93 @@ void LineManager::DrawGrid(float gridSize, int divisions, const Vector4 &color) 
 ///=============================================================================
 ///						球体の描画
 void LineManager::DrawSphere(const Vector3 &center, float radius, const Vector4 &color, int divisions) {
-	if(!isDrawSphere_ || divisions <= 0) {
-		return;
-	}
-	float angleStep = 2.0f * static_cast<float>( M_PI ) / divisions;
+	center;
+	radius;
+	color;
+	divisions;
+	//if(!isDrawSphere_ || divisions <= 0) {
+	//	return;
+	//}
+	//float angleStep = 2.0f * static_cast<float>( M_PI ) / divisions;
 
-	// XY, XZ, YZ 平面の円を描画
-	for(int i = 0; i < divisions; ++i) {
-		float angle1 = angleStep * i;
-		float angle2 = angleStep * ( i + 1 );
+	//// XY, XZ, YZ 平面の円を描画
+	//for(int i = 0; i < divisions; ++i) {
+	//	float angle1 = angleStep * i;
+	//	float angle2 = angleStep * ( i + 1 );
 
-		// XY 平面の円
-		DrawLine(
-			Vector3(center.x + radius * cosf(angle1), center.y + radius * sinf(angle1), center.z),
-			Vector3(center.x + radius * cosf(angle2), center.y + radius * sinf(angle2), center.z),
-			color
-		);
+	//	// XY 平面の円
+	//	DrawLine(
+	//		Vector3(center.x + radius * cosf(angle1), center.y + radius * sinf(angle1), center.z),
+	//		Vector3(center.x + radius * cosf(angle2), center.y + radius * sinf(angle2), center.z),
+	//		color
+	//	);
 
-		// XZ 平面の円
-		DrawLine(
-			Vector3(center.x + radius * cosf(angle1), center.y, center.z + radius * sinf(angle1)),
-			Vector3(center.x + radius * cosf(angle2), center.y, center.z + radius * sinf(angle2)),
-			color
-		);
+	//	// XZ 平面の円
+	//	DrawLine(
+	//		Vector3(center.x + radius * cosf(angle1), center.y, center.z + radius * sinf(angle1)),
+	//		Vector3(center.x + radius * cosf(angle2), center.y, center.z + radius * sinf(angle2)),
+	//		color
+	//	);
 
-		// YZ 平面の円
-		DrawLine(
-			Vector3(center.x, center.y + radius * cosf(angle1), center.z + radius * sinf(angle1)),
-			Vector3(center.x, center.y + radius * cosf(angle2), center.z + radius * sinf(angle2)),
-			color
-		);
-	}
+	//	// YZ 平面の円
+	//	DrawLine(
+	//		Vector3(center.x, center.y + radius * cosf(angle1), center.z + radius * sinf(angle1)),
+	//		Vector3(center.x, center.y + radius * cosf(angle2), center.z + radius * sinf(angle2)),
+	//		color
+	//	);
+	//}
 
-	// 緯度方向の分割を追加
-	for(int lat = 1; lat < divisions / 2; ++lat) {
-		float latAngle1 = static_cast<float>( M_PI ) * lat / ( divisions / 2 );
-		float latAngle2 = static_cast<float>( M_PI ) * ( lat + 1 ) / ( divisions / 2 );
+	//// 緯度方向の分割を追加
+	//for(int lat = 1; lat < divisions / 2; ++lat) {
+	//	float latAngle1 = static_cast<float>( M_PI ) * lat / ( divisions / 2 );
+	//	float latAngle2 = static_cast<float>( M_PI ) * ( lat + 1 ) / ( divisions / 2 );
 
-		float r1 = radius * sinf(latAngle1);
-		float r2 = radius * sinf(latAngle2);
-		float y1 = center.y + radius * cosf(latAngle1);
-		float y2 = center.y + radius * cosf(latAngle2);
+	//	float r1 = radius * sinf(latAngle1);
+	//	float r2 = radius * sinf(latAngle2);
+	//	float y1 = center.y + radius * cosf(latAngle1);
+	//	float y2 = center.y + radius * cosf(latAngle2);
 
-		for(int i = 0; i < divisions; ++i) {
-			float angle1 = angleStep * i;
-			float angle2 = angleStep * ( i + 1 );
+	//	for(int i = 0; i < divisions; ++i) {
+	//		float angle1 = angleStep * i;
+	//		float angle2 = angleStep * ( i + 1 );
 
-			// 緯度方向の円
-			DrawLine(
-				Vector3(center.x + r1 * cosf(angle1), y1, center.z + r1 * sinf(angle1)),
-				Vector3(center.x + r1 * cosf(angle2), y1, center.z + r1 * sinf(angle2)),
-				color
-			);
+	//		// 緯度方向の円
+	//		DrawLine(
+	//			Vector3(center.x + r1 * cosf(angle1), y1, center.z + r1 * sinf(angle1)),
+	//			Vector3(center.x + r1 * cosf(angle2), y1, center.z + r1 * sinf(angle2)),
+	//			color
+	//		);
 
-			DrawLine(
-				Vector3(center.x + r2 * cosf(angle1), y2, center.z + r2 * sinf(angle1)),
-				Vector3(center.x + r2 * cosf(angle2), y2, center.z + r2 * sinf(angle2)),
-				color
-			);
-		}
-	}
+	//		DrawLine(
+	//			Vector3(center.x + r2 * cosf(angle1), y2, center.z + r2 * sinf(angle1)),
+	//			Vector3(center.x + r2 * cosf(angle2), y2, center.z + r2 * sinf(angle2)),
+	//			color
+	//		);
+	//	}
+	//}
 
-	// 経度方向の線を追加
-	for(int lon = 0; lon < divisions; ++lon) {
-		float lonAngle = angleStep * lon;
-		float nextLonAngle = angleStep * ( lon + 1 );
+	//// 経度方向の線を追加
+	//for(int lon = 0; lon < divisions; ++lon) {
 
-		for(int lat = 0; lat <= divisions / 2; ++lat) {
-			float latAngle = static_cast<float>( M_PI ) * lat / ( divisions / 2 );
-			float nextLatAngle = static_cast<float>( M_PI ) * ( lat + 1 ) / ( divisions / 2 );
+	//	float lonAngle = angleStep * lon;
+	//	float nextLonAngle = angleStep * ( lon + 1 );
+	//	nextLonAngle;
+	//	for(int lat = 0; lat <= divisions / 2; ++lat) {
+	//		float latAngle = static_cast<float>( M_PI ) * lat / ( divisions / 2 );
+	//		float nextLatAngle = static_cast<float>( M_PI ) * ( lat + 1 ) / ( divisions / 2 );
 
-			float r1 = radius * sinf(latAngle);
-			float r2 = radius * sinf(nextLatAngle);
-			float y1 = center.y + radius * cosf(latAngle);
-			float y2 = center.y + radius * cosf(nextLatAngle);
+	//		float r1 = radius * sinf(latAngle);
+	//		float r2 = radius * sinf(nextLatAngle);
+	//		float y1 = center.y + radius * cosf(latAngle);
+	//		float y2 = center.y + radius * cosf(nextLatAngle);
 
-			DrawLine(
-				Vector3(center.x + r1 * cosf(lonAngle), y1, center.z + r1 * sinf(lonAngle)),
-				Vector3(center.x + r2 * cosf(lonAngle), y2, center.z + r2 * sinf(lonAngle)),
-				color
-			);
-		}
-	}
+	//		DrawLine(
+	//			Vector3(center.x + r1 * cosf(lonAngle), y1, center.z + r1 * sinf(lonAngle)),
+	//			Vector3(center.x + r2 * cosf(lonAngle), y2, center.z + r2 * sinf(lonAngle)),
+	//			color
+	//		);
+	//	}
+	//}
 }
 
 

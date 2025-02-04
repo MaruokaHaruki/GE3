@@ -8,6 +8,7 @@
  *********************************************************************/
 #include "GamePlayScene.h"
 #include "CameraManager.h"
+#include "input.h"
 
 ///=============================================================================
 ///						初期化
@@ -35,7 +36,7 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 	TextureManager::GetInstance()->LoadTexture("player_left_run_03.png");
 	//チュートリアル
 	TextureManager::GetInstance()->LoadTexture("move.png");
-
+	TextureManager::GetInstance()->LoadTexture("gameClear.png");
 
 	//========================================
 	// オブジェクト読み込み
@@ -77,7 +78,7 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 	//復数敵の初期化
 	//========================================
 	// 複数の敵
-	for (int i = 0; i < enemyNum_; ++i) {
+	for(int i = 0; i < enemyNum_; ++i) {
 		auto objEnemy = std::make_unique<Object3d>();
 		objEnemy->Initialize(object3dSetup);
 		objEnemy->SetModel("enemy.obj");
@@ -107,7 +108,7 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 			4,
 			0.5f,
 			true);
-	
+
 
 	//========================================
 	// 当たり判定
@@ -118,7 +119,14 @@ void GamePlayScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3d
 	collisionManager_ = std::make_unique<CollisionManager>();
 	collisionManager_->Initialize(objCollisionManager_.get());
 
-	
+	//========================================
+	// ゲームクリアスプライト
+	clearSprite_ = std::make_unique<Sprite>();
+	//スプライトの初期化
+	clearSprite_->Initialize(spriteSetup, "gameClear.png");
+	//サイズ
+	clearSprite_->SetSize({ 512.0f,256.0f });
+	clearSprite_->SetPosition(Vector2{ 1000.0f, 1000.0f });
 }
 
 ///=============================================================================
@@ -150,7 +158,7 @@ void GamePlayScene::Update() {
 	player_->Update();
 	//========================================
 	// 複数の敵
-	for (auto& enemy : enemyList_) {
+	for(auto &enemy : enemyList_) {
 		enemy->Update(player_->GetPosition());
 	}
 	//========================================
@@ -182,9 +190,19 @@ void GamePlayScene::Update() {
 	}
 	//もし敵が全滅していたらクリア
 	if(defeatedEnemies_ <= requiredDefeatedEnemies_) {
-		sceneNo = SCENE::CLEAR;
+		isGameClear = true;
 	}
 
+	//========================================
+	// ゲームクリアスプライト
+	if(isGameClear) {
+		clearSprite_->SetPosition(Vector2{ 400.0f, 300.0f });
+		clearSprite_->Update();
+		//Aボタンでタイトルに戻る
+		if(Input::GetInstance()->TriggerButton(XINPUT_GAMEPAD_A)) {
+			sceneNo = SCENE::TITLE;
+		}
+	}
 }
 
 ///=============================================================================
@@ -194,6 +212,11 @@ void GamePlayScene::Object2DDraw() {
 	// チュートリアル
 	moveSprite_->Draw();
 
+	//========================================
+	// ゲームクリアスプライト
+	if(isGameClear) {
+		clearSprite_->Draw();
+	}
 }
 
 ///=============================================================================
@@ -209,7 +232,7 @@ void GamePlayScene::Object3DDraw() {
 
 	//========================================
 	// 複数の敵
-	for (auto& enemy : enemyList_) {
+	for(auto &enemy : enemyList_) {
 		enemy->Draw();
 	}
 
