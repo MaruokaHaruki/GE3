@@ -8,6 +8,7 @@
  *********************************************************************/
 
 #include "WinApp.h"
+#include "Input.h"
 /// ===imgui=== //
 #include "imgui.h"
 #include"imgui_impl_dx12.h"
@@ -28,6 +29,10 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	case WM_DESTROY:
 		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
+		return 0;
+	case WM_MOUSEWHEEL:
+		short delta = GET_WHEEL_DELTA_WPARAM(wparam);
+		Input::GetInstance()->OnMouseWheel(delta);
 		return 0;
 	}
 	//標準のメッセージ処理を行う

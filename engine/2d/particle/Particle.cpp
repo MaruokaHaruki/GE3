@@ -363,7 +363,7 @@ ParticleStr Particle::CreateNewParticle(std::mt19937& randomEngine, const Vector
 
 	// カラーと寿命を設定
 	particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 1.0f };
-	particle.lifeTime = distTime(randomEngine);
+	particle.lifeTime = 0.4f; //distTime(randomEngine);
 	particle.currentTime = 0.0f;
 
 	return particle;

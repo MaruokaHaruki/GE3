@@ -30,9 +30,20 @@ public:
      */
     void SetRepeat(bool repeat);
 
+    /**----------------------------------------------------------------------------
+     * \brief  SetTransform 
+     * \param  transform
+     */
+	void SetTranslate(const Vector3 &translate) { transform_.translate = translate; }
+
+	//画像の大きさ
+	void SetCustomTextureSize(const Vector2 &size) { particle_->SetCustomTextureSize(size); }
+
     ///--------------------------------------------------------------
     ///							静的メンバ関数
 private:
+
+
 
 
     ///--------------------------------------------------------------

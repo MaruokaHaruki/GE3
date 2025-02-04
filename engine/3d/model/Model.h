@@ -132,7 +132,7 @@ private:
 	///---------------------------------------
 	/// バッファリソースの使い道を指すポインタ
 	//頂点
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
 
 	//---------------------------------------
 	// テクスチャ用変数

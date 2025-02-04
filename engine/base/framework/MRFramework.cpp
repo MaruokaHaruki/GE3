@@ -53,30 +53,25 @@ void MRFramework::Initialize() {
 	win_ = std::make_unique<WinApp>();
 	//ウィンドウの生成
 	win_->CreateGameWindow(L"MREngine_Ver15.0");
-
 	///--------------------------------------------------------------
 	///						 ダイレクトX生成
 	dxCore_ = std::make_unique<DirectXCore>();
 	//ダイレクトXの初期化
 	dxCore_->InitializeDirectX(win_.get());
-
 	///--------------------------------------------------------------
 	///						 ImGuiのセットアップ
 	imguiSetup_ = std::make_unique<ImguiSetup>();
 	//ImGuiの初期化
 	imguiSetup_->Initialize(win_.get(), dxCore_.get(), Style::CYBER);
-
 	///--------------------------------------------------------------
 	///						 SrvSetupクラス
 	srvSetup_ = std::make_unique<SrvSetup>();
 	//SrvSetupの初期化
 	srvSetup_->Initialize(dxCore_.get());
-
 	///--------------------------------------------------------------
 	///						 入力クラス
 	//入力の初期化
 	Input::GetInstance()->Initialize(win_->GetWindowClass().hInstance, win_->GetWindowHandle());
-
 	///--------------------------------------------------------------
 	///						 スプライトクラス
 	//========================================
@@ -87,7 +82,6 @@ void MRFramework::Initialize() {
 	//========================================
 	// テクスチャマネージャ
 	TextureManager::GetInstance()->Initialize(dxCore_.get(), "resources/texture/", srvSetup_.get());
-
 	///--------------------------------------------------------------
 	///						 Object3D共通部
 	//========================================
@@ -98,7 +92,6 @@ void MRFramework::Initialize() {
 	object3dSetup_ = std::make_unique<Object3dSetup>();
 	//3Dオブジェクト共通部の初期化
 	object3dSetup_->Initialize(dxCore_.get());
-
 	///--------------------------------------------------------------
 	///						 パーティクル共通部
 	//========================================
@@ -106,11 +99,14 @@ void MRFramework::Initialize() {
 	particleSetup_ = std::make_unique<ParticleSetup>();
 	//パーティクルセットアップの初期化
 	particleSetup_->Initialize(dxCore_.get(), srvSetup_.get());
-
+	///--------------------------------------------------------------
+	///						 ラインマネージャ
+	//========================================
+	// ラインマネージャの初期化
+	LineManager::GetInstance()->Initialize(dxCore_.get(), srvSetup_.get());
 	///--------------------------------------------------------------
 	///						 オーディオの初期化
 	MAudioG::GetInstance()->Initialize("resources/sound/");
-
 	///--------------------------------------------------------------
 	/// デフォルトカメラの初期化
 	//========================================
@@ -119,9 +115,10 @@ void MRFramework::Initialize() {
 	// TODO: カメラの改善 現在、カメラの設定はここで行っているが、自由に変更がしにくいという問題が発生している。
 	// Object3Dのカメラ設定
 	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
-	// カメラの設定
+	// パーティクルのカメラ設定
 	particleSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
-	
+	// Lineのカメラ設定
+	LineManager::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
 	///--------------------------------------------------------------
 	///						 シーンマネージャ
 	sceneManager_ = std::make_unique<SceneManager>();
@@ -135,17 +132,25 @@ void MRFramework::Initialize() {
 ///=============================================================================
 ///						更新
 void MRFramework::Update() {
-	// デバックカメラの呼び出し
+	//========================================
+	// デバックカメラの呼び出し1,2
 	if(Input::GetInstance()->PushKey(DIK_1)) {
 		CameraManager::GetInstance()->SetCurrentCamera("DebugCamera");
 	}
 	if(Input::GetInstance()->PushKey(DIK_2)) {
 		CameraManager::GetInstance()->SetCurrentCamera("DefaultCamera");
 	}
-
 	//========================================
 	// カメラの更新
 	CameraManager::GetInstance()->UpdateAll();
+	//========================================
+	// ラインの更新
+	// カメラの更新
+	LineManager::GetInstance()->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
+	// グリッドの描画
+	LineManager::GetInstance()->DrawGrid(10000.0f, 32, Vector4(1.0f, 1.0f, 1.0f, 1.0f));	//中心からxy平面を描画
+	// ラインの更新
+	LineManager::GetInstance()->Update();
 	//========================================
 	// Object3Dのカメラ設定の更新
 	object3dSetup_->SetDefaultCamera(CameraManager::GetInstance()->GetCurrentCamera());
@@ -154,7 +159,6 @@ void MRFramework::Update() {
 	//========================================
 	// インプットの更新
 	Input::GetInstance()->Update();
-	
 	//========================================
 	// シーンマネージャの更新
 	sceneManager_->Update();
@@ -176,6 +180,9 @@ void MRFramework::Finalize() {
 	// モデルマネージャの終了処理
 	ModelManager::GetInstance()->Finalize();
 	//========================================
+	// ラインマネージャの終了処理
+	LineManager::GetInstance()->Finalize();
+	//========================================
 	// ダイレクトX
 	dxCore_->ReleaseDirectX();
 	//========================================
@@ -190,6 +197,9 @@ void MRFramework::FrameworkPreDraw() {
 	// ループ前処理
 	dxCore_->PreDraw();
 	srvSetup_->PreDraw();
+	//========================================
+	// Lineの描画
+	LineManager::GetInstance()->Draw();
 }
 
 ///=============================================================================
@@ -206,21 +216,28 @@ void MRFramework::FrameworkPostDraw() {
 ///=============================================================================
 ///						ImGuiの更新前処理
 void MRFramework::ImGuiPreDraw() {
+	//========================================
 	// imguiの初期化
 	imguiSetup_->Begin();
 #ifdef _DEBUG
+	//========================================
 	// imguiの描画
 	sceneManager_->ImGuiDraw();
 	// InPutのImGui描画
 	Input::GetInstance()->ImGuiDraw();
+	//========================================
 	// CameraのImGui描画
 	CameraManager::GetInstance()->DrawImGui();
+	//========================================
+	// LineのImGui描画
+	LineManager::GetInstance()->DrawImGui();
 #endif // DEBUG
 }
 
 ///=============================================================================
 ///						ImGuiの更新後処理
 void MRFramework::ImGuiPostDraw() {
+	//========================================
 	// imguiの終了処理
 	imguiSetup_->End();
 }
@@ -228,6 +245,8 @@ void MRFramework::ImGuiPostDraw() {
 ///=============================================================================
 ///						Object2D共通描画設定
 void MRFramework::Object2DCommonDraw() {
+	//========================================
+	// スプライト共通描画設定
 	spriteSetup_->CommonDrawSetup();
 	// 2D描画
 	sceneManager_->Object2DDraw();
@@ -236,6 +255,8 @@ void MRFramework::Object2DCommonDraw() {
 ///=============================================================================
 ///						particle共通描画設定
 void MRFramework::ParticleCommonDraw() {
+	//========================================
+	// パーティクル共通描画設定
 	particleSetup_->CommonDrawSetup();
 	// パーティクル描画
 	sceneManager_->ParticleDraw();
@@ -244,6 +265,8 @@ void MRFramework::ParticleCommonDraw() {
 ///=============================================================================
 ///						Object3D共通描画設定
 void MRFramework::Object3DCommonDraw() {
+	//========================================
+	// 3D共通描画設定
 	object3dSetup_->CommonDrawSetup();
 	// 3D描画
 	sceneManager_->Object3DDraw();

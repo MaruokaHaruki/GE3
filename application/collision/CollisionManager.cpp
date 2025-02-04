@@ -3,6 +3,7 @@
 #include "ImguiSetup.h"
 #include <algorithm>
 #include <cmath>
+#include "LineManager.h"
 
 ///=============================================================================
 ///						初期化
@@ -25,6 +26,13 @@ void CollisionManager::Update() {
 	//========================================
 	// 衝突判定を実行
 	CheckAllCollisions();
+	for(const auto &pair : grid_) {
+		for(auto *obj : pair.second.objects) {
+			Vector3 position = obj->GetCollider()->GetPosition();
+			float radius = obj->GetCollider()->GetRadius();
+			LineManager::GetInstance()->DrawSphere(position, radius, Vector4{ 1.0f,0.0f,0.0f,1.0f });
+		}
+	}
 }
 
 ///=============================================================================

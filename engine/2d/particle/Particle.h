@@ -125,6 +125,11 @@ private:
 	///							入出力関数
 public:
 
+	//画像のサイズを設定
+	void SetCustomTextureSize(const Vector2 &size) {
+		customTextureSize = size;
+	}
+
 
 	///--------------------------------------------------------------
 	///							メンバ変数

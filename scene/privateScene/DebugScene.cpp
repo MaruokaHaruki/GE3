@@ -7,6 +7,7 @@
  * \note   
  *********************************************************************/
 #include "DebugScene.h"
+#include "Input.h"
 
 ///=============================================================================
 ///						初期化
@@ -16,6 +17,8 @@ void DebugScene::Initialize(SpriteSetup *spriteSetup, Object3dSetup *object3dSet
 
 	///--------------------------------------------------------------
 	///						 音声クラス
+	audio_ = MAudioG::GetInstance();
+	MAudioG::GetInstance()->LoadWav("Duke_Ellington.wav");
 
 	///--------------------------------------------------------------
 	///						 2D系クラス
@@ -63,6 +66,7 @@ void DebugScene::Finalize() {
 void DebugScene::Update() {
 	///--------------------------------------------------------------
 	///						更新処理
+
 	//========================================
 	// カメラの更新
 	//CameraManager::GetInstance()->UpdateAll();
@@ -88,6 +92,11 @@ void DebugScene::Update() {
 
 	//========================================
 	// 音声の再生
+	if(audio_->IsWavPlaying("Duke_Ellington.wav") == false) {
+		//audio_->PlayWavReverse("Duke_Ellington.wav", true, 1.0f, 1.0f);
+		//audio_->PlayWav("Duke_Ellington.wav", true, 1.0f, 1.0f);
+	}
+
 
 }
 

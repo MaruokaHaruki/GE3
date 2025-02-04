@@ -27,7 +27,7 @@ private:
 	//デストラクタ
 	~ModelManager() = default;
 	//コピーコンストラクタ
-	ModelManager(const ModelManager&) = delete;
+	ModelManager(const ModelManager&) = delete;	
 	//代入演算子
 	ModelManager& operator=(const ModelManager&) = delete;
 

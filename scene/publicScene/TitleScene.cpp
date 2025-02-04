@@ -37,11 +37,11 @@ void TitleScene::Finalize() {
 void TitleScene::Update() {
 	//========================================
 	// シーン遷移
-	if(Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+	if(Input::GetInstance()->TriggerKey(VK_SPACE)) {
 		sceneNo = SCENE::GAMEPLAY;
 	}
 	//コントローラ
-	if(Input::GetInstance()->TriggerButton(Input::BUTTON_A)) {
+	if(Input::GetInstance()->TriggerButton(XINPUT_GAMEPAD_A)) {
 		sceneNo = SCENE::GAMEPLAY;
 	}
 }

@@ -45,12 +45,11 @@ PixelShaderOutput main(VertexShaderOutput input)
     { //Lightngを使用しない場合
         output.color = gMaterial.color * textureColor;
     }
-    
-    // TODO: 後に修正をかける
-    // アルファテストを実装
-    //if (output.color.a < 0.1f){
-    //    discard; // ピクセルを描画しない
-    //}
+    //アルファテストを実装
+    if (output.color.a < 0.1f)
+    {
+        discard; // ピクセルを描画しない
+    }
     
     return output;
 }

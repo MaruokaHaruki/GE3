@@ -84,9 +84,23 @@ private:
 	std::unique_ptr<Enemy> enemy_;
 	// 3dオブジェクト
 	std::unique_ptr<Object3d> objEnemy_;
-
+	//複数体の敵の格納
+	std::vector<std::unique_ptr<Enemy>> enemyList_;
+	std::vector<std::unique_ptr<Object3d>> objEnemyList_;
+	//敵の数
+	int enemyNum_ = 32;
 	//========================================
 	// スプライト
 	std::unique_ptr<Sprite> moveSprite_;
+	//========================================
+	// パーティクル
+	std::unique_ptr<Particle> particle_;
+	//エミッター
+	std::unique_ptr<ParticleEmitter> particleEmitter_;
+	//========================================
+	// 倒した敵の数
+	int defeatedEnemies_ = 0;
+	// クリアに必要な敵の数
+	const int requiredDefeatedEnemies_ = 2;
 };
 

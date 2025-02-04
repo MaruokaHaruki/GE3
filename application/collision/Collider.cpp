@@ -1,7 +1,7 @@
 #include "Collider.h"
 
 ///=============================================================================
-///						円同士の判定　
+///						円同士の判定
 bool Collider::Intersects(const Collider& other) const {
     // 2つの球体間の距離の二乗を計算
     Vector3 diff = position_ - other.position_;
