@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "${workspaceFolder}/GE3_DirectXGame.sln",
+                "/property:GenerateFullPaths=true",
+                "/t:build",
+                "/p:Configuration=Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$msCompile"]
+        },
+        {
+            "label": "buildRelease",
+            "type": "shell",
+            "command": "msbuild",
+            "args": [
+                "${workspaceFolder}/GE3_DirectXGame.sln",
+                "/property:GenerateFullPaths=true",
+                "/t:build",
+                "/p:Configuration=Release"
+            ],
+            "group": "build",
+            "problemMatcher": ["$msCompile"]
+        }
+    ]
+}

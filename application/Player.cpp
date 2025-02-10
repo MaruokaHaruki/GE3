@@ -111,7 +111,6 @@ void Player::OnCollisionEnter(BaseObject *other) {
 	}
 	velocity.x *= -velocity.x;
 	velocity.z *= -velocity.z;
-
 	//========================================
 	// フラグ
 	isHitEnter = true;
