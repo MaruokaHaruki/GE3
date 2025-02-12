@@ -11,11 +11,9 @@
 #include "ModelData.h"
 #include "VertexData.h"
 #include "Material.h"
-
 //========================================
 // 標準ライブラリ
 #include <random>
-
 //========================================
 // DX12include
 #include<d3d12.h>
@@ -28,7 +26,8 @@
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
 
-//Particle構造体
+//========================================
+// ParticleStr構造体
 struct ParticleStr {
 	Transform transform;
 	Vector3 velocity;
@@ -36,13 +35,14 @@ struct ParticleStr {
 	float lifeTime;
 	float currentTime;
 };
-
+//========================================
+// particleForGPU構造体
 struct ParticleForGPU {
 	Matrix4x4 WVP;
 	Matrix4x4 World;
 	Vector4 color;
 };
-
+//========================================
 // パーティクルグループ構造体の定義
 struct ParticleGroup {
 	// マテリアルデータ
@@ -63,35 +63,34 @@ struct ParticleGroup {
 	Vector2 textureSize = { 0.0f, 0.0f }; // テクスチャサイズを追加
 };
 
+///=============================================================================
+///                        パーティクルクラス
 class Object3dSetup;
 class Camera;
 class Particle {
 	///--------------------------------------------------------------
 	///							メンバ関数
 public:
-
 	/// \brief 初期化
 	void Initialize(ParticleSetup* particleSetup);
-
 	/// \brief 更新
 	void Update();
-
 	/// \brief 描画 
 	void Draw();
 
 	/**----------------------------------------------------------------------------
-	 * \brief  Emit
-	 * \param  name
-	 * \param  position
-	 * \param  count
+	 * \brief  Emit パーティクルの発生
+	 * \param  name パーティクルグループ名
+	 * \param  position 発生位置
+	 * \param  count 発生数
 	 */
 	void Emit(const std::string name, const Vector3& position, uint32_t count);
 
 	/**----------------------------------------------------------------------------
-	 * \brief  CreateParticleGroup
-	 * \param  name
-	 * \param  materialFilePath
-	 * \param  maxInstanceCount
+	 * \brief  CreateParticleGroup パーティクルグループの作成
+	 * \param  name パーティクルグループ名
+	 * \param  materialFilePath マテリアルファイルパス
+	 * \param  maxInstanceCount 最大インスタンス数
 	 */
 	void CreateParticleGroup(const std::string& name, const std::string& textureFilePath/*, uint32_t maxInstanceCount*/);
 
@@ -103,17 +102,14 @@ private:
 	 * \brief  CreateVertexData 頂点データの作成
 	 */
 	void CreateVertexData();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  CreateVertexBufferView 頂点バッファビューの作成
 	 */
 	void CreateVertexBufferView();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  CreateMaterialData マテリアルデータの作成
 	 */
 	void CreateMaterialData();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  CreateNewParticle 新しいパーティクルを生成
 	 * \param  randomEngine 乱数生成器
@@ -124,29 +120,23 @@ private:
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
-
 	//画像のサイズを設定
 	void SetCustomTextureSize(const Vector2 &size) {
 		customTextureSize = size;
 	}
 
-
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
-
 	//---------------------------------------
 	// パーティクルセットアップポインタ
 	ParticleSetup* particleSetup_ = nullptr;
-
 	//---------------------------------------
 	// パーティクルグループ
 	std::unordered_map<std::string, ParticleGroup> particleGroups;
-
 	//---------------------------------------
 	// モデルデータ
 	ModelData modelData_;
-
 	//---------------------------------------
 	// 頂点データ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_;
@@ -154,22 +144,18 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_;
 	// バッファリソース内のデータを指すポインタ
 	VertexData* vertexData_ = nullptr;
-
 	//---------------------------------------
 	// マテリアルデータ
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialBuffer_;
 	// バッファリソース内のデータを指すポインタ
 	Material* materialData_ = nullptr;
-
 	//---------------------------------------
 	// インスタンシングバッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingBuffer_;
-
 	//---------------------------------------
 	// 乱数生成器の初期化
 	std::random_device seedGenerator_;
 	std::mt19937 randomEngine_;
-
 	//---------------------------------------
 	// その他
 	// カメラ目線を使用するかどうか
@@ -188,7 +174,6 @@ private:
 	RangeForRandom colorRange_ = { 1.0f, 1.0f };
 	RangeForRandom lifetimeRange_ = { 1.0f, 3.0f };
 	RangeForRandom velocityRange_ = { -1.1f, 1.1f };
-
 	// TODO:設定しているテクスチャサイズを使うかどうかを変更できるようにする
 	Vector2 customTextureSize = { 100.0f, 100.0f };
 };

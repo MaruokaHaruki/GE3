@@ -15,23 +15,26 @@
  ///=============================================================================
  ///								初期化
 void Sprite::Initialize(SpriteSetup* SpriteSetup, std::string textureFilePath) {
+	//========================================
 	//引数で受け取ってメンバ変数に記録する
 	this->spriteSetup_ = SpriteSetup;
-
+	//========================================
 	//頂点バッファの作成
 	CreateVertexBuffer();
+	//========================================
 	//インデックスバッファの作成
 	CreateIndexBuffer();
+	//========================================
 	//マテリアルバッファの作成
 	CreateMaterialBuffer();
+	//========================================
 	//トランスフォーメーションマトリックスバッファの作成
 	CreateTransformationMatrixBuffer();
-
+	//========================================
 	//ファイルパスの記録
 	textureFilePath_ = textureFilePath;
 	//textureIndex = TextureManager::GetInstance()->GetTextureIndex(textureFilePath);
-
-
+	//========================================
 	//テクスチャのサイズを取得
 	AdjustTextureSize();
 }
@@ -40,24 +43,19 @@ void Sprite::Initialize(SpriteSetup* SpriteSetup, std::string textureFilePath) {
 ///									更新
 //NOTE:引数としてローカル行列とビュー行列を持ってくること
 void Sprite::Update(Matrix4x4 viewMatrix) {
-
 	//---------------------------------------
 	// テクスチャ範囲の反映
 	ReflectTextureRange();
-
 	//---------------------------------------
 	// アンカーポイントの反映
 	ReflectAnchorPointAndFlip();
-
 	//---------------------------------------
 	// SRTの反映
 	ReflectSRT();
-
 	//---------------------------------------
 	// スプライトの変換行列を作成
 	Matrix4x4 worldMatrixSprite = MakeAffineMatrix(transform_.scale, transform_.rotate, transform_.translate);
 	transformationMatrixData_->World = worldMatrixSprite;
-
 	//---------------------------------------
 	// 正射影行列の作成
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(
@@ -65,7 +63,6 @@ void Sprite::Update(Matrix4x4 viewMatrix) {
 		float(spriteSetup_->GetDXManager()->GetWinApp().GetWindowWidth()),
 		float(spriteSetup_->GetDXManager()->GetWinApp().GetWindowHeight()),
 		0.0f, 100.0f);
-
 	//---------------------------------------
 	// ワールド・ビュー・プロジェクション行列を計算
 	Matrix4x4 worldViewProjectionMatrixSprite = Multiply4x4(worldMatrixSprite, Multiply4x4(viewMatrix, projectionMatrixSprite));
@@ -82,26 +79,26 @@ void Sprite::Draw() {
 	if(!vertexBuffer_ || !indexBuffer_ || !materialBuffer_ || !transfomationMatrixBuffer_) {
 		throw std::runtime_error("One or more buffers are not initialized.");
 	}
-
+	//========================================
 	// コマンドリスト取得
 	auto commandList = spriteSetup_->GetDXManager()->GetCommandList();
-
+	//========================================
 	// 頂点バッファの設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
-
+	//========================================
 	// インデックスバッファの設定
 	commandList->IASetIndexBuffer(&indexBufferView_);
-
+	//========================================
 	// プリミティブのトポロジーを設定
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
+	//========================================
 	// Material と TransformationMatrix の設定
 	commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
 	commandList->SetGraphicsRootConstantBufferView(1, transfomationMatrixBuffer_->GetGPUVirtualAddress());
-
+	//========================================
 	// テクスチャの設定
 	commandList->SetGraphicsRootDescriptorTable(2, TextureManager::GetInstance()->GetSrvHandleGPU(textureFilePath_));
-	
+	//========================================
 	// 描画コール
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 }
@@ -119,50 +116,53 @@ void Sprite::CreateVertexBuffer() {
 		throw std::runtime_error("Failed to Create Vertex Buffer");
 		return;
 	}
-
+	//========================================
 	// バッファビューの設定
 	vertexBufferView_.BufferLocation = vertexBuffer_->GetGPUVirtualAddress();
 	vertexBufferView_.SizeInBytes = sizeof(VertexData) * 4;
 	vertexBufferView_.StrideInBytes = sizeof(VertexData);
-
+	//========================================
 	// リソースにデータを書き込む
 	vertexBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &vertexData_ ));
-
+	//========================================
 	// 2つの三角形の頂点データを設定
 	vertexData_[0].position = { 0.0f, 1.0f, 0.0f, 1.0f };
 	vertexData_[0].texCoord = { 0.0f, 1.0f };
 	vertexData_[0].normal = { 0.0f, 0.0f, -1.0f };
-
+	// 頂点データの設定
 	vertexData_[1].position = { 0.0f, 0.0f, 0.0f, 1.0f };
 	vertexData_[1].texCoord = { 0.0f, 0.0f };
 	vertexData_[1].normal = { 0.0f, 0.0f, -1.0f };
-
+	// 頂点データの設定
 	vertexData_[2].position = { 1.0f, 1.0f, 0.0f, 1.0f };
 	vertexData_[2].texCoord = { 1.0f, 1.0f };
 	vertexData_[2].normal = { 0.0f, 0.0f, -1.0f };
-
+	// 頂点データの設定
 	vertexData_[3].position = { 1.0f, 0.0f, 0.0f, 1.0f };
 	vertexData_[3].texCoord = { 1.0f, 0.0f };
 	vertexData_[3].normal = { 0.0f, 0.0f, -1.0f };
 }
 
+///=============================================================================
+///                        インデックスバッファの作成
 void Sprite::CreateIndexBuffer() {
 	// インデックスデータ用のバッファリソースを作成
 	indexBuffer_ = spriteSetup_->GetDXManager()->CreateBufferResource(sizeof(uint32_t) * 6);
-
+	//========================================
+	// バッファが作成できなかった場合はエラーを返す
 	if(!indexBuffer_) {
 		throw std::runtime_error("Failed to Create Index Buffer");
 		return;
 	}
-
+	//========================================
 	// バッファビューの設定
 	indexBufferView_.BufferLocation = indexBuffer_->GetGPUVirtualAddress();
 	indexBufferView_.SizeInBytes = sizeof(uint32_t) * 6;
 	indexBufferView_.Format = DXGI_FORMAT_R32_UINT;
-
+	//========================================
 	// リソースにデータを書き込む
 	indexBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &indexData_ ));
-
+	//========================================
 	// インデックスデータを設定
 	indexData_[0] = 0;
 	indexData_[1] = 1;
@@ -202,7 +202,6 @@ void Sprite::CreateTransformationMatrixBuffer() {
 	*transformationMatrixData_ = transformationMatrix;
 }
 
-
 ///=============================================================================
 ///								反映処理
 ///--------------------------------------------------------------
@@ -238,7 +237,6 @@ void Sprite::ReflectAnchorPointAndFlip() {
 		top = -top;
 		bottom = -bottom;
 	}
-
 	//vertexDataにアンカーポイントを反映
 	vertexData_[0].position = { left, bottom, 0.0f, 1.0f };	//左下
 	vertexData_[1].position = { left, top, 0.0f, 1.0f };	//左上
@@ -270,9 +268,10 @@ void Sprite::ReflectTextureRange() {
 ///--------------------------------------------------------------
 ///						 テクスチャサイズをイメージと統合
 void Sprite::AdjustTextureSize() {
+	//========================================
 	// テクスチャのメタデータを取得
 	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureFilePath_);
-
+	//========================================
 	// テクスチャの幅と高さを取得
 	float textureWidth = static_cast<float>( metadata.width );
 	float textureHeight = static_cast<float>( metadata.height );

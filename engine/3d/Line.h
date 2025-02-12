@@ -23,6 +23,8 @@
 #include <dxcapi.h>
 #pragma comment(lib,"dxcompiler.lib")
 
+//========================================
+//  ライン頂点
 struct LineVertex {
 	Vector3 position;
 	Vector4 color;
@@ -34,21 +36,16 @@ class Line {
 	///--------------------------------------------------------------
 	///							メンバ関数
 public:
-
 	/// \brief 初期化
 	void Initialize(LineSetup *lineSetup);
-
 	/// \brief 更新
 	void Update();
-
 	/// \brief 描画 
 	void Draw();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  ClearLines 
 	 */
 	void ClearLines();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  DrawLine ライン描画
 	 * \param  start 始点
@@ -64,7 +61,6 @@ private:
 	 * \brief  CreateVertexBuffer 頂点バッファの作成
 	 */
 	void CreateVertexBuffer();
-
 	/**----------------------------------------------------------------------------
 	 * \brief  CreateTransformationMatrixBuffer 
 	 * \return 
@@ -74,22 +70,17 @@ private:
 	///--------------------------------------------------------------
 	///							入出力関数
 public:
-
-	
-
 	/**----------------------------------------------------------------------------
 	* \brief  SetTransform トランスフォーメーションの設定
 	* \param  transform トランスフォーメーション
 	* \note
 	*/
 	void SetTransform(const Transform& transform) { transform_ = transform; }
-
 	/**----------------------------------------------------------------------------
 	 * \brief  GetTransform 
 	 * \return 
 	 */
 	Transform GetTransform() const { return transform_; }
-
 	/**----------------------------------------------------------------------------
 	* \brief  SetModel モデルの設定
 	* \param  model モデル
@@ -102,7 +93,6 @@ public:
 	* \note
 	*/
 	const Vector3& GetScale() const { return transform_.scale; }
-
 	/**----------------------------------------------------------------------------
 	* \brief  SetRotate 回転の設定
 	* \param  rotate 回転
@@ -115,7 +105,6 @@ public:
 	* \note
 	*/
 	const Vector3& GetRotation() const { return transform_.rotate; }
-
 	/**----------------------------------------------------------------------------
 	* \brief  SetTranslate 移動の設定
 	* \param  translate 移動
@@ -128,7 +117,6 @@ public:
 	* \note
 	*/
 	const Vector3& GetPosition() const { return transform_.translate; }
-
 	/**----------------------------------------------------------------------------
 	* \brief  SetCamera カメラの設定
 	* \param  camera
@@ -138,34 +126,27 @@ public:
 	///--------------------------------------------------------------
 	///							メンバ変数
 private:
-
 	//---------------------------------------
 	// オブジェクト3Dセットアップポインタ
 	LineSetup* lineSetup_ = nullptr;
-
 	//---------------------------------------
 	// 頂点データ
 	std::vector<LineVertex> vertices_;
-
 	//---------------------------------------
 	// 頂点バッファ
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexBuffer_ = nullptr;
 	// バッファリソースの使い道を指すポインタ
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView_ = {};
-
 	//---------------------------------------
 	//トランスフォーメーションマトリックス
 	Microsoft::WRL::ComPtr <ID3D12Resource> transfomationMatrixBuffer_;
-
 	//---------------------------------------
 	// バッファリソース内のデータを指すポインタ
 	//トランスフォーメーションマトリックス
 	TransformationMatrix* transformationMatrixData_ = nullptr;
-
 	//--------------------------------------
 	// Transform
 	Transform transform_ = {};
-
 	//--------------------------------------
 	// カメラ
 	Camera* camera_ = nullptr;

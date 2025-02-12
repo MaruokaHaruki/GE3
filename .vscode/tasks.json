@@ -1,16 +1,17 @@
+//// filepath: /C:/Kamata_Workbench/LE2B/GE3/project/.vscode/tasks.json
 {
     "version": "2.0.0",
+    "options": {
+        "shell": {
+            "executable": "C:\\Windows\\System32\\cmd.exe",
+            "args": ["/d", "/c"]
+        }
+    },
     "tasks": [
         {
             "label": "build",
             "type": "shell",
-            "command": "msbuild",
-            "args": [
-                "${workspaceFolder}/GE3_DirectXGame.sln",
-                "/property:GenerateFullPaths=true",
-                "/t:build",
-                "/p:Configuration=Debug"
-            ],
+            "command": "call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat\" && \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\" \"${workspaceFolder}\\GE3_DirectXGame.sln\" /property:GenerateFullPaths=true /t:build /p:Configuration=Debug",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -20,13 +21,7 @@
         {
             "label": "buildRelease",
             "type": "shell",
-            "command": "msbuild",
-            "args": [
-                "${workspaceFolder}/GE3_DirectXGame.sln",
-                "/property:GenerateFullPaths=true",
-                "/t:build",
-                "/p:Configuration=Release"
-            ],
+            "command": "call \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat\" && \"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe\" \"${workspaceFolder}\\GE3_DirectXGame.sln\" /property:GenerateFullPaths=true /t:build /p:Configuration=Release",
             "group": "build",
             "problemMatcher": ["$msCompile"]
         }

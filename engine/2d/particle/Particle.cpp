@@ -1,10 +1,10 @@
 #include "Particle.h"
 #include "Camera.h"
-//---------------------------------------
+//========================================
 // ファイル読み込み関数
 #include <fstream>
 #include <sstream>
-//---------------------------------------
+//========================================
 // 数学関数　
 #include <cmath>
 #include "MathFunc4x4.h"
@@ -13,7 +13,6 @@
 #include "TextureManager.h"
 #include "ParticleSetup.h"
 #include <numbers>
-
 
 ///=============================================================================
 ///						初期化処理
@@ -52,7 +51,6 @@ void Particle::Update() {
 		0.1f, 100.0f);
 	// ビュープロジェクション行列の取得
 	Matrix4x4 viewProjectionMatrix = Multiply4x4(viewMatrix, projectionMatrix);
-
 	//========================================
 	// ビルボード行列の取得
 	Matrix4x4 backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
@@ -66,10 +64,9 @@ void Particle::Update() {
 	} else {
 		billboardMatrix = Identity4x4();
 	}
-
+	//========================================
 	// スケール調整用の倍率を設定
 	constexpr float scaleMultiplier = 0.01f; // 必要に応じて調整
-
 	//========================================
 	// パーティクルの更新
 	for(auto& group : particleGroups) {
@@ -140,7 +137,7 @@ void Particle::Draw() {
 	//commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// VBV (Vertex Buffer View)を設定
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView_);
-
+	//========================================
 	// 全てのパーティクルグループについて処理を行う
 	for(auto& group : particleGroups) {
 		if(group.second.instanceCount == 0) continue; // インスタンスが無い場合はスキップ
@@ -158,43 +155,38 @@ void Particle::Draw() {
 
 			// 必要であればUV座標を設定する処理を追加
 		//}
-
+		//========================================
 		//マテリアルCBufferの場所を設定
 		commandList->SetGraphicsRootConstantBufferView(0, materialBuffer_->GetGPUVirtualAddress());
-
 		// テクスチャのSRVのDescriptorTableを設定
 		commandList->SetGraphicsRootDescriptorTable(2, particleSetup_->GetSrvSetup()->GetSRVGPUDescriptorHandle(group.second.srvIndex));
-
 		// インスタンシングデータのSRVのDescriptorTableを設定
 		commandList->SetGraphicsRootDescriptorTable(1, particleSetup_->GetSrvSetup()->GetSRVGPUDescriptorHandle(group.second.instancingSrvIndex));
-
 		// Draw Call (インスタンシング描画)
 		commandList->DrawInstanced(6, group.second.instanceCount, 0, 0);
-
-
 		// インスタンスカウントをリセット
 		group.second.instanceCount = 0;
 	}
-
 }
 
 ///=============================================================================
 ///						エミッター
 void Particle::Emit(const std::string name, const Vector3& position, uint32_t count) {
+	//========================================
+	// パーティクルグループが存在しない場合はエラーを出力して終了
 	if(particleGroups.find(name) == particleGroups.end()) {
 		// パーティクルグループが存在しない場合はエラーを出力して終了
 		assert("Specified particle group does not exist!");
-
 	}
-
+	//========================================
 	// 指定されたパーティクルグループが存在する場合、そのグループにパーティクルを追加
 	ParticleGroup& group = particleGroups[name];
-
+	//========================================
 	// すでにkNumMaxInstanceに達している場合、新しいパーティクルの追加をスキップする
 	if(group.particleList.size() >= count) {
 		return;
 	}
-
+	//========================================
 	// 指定された数のパーティクルを生成して追加
 	for(uint32_t i = 0; i < count; ++i) {
 		/*Particle newParticle = MakeNewParticle(randomEngine, position);
@@ -217,23 +209,23 @@ void Particle::CreateParticleGroup(const std::string& name, const std::string& t
 	if(nameExists) {
 		assert(false && "Particle group with this name already exists!");
 	}
-
+	//========================================
 	// 新たなパーティクルグループを作成
 	ParticleGroup newGroup;
 	newGroup.materialFilePath = textureFilePath;
-
+	//========================================
 	// テクスチャのSRVインデックスを取得して設定
 	TextureManager::GetInstance()->LoadTexture(textureFilePath);
-	
+	//========================================
 	// テクスチャのSRVインデックスを取得して設定
 	newGroup.srvIndex = TextureManager::GetInstance()->GetTextureIndex(textureFilePath);
-
+	//========================================
 	// テクスチャサイズを取得
 	const DirectX::TexMetadata& metadata = TextureManager::GetInstance()->GetMetadata(textureFilePath);
 	Vector2 textureSize = { static_cast<float>( metadata.width ), static_cast<float>( metadata.height )};
 	// カスタムサイズが指定されているかどうか
 	//newGroup.textureSize = textureSize;
-
+	//========================================
 	// サイズを設定（指定があればそれを使用、なければテクスチャサイズを使用）
 	if (customTextureSize.x > 0.0f && customTextureSize.y > 0.0f) {
 		newGroup.textureSize = customTextureSize;
@@ -241,10 +233,10 @@ void Particle::CreateParticleGroup(const std::string& name, const std::string& t
 	else {
 		newGroup.textureSize = textureSize;
 	}
-
+	//========================================
 	//// テクスチャサイズを設定
 	//AdjustTextureSize(newGroup, textureFilePath);
-
+	//========================================
 	// インスタンシング用リソースの生成
 	//newGroup.instancingResource =
 	//	dxCommon_->CreateBufferResource(sizeof(ParticleForGPU) * kNumMaxInstance);
@@ -252,30 +244,31 @@ void Particle::CreateParticleGroup(const std::string& name, const std::string& t
 		particleSetup_->
 		GetDXManager()->
 		CreateBufferResource(sizeof(ParticleForGPU) * kNumMaxInstance);
-
+	//========================================
+	// インスタンシングデータのポインタを取得
 	newGroup.instancingResource->Map(0, nullptr, reinterpret_cast<void**>( &newGroup.instancingDataPtr ));
 	for(uint32_t index = 0; index < kNumMaxInstance; ++index) {
 		newGroup.instancingDataPtr[index].WVP = Identity4x4();
 		newGroup.instancingDataPtr[index].World = Identity4x4();
 		//newGroup.instancingDataPtr[index].color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
-
+	//========================================
 	// 最大インスタンシング用リソースの生成
 	//InstancingMaxResource();
-
+	//========================================
 	// インスタンシング用SRVを確保してSRVインデックスを記録
 	//newGroup.instancingSrvIndex =　srvManager_->Allocate() + 1;
 	newGroup.instancingSrvIndex = particleSetup_->GetSrvSetup()->Allocate() + 1;
 	// 作成したSRVをインスタンシング用リソースに設定
 	//srvManager_->CreateSRVforStructuredBuffer(newGroup.instancingSrvIndex, newGroup.instancingResource.Get(), kNumMaxInstance, sizeof(ParticleForGPU));
 	particleSetup_->GetSrvSetup()->CreateSRVStructuredBuffer(newGroup.instancingSrvIndex, newGroup.instancingResource.Get(), kNumMaxInstance, sizeof(ParticleForGPU));
-
+	//========================================
 	// パーティクルグループをリストに追加
 	particleGroups.emplace(name, newGroup);
-
+	//========================================
 	// マテリアルデータの初期化
 	CreateMaterialData();
-
+	//========================================
 	// TODO:新しいブレンドモードを設定
 	//blendMode_ = blendMode;
 	//GraphicsPipelineState(blendMode);  // 再生成
@@ -300,7 +293,6 @@ void Particle::CreateVertexBufferView() {
 	//========================================
 	// 1.頂点バッファの作成
 	vertexBuffer_ = particleSetup_->GetDXManager()->CreateBufferResource(sizeof(VertexData) * modelData_.vertices.size());
-
 	//========================================
 	// 2.頂点バッファビューの作成
 	//リソースの先頭のアドレスから使う
@@ -314,12 +306,14 @@ void Particle::CreateVertexBufferView() {
 ///=============================================================================
 ///						マテリアルデータの作成
 void Particle::CreateMaterialData() {
+	//========================================
 	// マテリアル用のリソースを作成
 	materialBuffer_ = particleSetup_->GetDXManager()->CreateBufferResource(sizeof(Material));
-
+	//========================================
 	//書き込むためのアドレスを取得
 	materialBuffer_->Map(0, nullptr, reinterpret_cast<void**>( &materialData_ ));
 	materialData_->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	//========================================
 	//SpriteはLightingしないのfalseを設定する
 	materialData_->enableLighting = false;
 	materialData_->uvTransform = Identity4x4();
@@ -329,22 +323,23 @@ void Particle::CreateMaterialData() {
 ///						新しいパーティクルを生成
 // Particle.cpp
 ParticleStr Particle::CreateNewParticle(std::mt19937& randomEngine, const Vector3& position) {
+	//========================================
 	// カラーと寿命のランダム分布
 	std::uniform_real_distribution<float> distColor(colorRange_.min, colorRange_.max);
 	std::uniform_real_distribution<float> distTime(lifetimeRange_.min, lifetimeRange_.max);
-
+	//========================================
 	// 速度のランダム分布
 	std::uniform_real_distribution<float> distSpeed(velocityRange_.min, velocityRange_.max);
-
+	//========================================
 	// 新たなパーティクルの生成
 	ParticleStr particle = {};
-
+	//========================================
 	particle.transform.scale = { 1.0f, 1.0f, 1.0f };
 	particle.transform.rotate = { 0.0f, 0.0f, 0.0f };
-
+	//========================================
 	// 初期位置をエミッターの位置に設定
 	particle.transform.translate = position;
-
+	//========================================
 	// ランダムな方向ベクトルの生成（球面上のランダムな点）
 	std::uniform_real_distribution<float> distAngle(0.0f, 1.0f);
 	float z = distAngle(randomEngine) * 2.0f - 1.0f; // z ∈ [-1, 1]
@@ -352,20 +347,20 @@ ParticleStr Particle::CreateNewParticle(std::mt19937& randomEngine, const Vector
 	float r = std::sqrt(1.0f - z * z);
 	float x = r * std::cos(theta);
 	float y = r * std::sin(theta);
-
+	//========================================
 	Vector3 direction = { x, y, z }; // 方向ベクトル
-
+	//========================================
 	// 速度を設定
 	float speed = distSpeed(randomEngine);
-
+	//========================================
 	// 初期速度を設定
 	particle.velocity = MultiplyVec3(speed, direction);
-
+	//========================================
 	// カラーと寿命を設定
 	particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 1.0f };
 	particle.lifeTime = 0.4f; //distTime(randomEngine);
 	particle.currentTime = 0.0f;
-
+	//========================================
 	return particle;
 }
 
